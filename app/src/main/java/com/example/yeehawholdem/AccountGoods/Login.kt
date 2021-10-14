@@ -25,8 +25,13 @@ import androidx.navigation.compose.rememberNavController
 import com.example.yeehawholdem.R
 import com.example.yeehawholdem.Screen
 
+//TODO add the sign in functionality, implement a forgot password button as well as the corresponding code for that
+//Probably change the image used as well
+
+
 @Composable
 fun LoginScreen(navController : NavController) {
+
     //username
     val usernameValue = remember { mutableStateOf("")}
     //password
@@ -51,8 +56,7 @@ fun LoginScreen(navController : NavController) {
             .background(MaterialTheme.colors.background),
             contentAlignment = Alignment.TopCenter)
         {
-            Spacer(modifier = Modifier.padding(20.dp))
-            Image(painter = painterResource(id = R.drawable.pain), contentDescription = null)
+            Image(painter = painterResource(id = R.drawable.pain), contentDescription = "Login Image")
         }
 
         //A column in the box corresponds to the sign in at the top of the screen
@@ -121,6 +125,7 @@ fun LoginScreen(navController : NavController) {
             //Add some space before the sign in button
             Spacer(modifier = Modifier.padding(10.dp))
             Button(onClick = {
+                             //TODO HERE
                 //Sign in functionality
                 //Something like check the user name and password in the database
                 //If it exists, then send em back to the main menu
@@ -136,7 +141,8 @@ fun LoginScreen(navController : NavController) {
             Text(text = "Create An Account", modifier = Modifier
                 .clickable(onClick = {
                     navController.navigate(route = Screen.CreateAccount.route)
-                }) )
+                }),
+            color = MaterialTheme.colors.primary)
 
             Spacer(modifier = Modifier.padding(80.dp))
         }
@@ -144,41 +150,6 @@ fun LoginScreen(navController : NavController) {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  /*  navController : NavController
-) {
-    Column(modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly)
-    {
-        UsernameTextBox()
-        PasswordTextBox()
-        Box() {
-            Text(
-                modifier = Modifier
-                    .clickable {
-                        navController.navigate(route = Screen.MainMenu.route)
-                    },
-                text = "Back To Main",
-                color = MaterialTheme.colors.secondary,
-                fontSize = MaterialTheme.typography.h3.fontSize,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
-}*/
 
 
 @Composable
