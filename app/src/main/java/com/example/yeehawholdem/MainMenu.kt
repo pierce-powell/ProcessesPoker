@@ -101,7 +101,7 @@ fun MainMenuScreen(
             if(isOnline && isLoggedIn) {
                 Button(
                     onClick = {
-                        navController.navigate(route = Screen.Login.route)
+                        navController.navigate(route = Screen.GameBoard.route)
                     },
                     modifier = Modifier
                         .fillMaxWidth(.8f)
@@ -118,7 +118,7 @@ fun MainMenuScreen(
                 Button(
                     onClick = {
                         //TODO issue warning prompt that their progress will not be saved
-                        navController.navigate(route = Screen.Login.route)
+                        navController.navigate(route = Screen.GameBoard.route)
                     },
                     modifier = Modifier
                         .fillMaxWidth(.8f)
@@ -135,7 +135,7 @@ fun MainMenuScreen(
                 Button(
                     onClick = {
                         //TODO issue warning prompt that their progress will not be saved
-                        navController.navigate(route = Screen.Login.route)
+                        navController.navigate(route = Screen.GameBoard.route)
                     },
                     modifier = Modifier
                         .fillMaxWidth(.8f)

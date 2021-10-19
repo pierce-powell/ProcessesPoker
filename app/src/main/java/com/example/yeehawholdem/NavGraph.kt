@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.yeehawholdem.GameBoardGoods.GameBoardScreen
 import com.example.yeehawholdem.LeaderBoardGoods.LeaderBoardScreen
 import com.example.yeehawholdem.Login.LoginScreen
 
@@ -27,6 +28,10 @@ fun setUpNavHost(navController: NavHostController)
         composable(route = Screen.LeaderBoard.route)
         {
             LeaderBoardScreen(navController = navController)
+        }
+        composable(route = Screen.GameBoard.route)
+        {
+            GameBoardScreen(navController = navController)
         }
     }
 }

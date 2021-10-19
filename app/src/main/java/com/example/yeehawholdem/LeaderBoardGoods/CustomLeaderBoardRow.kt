@@ -2,10 +2,7 @@ package com.example.yeehawholdem.LeaderBoardGoods
 
 import android.app.Person
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,9 +20,10 @@ fun CustomLeaderBoardRow(curPlayer: Player) {
         modifier = Modifier
             .background(Color.LightGray)
             .fillMaxWidth()
-            .padding(24.dp),
+            .padding(12.dp)
+            .height(36.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         Text(
             text = "${curPlayer.balance}",
