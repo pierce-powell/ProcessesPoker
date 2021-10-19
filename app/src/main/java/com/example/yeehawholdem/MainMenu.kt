@@ -86,7 +86,7 @@ fun MainMenuScreen(
 
             //Leaderboard button
             Button(onClick = {
-                navController.navigate(route = Screen.Login.route)
+                navController.navigate(route = Screen.LeaderBoard.route)
             },
                 modifier = Modifier
                     .fillMaxWidth(.8f)

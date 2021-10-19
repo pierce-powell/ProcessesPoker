@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.yeehawholdem.LeaderBoardGoods.LeaderBoardScreen
 import com.example.yeehawholdem.Login.LoginScreen
 
 @Composable
@@ -22,6 +23,10 @@ fun setUpNavHost(navController: NavHostController)
         composable(route = Screen.CreateAccount.route)
         {
             CreateAccount(navController = navController)
+        }
+        composable(route = Screen.LeaderBoard.route)
+        {
+            LeaderBoardScreen(navController = navController)
         }
     }
 }
