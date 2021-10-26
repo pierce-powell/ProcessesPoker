@@ -16,6 +16,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.yeehawholdem.R
 
+//Global variables
+public val CARD_HEIGHT = 109.dp
+
 @Composable
 fun GameBoardScreen(navController : NavController)
 {
@@ -48,7 +51,7 @@ fun GameBoardScreen(navController : NavController)
             //The River :tm:
             Row(modifier = Modifier
                 .fillMaxWidth()
-                .height(109.dp), // However tall we need for a card
+                .height(CARD_HEIGHT), // However tall we need for a card
                 horizontalArrangement = Arrangement.Center)
             {
                 //The river will have 5 cards. we can do this by making 5 boxes to hold out images
@@ -65,7 +68,7 @@ fun GameBoardScreen(navController : NavController)
             //The users hand
             Row(modifier = Modifier
                 .fillMaxWidth()
-                .height(109.dp), // However tall we need for a card
+                .height(CARD_HEIGHT), // However tall we need for a card
                 horizontalArrangement = Arrangement.Center)
             {
                 //The river will have 5 cards. we can do this by making 5 boxes to hold out images

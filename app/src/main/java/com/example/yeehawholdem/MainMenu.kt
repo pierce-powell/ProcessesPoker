@@ -22,7 +22,6 @@ import androidx.navigation.compose.rememberNavController
 //TODO Issue warning about not being saved when offline or not logged in
 //TODO Determine whether to hide buttons that they can't do or allow them to remain and issue prompts
 //TODO Remove "AS GUEST" from online !logged in favor of issuing a prompt?
-//TODO bruh
 
 @Composable
 fun MainMenuScreen(
