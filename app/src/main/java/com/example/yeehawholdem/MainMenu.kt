@@ -20,8 +20,8 @@ import androidx.navigation.compose.rememberNavController
 //TODO Need to keep track of whether or not the user is online and logged in.
 //TODO implement sign out functionality
 //TODO Issue warning about not being saved when offline or not logged in
-//TODO Determine whether to hide buttons that they can't do or allow them to remain and issue prompts
-//TODO Remove "AS GUEST" from online !logged in favor of issuing a prompt?
+//TODO Remove "AS GUEST" from online !logged in favor of issuing a prompt
+
 
 @Composable
 fun MainMenuScreen(
@@ -46,10 +46,10 @@ fun MainMenuScreen(
             contentAlignment = Alignment.TopCenter
         )
         {
-            Image(
+          /*  Image(
                 painter = painterResource(id = R.drawable.pain),
                 contentDescription = "Login Image"
-            )
+            )*/
         }
 
         //Column to hold all the goods
@@ -134,7 +134,7 @@ fun MainMenuScreen(
                 Button(
                     onClick = {
                         //TODO issue warning prompt that their progress will not be saved
-                        navController.navigate(route = Screen.GameBoard.route)
+                        navController.navigate(route = Screen.GameBoardOffline.route)
                     },
                     modifier = Modifier
                         .fillMaxWidth(.8f)

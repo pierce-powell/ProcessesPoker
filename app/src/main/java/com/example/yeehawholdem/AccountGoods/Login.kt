@@ -56,7 +56,7 @@ fun LoginScreen(navController : NavController) {
             .background(MaterialTheme.colors.background),
             contentAlignment = Alignment.TopCenter)
         {
-            Image(painter = painterResource(id = R.drawable.pain), contentDescription = "Login Image")
+            //Image(painter = painterResource(id = R.drawable.pain), contentDescription = "Login Image")
         }
 
         //A column in the box corresponds to the sign in at the top of the screen

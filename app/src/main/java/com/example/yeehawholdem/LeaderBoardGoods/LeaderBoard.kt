@@ -39,10 +39,10 @@ fun LeaderBoardScreen(navController : NavController)
             contentAlignment = Alignment.TopCenter
         )
         {
-            Image(
+           /* Image(
                 painter = painterResource(id = R.drawable.pain),
                 contentDescription = "Login Image"
-            )
+            )*/
         }
         Box(modifier = Modifier
             .fillMaxHeight(.8f)

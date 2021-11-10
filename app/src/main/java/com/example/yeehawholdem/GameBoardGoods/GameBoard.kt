@@ -1,13 +1,22 @@
 package com.example.yeehawholdem.GameBoardGoods
 
+import android.view.Surface
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -15,12 +24,39 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.yeehawholdem.R
+import com.example.yeehawholdem.Screen
 
 //Global variables
 public val CARD_HEIGHT = 109.dp
 
+//TODO: Diplay the current pot
+//TODO: Quit game button
+//TODO: Hold, Bet, Raise
+//TODO: Make the image correspond to the actual card in play
+//TODO: Display Best Hand at the end of the round
+//TODO: Make the height connected to the individual box instead of the row, so we can click to enlarge?
+
+//private val howManyFlips = 0 (Just ask the dealer obj)
+
+/*
+Use Case:
+User clicks play offline
+Booted into game screen, seeing only their hand and are asked to place a hold, fold, raise and can
+    see the dealers starting bet as well as the pot initialized with that bet
+upon bet confirmation, the first three cards in the river are flipped, dealer places a new bet,
+    user is then faced with same question, hold, fold, raise
+Upon confirmation, the 4th card is flipped (more bets)
+then 5th (more bets)
+Winner is then displayed on screen with their best hand.
+Pot is added to the users balance
+Then Quit or Continue prompt is displayed
+Continue restarts the game
+Quit returns to Main Menu
+
+ */
+
 @Composable
-fun GameBoardScreen(navController : NavController)
+fun GameBoardOfflineScreen(navController : NavController)
 {
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter)
@@ -35,10 +71,10 @@ fun GameBoardScreen(navController : NavController)
         )
         {
             // The Pretty Picture
-            Image(
+            /*Image(
                 painter = painterResource(id = R.drawable.pain),
                 contentDescription = "Login Image"
-            )
+            )*/
         }
 
         //Outer Column to store our two rows
@@ -59,7 +95,21 @@ fun GameBoardScreen(navController : NavController)
                 addCard(curCardID = 2)
                 addCard(curCardID = 3)
                 addCard(curCardID = 4)
-                addCard(curCardID = 5)
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .background(MaterialTheme.colors.background)
+                        .padding(1.dp)
+                        .clip(RectangleShape),
+                    contentAlignment = Alignment.Center,
+                )
+                {
+                    // The Pretty Picture
+                    Image(
+                        painter = painterResource(id = R.drawable.tenofclubsmachtwo),
+                        contentDescription = "Card"
+                    )
+                }
             }
             
             Spacer(modifier = Modifier.padding(50.dp))
@@ -79,43 +129,89 @@ fun GameBoardScreen(navController : NavController)
     }
 }
 
+
+private fun FoldBetConfirm()
+{
+    /*
+    Fold : Button they can click (no user input)
+    Bet : Mini pop up populated with the dealers bet locked,
+    ______________________________________
+    |  INT BET                       ^    |
+    | (Default to dealers)        adjust  |
+    |  CONFIRM                       v    |
+    --------------------------------------
+     */
+
+
+   /* //On click functionality for confirm button
+    if (howManyFlips == 0)
+        //Flip 3
+    else if (howManyFlips == 3)
+        //flip the 4th
+    else if (howManyFlips == 4)
+        //flip the 5th
+
+    */
+}
+
 @Composable
 private fun addCard(curCardID: Int)
 {
+    val scale = remember { mutableStateOf(1f)}
+
+    //TODO: Add the proper card based on ID
+
     //determine which drawable to use
     Box(
         modifier = Modifier
             .fillMaxHeight()
             .background(MaterialTheme.colors.background)
-            .padding(1.dp),
+            .padding(1.dp)
+            .clip(RectangleShape)
+            .pointerInput(Unit) {
+                                detectTransformGestures {centroid, pan, zoom, rotation ->
+                                    scale.value *= zoom
+                                }
+            },
         contentAlignment = Alignment.Center,
     )
     {
         // The Pretty Picture
-        Image(
-            painter = painterResource(id = R.drawable.samplecard),
+        Image(modifier = Modifier.graphicsLayer(
+            scaleX = maxOf(.1f, minOf(3f, scale.value)),
+            scaleY = maxOf(.1f, minOf(3f, scale.value)),
+        ),
+            painter = painterResource(id = R.drawable.tenofclubsmachtwo),
             contentDescription = "Card"
         )
     }
 }
 
 @Composable
-private fun addText(text : String)
-{
-    //Row for the river text
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .height(40.dp), // However tall we need for a card
-        horizontalArrangement = Arrangement.Center) {
-        //Box to put the text in
-        Box(contentAlignment = Alignment.Center) {
-            Text(
-                textAlign = TextAlign.Center,
-                fontSize = MaterialTheme.typography.h5.fontSize,
-                text = text
-            )
+private fun addText(text : String) {
+    // Wrap in a surface so it can pick up on light-mode vs dark
+    Surface() {
+        //Row for the river text
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp), // However tall we need for a card
+            horizontalArrangement = Arrangement.Center
+        ) {
+            //Box to put the text in
+            Box(contentAlignment = Alignment.Center) {
+                Text(
+                    textAlign = TextAlign.Center,
+                    fontSize = MaterialTheme.typography.h5.fontSize,
+                    text = text
+                )
+            }
         }
     }
+}
+
+fun setIsGameActive() {
+    //table.getGameStatus()
 }
 
 
@@ -123,5 +219,5 @@ private fun addText(text : String)
 @Preview
 fun gamePreview()
 {
-    GameBoardScreen(navController = rememberNavController())
+    GameBoardOfflineScreen(navController = rememberNavController())
 }

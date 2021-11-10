@@ -48,7 +48,7 @@ fun CreateAccount(navController : NavController)
             .fillMaxSize()
             .background(MaterialTheme.colors.background), contentAlignment = Alignment.TopCenter)
         {
-            Image(painter = painterResource(id = R.drawable.pain), contentDescription = null)
+            //Image(painter = painterResource(id = R.drawable.pain), contentDescription = null)
         }
 
         //Outer column that will contain all our text fields
