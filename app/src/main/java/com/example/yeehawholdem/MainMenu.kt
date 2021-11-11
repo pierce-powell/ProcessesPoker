@@ -23,6 +23,11 @@ import androidx.navigation.compose.rememberNavController
 //TODO Remove "AS GUEST" from online !logged in favor of issuing a prompt
 
 
+//Global variables
+public val BUTTON_HEIGHT = 50.dp
+public const val BUTTON_WIDTH = .8f
+public val SPACER_HEIGHT = 20.dp
+
 @Composable
 fun MainMenuScreen(
     navController : NavController
@@ -63,8 +68,8 @@ fun MainMenuScreen(
                 navController.navigate(route = Screen.Login.route)
             },
                 modifier = Modifier
-                    .fillMaxWidth(.8f)
-                    .height(50.dp))
+                    .fillMaxWidth(BUTTON_WIDTH)
+                    .height(BUTTON_HEIGHT))
             {
                 Text(text = "LOGIN", fontSize = MaterialTheme.typography.h5.fontSize)
             }
@@ -74,27 +79,27 @@ fun MainMenuScreen(
                     //TODO implement sign out functionality
                 },
                     modifier = Modifier
-                        .fillMaxWidth(.8f)
-                        .height(50.dp))
+                        .fillMaxWidth(BUTTON_WIDTH)
+                        .height(BUTTON_HEIGHT))
                 {
                     Text(text = "SIGN OUT", fontSize = MaterialTheme.typography.h5.fontSize)
                 }
             }
 
-            Spacer(modifier = Modifier.padding(20.dp))
+            Spacer(modifier = Modifier.padding(SPACER_HEIGHT))
 
             //Leaderboard button
             Button(onClick = {
                 navController.navigate(route = Screen.LeaderBoard.route)
             },
                 modifier = Modifier
-                    .fillMaxWidth(.8f)
-                    .height(50.dp))
+                    .fillMaxWidth(BUTTON_WIDTH)
+                    .height(BUTTON_HEIGHT))
             {
                 Text(text = "LEADERBOARD", fontSize = MaterialTheme.typography.h5.fontSize)
             }
 
-            Spacer(modifier = Modifier.padding(20.dp))
+            Spacer(modifier = Modifier.padding(SPACER_HEIGHT))
 
             //User can only play online if they have an internet connection
             if(isOnline && isLoggedIn) {
@@ -103,8 +108,8 @@ fun MainMenuScreen(
                         navController.navigate(route = Screen.GameBoard.route)
                     },
                     modifier = Modifier
-                        .fillMaxWidth(.8f)
-                        .height(50.dp)
+                        .fillMaxWidth(BUTTON_WIDTH)
+                        .height(BUTTON_HEIGHT)
                 )
                 {
                     Text(text = "PLAY ONLINE", fontSize = MaterialTheme.typography.h5.fontSize)
@@ -120,8 +125,8 @@ fun MainMenuScreen(
                         navController.navigate(route = Screen.GameBoard.route)
                     },
                     modifier = Modifier
-                        .fillMaxWidth(.8f)
-                        .height(50.dp)
+                        .fillMaxWidth(BUTTON_WIDTH)
+                        .height(BUTTON_HEIGHT)
                 )
                 {
                     Text(text = "PLAY ONLINE AS GUEST", fontSize = MaterialTheme.typography.h5.fontSize)
@@ -137,8 +142,8 @@ fun MainMenuScreen(
                         navController.navigate(route = Screen.GameBoardOffline.route)
                     },
                     modifier = Modifier
-                        .fillMaxWidth(.8f)
-                        .height(50.dp)
+                        .fillMaxWidth(BUTTON_WIDTH)
+                        .height(BUTTON_HEIGHT)
                 )
                 {
                     Text(text = "PLAY OFFLINE", fontSize = MaterialTheme.typography.h5.fontSize)

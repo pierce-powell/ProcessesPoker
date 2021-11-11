@@ -5,12 +5,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,6 +22,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.yeehawholdem.BUTTON_HEIGHT
+import com.example.yeehawholdem.BUTTON_WIDTH
 import com.example.yeehawholdem.R
 import com.example.yeehawholdem.Screen
 
@@ -41,7 +42,7 @@ public val CARD_HEIGHT = 109.dp
 /*
 Use Case:
 User clicks play offline
-Booted into game screen, seeing only their hand and are asked to place a hold, fold, raise and can
+Booted into game screen, seeing only their hand and are asked to fold or bet and can
     see the dealers starting bet as well as the pot initialized with that bet
 upon bet confirmation, the first three cards in the river are flipped, dealer places a new bet,
     user is then faced with same question, hold, fold, raise
@@ -58,6 +59,12 @@ Quit returns to Main Menu
 @Composable
 fun GameBoardOfflineScreen(navController : NavController)
 {
+    //variables for later
+    var pot by remember{ mutableStateOf(0)}
+    var cardsFlipped = 0
+    var userBet by remember{ mutableStateOf(10) }
+    var dealerBet by remember{ mutableStateOf(10)}
+
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter)
     {
@@ -78,7 +85,7 @@ fun GameBoardOfflineScreen(navController : NavController)
         }
 
         //Outer Column to store our two rows
-        Column(modifier = Modifier
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
             .fillMaxHeight(.8f)
             .fillMaxWidth()
         )
@@ -112,8 +119,79 @@ fun GameBoardOfflineScreen(navController : NavController)
                 }
             }
             
-            Spacer(modifier = Modifier.padding(50.dp))
-            
+            Spacer(modifier = Modifier.padding(15.dp))
+            addText(text = "Pot: $pot")
+            Spacer(modifier = Modifier.padding(15.dp))
+
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .height(90.dp),
+                horizontalArrangement = Arrangement.Center)
+            {
+                Button(//fold button
+                    onClick = {
+                        //the dealer wins and the next round starts
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(.3f)
+                        .height(BUTTON_HEIGHT)
+                )
+                {
+                    Text(text = "Fold", fontSize = MaterialTheme.typography.h5.fontSize)
+                }
+                Spacer(modifier = Modifier.padding(15.dp))
+                if(userBet < dealerBet)
+                    userBet = dealerBet
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(.5f)
+                )
+                {
+                    Text(text = "Bet: $userBet", fontSize = MaterialTheme.typography.h5.fontSize)
+                    Button(
+                        onClick = {
+
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(1f)
+                            .height(45.dp)
+                    )
+                    {
+                        Text(text = "Lock in", fontSize = MaterialTheme.typography.h5.fontSize)
+                    }
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(.4f)
+                )
+                {
+                    Button(//raise bet button
+                        onClick = {
+                            userBet += 5
+
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(.9f)
+                            .height(40.dp)
+                    )
+                    {
+                        Text(text = "^", fontSize = MaterialTheme.typography.h5.fontSize)
+                    }
+                    Button(//lower bet button
+                        onClick = {
+                            if(userBet - 5 >= dealerBet)
+                                userBet -= 5
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(.9f)
+                            .height(40.dp)
+                    )
+                    {
+                        Text(text = "v", fontSize = MaterialTheme.typography.h5.fontSize)
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.padding(10.dp))
             addText(text = "User Hand")
             //The users hand
             Row(modifier = Modifier
@@ -129,6 +207,9 @@ fun GameBoardOfflineScreen(navController : NavController)
     }
 }
 
+fun setIsGameActive() {
+    //table.getGameStatus()
+}
 
 private fun FoldBetConfirm()
 {
@@ -144,14 +225,19 @@ private fun FoldBetConfirm()
 
 
    /* //On click functionality for confirm button
-    if (howManyFlips == 0)
+    if (cardsFlipped == 0)
         //Flip 3
-    else if (howManyFlips == 3)
+    else if (cardsFlipped == 3)
         //flip the 4th
-    else if (howManyFlips == 4)
+    else if (cardsFlipped == 4)
         //flip the 5th
 
     */
+}
+
+private fun incrementRound()
+{
+
 }
 
 @Composable
@@ -210,13 +296,8 @@ private fun addText(text : String) {
     }
 }
 
-fun setIsGameActive() {
-    //table.getGameStatus()
-}
-
-
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun gamePreview()
 {
     GameBoardOfflineScreen(navController = rememberNavController())
