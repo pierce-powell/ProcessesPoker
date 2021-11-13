@@ -65,23 +65,25 @@ fun GameBoardOfflineScreen(navController : NavController)
     var userBet by remember{ mutableStateOf(10) }
     var dealerBet by remember{ mutableStateOf(10)}
 
-    Box(modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter)
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
     {
-
-        //A box to put our pretty picture in
-        Box(
+        Row(//exit game button
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colors.background),
-            contentAlignment = Alignment.TopCenter
+            horizontalArrangement = Arrangement.End
         )
         {
-            // The Pretty Picture
-            /*Image(
-                painter = painterResource(id = R.drawable.pain),
-                contentDescription = "Login Image"
-            )*/
+            Button(
+                onClick = {
+                    navController.navigate(route = Screen.MainMenu.route)
+            }, modifier = Modifier
+                .fillMaxWidth(.15f)
+                .height(BUTTON_HEIGHT))
+            {
+                Text(text = "X", fontSize = MaterialTheme.typography.h5.fontSize)
+            }
+            addText(text = "Dealer bet: $dealerBet")
         }
 
         //Outer Column to store our two rows
@@ -147,10 +149,10 @@ fun GameBoardOfflineScreen(navController : NavController)
                     .fillMaxWidth(.5f)
                 )
                 {
-                    Text(text = "Bet: $userBet", fontSize = MaterialTheme.typography.h5.fontSize)
+                    addText(text = "Bet: $userBet")
                     Button(
                         onClick = {
-
+                                  pot = dealerBet + userBet
                         },
                         modifier = Modifier
                             .fillMaxWidth(1f)
@@ -168,15 +170,15 @@ fun GameBoardOfflineScreen(navController : NavController)
                     Button(//raise bet button
                         onClick = {
                             userBet += 5
-
                         },
                         modifier = Modifier
                             .fillMaxWidth(.9f)
                             .height(40.dp)
                     )
                     {
-                        Text(text = "^", fontSize = MaterialTheme.typography.h5.fontSize)
+                        Text(text = "+", fontSize = MaterialTheme.typography.h5.fontSize)
                     }
+                    Spacer(modifier = Modifier.padding(2.dp))
                     Button(//lower bet button
                         onClick = {
                             if(userBet - 5 >= dealerBet)
@@ -187,7 +189,7 @@ fun GameBoardOfflineScreen(navController : NavController)
                             .height(40.dp)
                     )
                     {
-                        Text(text = "v", fontSize = MaterialTheme.typography.h5.fontSize)
+                        Text(text = "-", fontSize = MaterialTheme.typography.h5.fontSize)
                     }
                 }
             }
@@ -255,9 +257,9 @@ private fun addCard(curCardID: Int)
             .padding(1.dp)
             .clip(RectangleShape)
             .pointerInput(Unit) {
-                                detectTransformGestures {centroid, pan, zoom, rotation ->
-                                    scale.value *= zoom
-                                }
+                detectTransformGestures { centroid, pan, zoom, rotation ->
+                    scale.value *= zoom
+                }
             },
         contentAlignment = Alignment.Center,
     )
