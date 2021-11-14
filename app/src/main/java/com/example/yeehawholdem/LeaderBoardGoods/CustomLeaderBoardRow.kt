@@ -31,12 +31,14 @@ fun CustomLeaderBoardRow(curPlayer: Player) {
             fontSize = Typography.h4.fontSize,
             fontWeight = FontWeight.Bold
         )
-        Text(
-            text = curPlayer.name,
-            color = Color.Black,
-            fontSize = Typography.h4.fontSize,
-            fontWeight = FontWeight.Normal
-        )
+        curPlayer.name?.let {
+            Text(
+                text = it,
+                color = Color.Black,
+                fontSize = Typography.h4.fontSize,
+                fontWeight = FontWeight.Normal
+            )
+        }
     }
 }
 

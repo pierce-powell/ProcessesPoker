@@ -24,11 +24,18 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.yeehawholdem.BUTTON_HEIGHT
 import com.example.yeehawholdem.BUTTON_WIDTH
+import com.example.yeehawholdem.LogicGoods.Card
+import com.example.yeehawholdem.LogicGoods.Dealer
+import com.example.yeehawholdem.LogicGoods.Player
+import com.example.yeehawholdem.LogicGoods.Table
 import com.example.yeehawholdem.R
 import com.example.yeehawholdem.Screen
 
 //Global variables
 public val CARD_HEIGHT = 109.dp
+var dealer = Dealer()
+var player = Player()
+var table = Table()
 
 //TODO: Diplay the current pot
 //TODO: Quit game button
@@ -65,6 +72,11 @@ fun GameBoardOfflineScreen(navController : NavController)
     var userBet by remember{ mutableStateOf(10) }
     var dealerBet by remember{ mutableStateOf(10)}
 
+    // Testing functionality of dealer
+    dealer.setupTable(table = table)
+    dealer.dealCard(player)
+    dealer.dealCard(player)
+
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
     {
         Row(//exit game button
@@ -99,11 +111,12 @@ fun GameBoardOfflineScreen(navController : NavController)
                 .height(CARD_HEIGHT), // However tall we need for a card
                 horizontalArrangement = Arrangement.Center)
             {
+
                 //The river will have 5 cards. we can do this by making 5 boxes to hold out images
-                addCard(curCardID = 1)
-                addCard(curCardID = 2)
-                addCard(curCardID = 3)
-                addCard(curCardID = 4)
+                addCard(card = table.sharedDeck?.getOrNull(0), curCardID = 1)
+                addCard(card = table.sharedDeck?.getOrNull(1), curCardID = 2)
+                addCard(card = table.sharedDeck?.getOrNull(2), curCardID = 3)
+                addCard(card = table.sharedDeck?.getOrNull(3), curCardID = 4)
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
@@ -115,7 +128,7 @@ fun GameBoardOfflineScreen(navController : NavController)
                 {
                     // The Pretty Picture
                     Image(
-                        painter = painterResource(id = R.drawable.tenofclubsmachtwo),
+                        painter = painterResource(id = table.sharedDeck?.getOrNull(4)!!.cardPicture),
                         contentDescription = "Card"
                     )
                 }
@@ -202,8 +215,8 @@ fun GameBoardOfflineScreen(navController : NavController)
                 horizontalArrangement = Arrangement.Center)
             {
                 //The river will have 5 cards. we can do this by making 5 boxes to hold out images
-                addCard(curCardID = 1)
-                addCard(curCardID = 2)
+                addCard(card = player.hand?.getOrNull(0), curCardID = 1)
+                addCard(card = player.hand?.getOrNull(1), curCardID = 2)
             }
         }
     }
@@ -243,9 +256,13 @@ private fun incrementRound()
 }
 
 @Composable
-private fun addCard(curCardID: Int)
+private fun addCard(card: Card?, curCardID: Int = 0)
 {
     val scale = remember { mutableStateOf(1f)}
+
+    // var card = table.sharedDeck?.getOrNull(curCardID - 1)
+    // var card: Card? = dealer?.usableDeck?.getOrNull(0) // TODO: Change to use dealer's deck
+    // dealer?.usableDeck?.removeAt(0) // TODO: Deal cards before removing from deck
 
     //TODO: Add the proper card based on ID
 
@@ -265,13 +282,15 @@ private fun addCard(curCardID: Int)
     )
     {
         // The Pretty Picture
-        Image(modifier = Modifier.graphicsLayer(
-            scaleX = maxOf(.1f, minOf(3f, scale.value)),
-            scaleY = maxOf(.1f, minOf(3f, scale.value)),
-        ),
-            painter = painterResource(id = R.drawable.tenofclubsmachtwo),
-            contentDescription = "Card"
-        )
+        if (card != null) {
+            Image(modifier = Modifier.graphicsLayer(
+                scaleX = maxOf(.1f, minOf(3f, scale.value)),
+                scaleY = maxOf(.1f, minOf(3f, scale.value)),
+            ),
+                painter = painterResource(id = card.cardPicture),
+                contentDescription = "Card"
+            )
+        }
     }
 }
 
