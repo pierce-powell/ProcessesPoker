@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "638876262840",
+    "firebase_url": "https://yeehawholdem-default-rtdb.firebaseio.com",
+    "project_id": "yeehawholdem",
+    "storage_bucket": "yeehawholdem.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:638876262840:android:e8841d35f9a936820fef4d",
+        "android_client_info": {
+          "package_name": "com.example.yeehawholdem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "638876262840-9k86kotifa7prmp846vva7cahpam84j0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDb-1-CQUFVpwFTmmQWvdqyo-FBwr8o09A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "638876262840-9k86kotifa7prmp846vva7cahpam84j0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
