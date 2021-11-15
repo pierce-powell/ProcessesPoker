@@ -26,7 +26,7 @@ class Dealer {
     }
 
     fun increaseCardCount() {
-        TODO()
+        cardCount++
     }
 
     // Idea: Get player from turn order or as parameter passed in?
@@ -47,5 +47,10 @@ class Dealer {
             usableDeck?.getOrNull(0)?.let { table?.sharedDeck?.add(it) }
             usableDeck?.removeAt(0)
         }
+    }
+
+    //testing functions
+    public fun printDeck(){
+        usableDeck?.forEach { System.out.println(it) }
     }
 }
