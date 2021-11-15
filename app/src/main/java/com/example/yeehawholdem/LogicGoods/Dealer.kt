@@ -16,12 +16,11 @@ class Dealer {
     }
 
     private fun shuffleUsable() {
-        // TODO: Put in Try-Catch block?
         usableDeck?.shuffle()
     }
 
     fun dealCard(player: Player?) {
-        // TODO()
+        // TODO: Change to also work with the table's sharedDeck?
         usableDeck?.getOrNull(0)?.let { player?.hand?.add(it) }
         usableDeck?.removeAt(0)
     }
@@ -30,6 +29,7 @@ class Dealer {
         TODO()
     }
 
+    // Idea: Get player from turn order or as parameter passed in?
     fun promptPlayer() {
         TODO()
     }

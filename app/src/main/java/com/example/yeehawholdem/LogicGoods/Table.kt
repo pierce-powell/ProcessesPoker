@@ -13,7 +13,6 @@ class Table {
     }
 
     fun getPlayerID(player: Int): Int? {
-        // TODO()
         return playerArray?.getOrNull(player)?.playerID
     }
 
@@ -21,7 +20,7 @@ class Table {
         try {
             sharedDeck?.add(card)
         } catch (e: Exception) {
-            TODO()
+            // TODO: handle exception
         }
     }
 
@@ -30,7 +29,7 @@ class Table {
             if (amount > 0) currentPot += amount
             else throw IllegalArgumentException("Amount must be greater than 0")
         } catch (e: IllegalArgumentException) {
-            TODO()
+            // TODO: handle exception
         }
 
     }

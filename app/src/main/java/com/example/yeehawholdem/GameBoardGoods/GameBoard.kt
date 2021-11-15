@@ -1,6 +1,7 @@
 package com.example.yeehawholdem.GameBoardGoods
 
 import android.view.Surface
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
@@ -24,10 +25,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.yeehawholdem.BUTTON_HEIGHT
 import com.example.yeehawholdem.BUTTON_WIDTH
-import com.example.yeehawholdem.LogicGoods.Card
-import com.example.yeehawholdem.LogicGoods.Dealer
-import com.example.yeehawholdem.LogicGoods.Player
-import com.example.yeehawholdem.LogicGoods.Table
+import com.example.yeehawholdem.LogicGoods.*
 import com.example.yeehawholdem.R
 import com.example.yeehawholdem.Screen
 
@@ -36,6 +34,7 @@ public val CARD_HEIGHT = 109.dp
 var dealer = Dealer()
 var player = Player()
 var table = Table()
+var checkHand = CheckHand()
 
 //TODO: Diplay the current pot
 //TODO: Quit game button
@@ -72,11 +71,6 @@ fun GameBoardOfflineScreen(navController : NavController)
     var userBet by remember{ mutableStateOf(10) }
     var dealerBet by remember{ mutableStateOf(10)}
 
-    // Testing functionality of dealer
-    dealer.setupTable(table = table)
-    dealer.dealCard(player)
-    dealer.dealCard(player)
-
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
     {
         Row(//exit game button
@@ -111,6 +105,15 @@ fun GameBoardOfflineScreen(navController : NavController)
                 .height(CARD_HEIGHT), // However tall we need for a card
                 horizontalArrangement = Arrangement.Center)
             {
+                // Testing functionality of dealer
+                dealer.setupTable(table = table)
+                dealer.dealCard(player)
+                dealer.dealCard(player)
+                table.sharedDeck = mutableListOf<Card>(Card(0), Card(13), Card(26), Card(1), Card(14))
+                checkHand.currentHand = table.sharedDeck
+
+                var Test = player.getHighCard()
+
 
                 //The river will have 5 cards. we can do this by making 5 boxes to hold out images
                 addCard(card = table.sharedDeck?.getOrNull(0), curCardID = 1)
