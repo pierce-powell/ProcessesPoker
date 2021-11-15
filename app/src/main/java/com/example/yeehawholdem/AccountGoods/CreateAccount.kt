@@ -1,7 +1,6 @@
 package com.example.yeehawholdem
 
-import android.graphics.Paint
-import androidx.compose.foundation.Image
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,7 +16,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun CreateAccount(navController : NavController)
 {
@@ -25,11 +29,25 @@ fun CreateAccount(navController : NavController)
     //TODO implement the password check to issue the user a prompt if they don't match
     //TODO also actually do something with the gathered variables when they click the create account button
 
+    lateinit var auth: FirebaseAuth;
+
+    auth = Firebase.auth
+
+
     //Variables
     val username = remember { mutableStateOf("")}
     val email = remember { mutableStateOf("")}
     val password1 = remember { mutableStateOf("")}
     val password2 = remember { mutableStateOf("")}
+
+    //These used to display an error message if needed
+    var showDialog by remember { mutableStateOf(false) }
+    var errorResults by remember { mutableStateOf("") }
+
+
+    //This is used to display a successful or failure
+    var userCreatedSuccessfully by remember { mutableStateOf(false) }
+    var userNotCreatedSuccessfully by remember { mutableStateOf(false) }
 
     //Password visibility controller
     var passwordVisibility by remember { mutableStateOf(false) }
@@ -161,10 +179,27 @@ fun CreateAccount(navController : NavController)
             //Add some space before the sign in button
             Spacer(modifier = Modifier.padding(10.dp))
             Button(onClick = {
-                //TODO HERE
-                //Create account functionality
-                //Something like check the user name and password in the database
-                //If it exists, then send em back to the main menu, logged in style
+                errorResults = checkInputFields(username = username, email = email, password1 = password1, password2 = password2)
+
+                // This triggers a pop up if something is wrong
+                if ((errorResults.isNotEmpty())) {
+                    showDialog = true
+                }
+                // Otherwisem the information that was entered was correct
+                else
+                {
+                    auth.createUserWithEmailAndPassword(email.value, password2.value).addOnCompleteListener(
+                        OnCompleteListener {
+                            if( it.isSuccessful ) {
+                                //TODO Update Player OBJ to reflect successful Login
+
+                                userCreatedSuccessfully = true
+                            }
+                            else {
+                                userNotCreatedSuccessfully = true
+                            }
+                        })
+                }
             },
                 modifier = Modifier
                     .fillMaxWidth(.8f)
@@ -174,9 +209,90 @@ fun CreateAccount(navController : NavController)
             }
 
         }
+
+
         Spacer(modifier = Modifier.height(150.dp))
     }
+
+    // The pop up error message previously mentioned
+    if (showDialog == true) {
+
+        AlertDialog(onDismissRequest = {},
+            title = {
+                Text(text = errorResults)
+            },
+            confirmButton = {
+                Button(onClick = {
+                    showDialog = false
+                })
+                {
+                    Text(text = "Dismiss")
+                }
+            }
+        )
+    }
+
+    if (userCreatedSuccessfully == true) {
+
+        AlertDialog(onDismissRequest = {},
+            title = {
+                Text(text = "User Account Created!")
+            },
+            confirmButton = {
+                Button(onClick = {
+                    userCreatedSuccessfully = false
+                    navController.navigate(route = Screen.MainMenu.route)
+                })
+                {
+                    Text(text = "Ok")
+                }
+            }
+        )
+    }
+
+
+    if (userNotCreatedSuccessfully == true) {
+
+        AlertDialog(onDismissRequest = {},
+            title = {
+                Text(text = "Error creating account, please double check information!")
+            },
+            confirmButton = {
+                Button(onClick = {
+                    userNotCreatedSuccessfully = false
+                })
+                {
+                    Text(text = "Ok")
+                }
+            }
+        )
+    }
+
 }
+
+
+
+fun checkInputFields(username: MutableState<String>, email: MutableState<String>, password1: MutableState<String>, password2: MutableState<String>): String {
+    if ((username.value == "") or (email.value == "") or (password1.value == "") or (password2.value == "")){
+        return "One or more fields are empty, please fill in appropriate values for all fields!"
+    }
+    else if (password1.value != password2.value){
+        return "The passwords entered do not match!"
+    }
+    else if(username.value.length < 3) {
+        return "Username must be at least 3 characters!"
+    }
+    else if (password2.value.length < 5){
+        return "Password length must be at least 5 characters!"
+    }
+    else
+        return ""
+}
+
+
+
+
+
 
 @Composable
 @Preview
