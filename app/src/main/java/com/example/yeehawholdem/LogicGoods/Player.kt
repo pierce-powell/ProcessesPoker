@@ -3,19 +3,16 @@ package com.example.yeehawholdem.LogicGoods
 // TODO: Add bet and fold funcitons?
 
 data class Player(
-    var name: String? = null,
+    var name: String = "",
     var balance: Float = 0f,
     var playerID: Int = 0,
-    var hand: MutableList<Card>? = null,
+    var hand: MutableList<Card> = mutableListOf(),
 ) {
-    var isStillIn: Boolean? = null
-
-    init {
-        hand = mutableListOf<Card>()
-    }
+    var isStillIn = true
+    var checkFlag = false
 
     fun getHighCard() : Int {
-        return hand?.maxByOrNull { it.value }!!.value
+        return hand.maxByOrNull { it.value }!!.value
     }
 
     fun acceptCard() {

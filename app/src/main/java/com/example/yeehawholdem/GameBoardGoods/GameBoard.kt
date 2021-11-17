@@ -31,10 +31,9 @@ import com.example.yeehawholdem.Screen
 
 //Global variables
 public val CARD_HEIGHT = 109.dp
-var dealer = Dealer()
-var player = Player()
-var table = Table()
-var checkHand = CheckHand()
+val SMALL_BLIND = 10f
+val BIG_BLIND = 20f
+val STARTING_BALANCE = 1000f
 
 //TODO: Diplay the current pot
 //TODO: Quit game button
@@ -63,13 +62,31 @@ Quit returns to Main Menu
  */
 
 @Composable
-fun GameBoardOfflineScreen(navController : NavController)
+fun GameBoardOfflineScreen(navController : NavController, game : Game)
 {
     //variables for later
     var pot by remember{ mutableStateOf(0)}
     var cardsFlipped = 0
     var userBet by remember{ mutableStateOf(10) }
     var dealerBet by remember{ mutableStateOf(10)}
+
+    // Gameplay Loop
+    // TODO: Implement proper game state logic. Get bet and fold parameters from user.
+    if (game.gameState != GameState.STOPPED) {
+        if (game.gameState == GameState.NEXTGAME) {
+            // Start the Next New Game
+            game.nextGame()
+        } else if (game.gameState == GameState.BETORCHECK) {
+            // Betting or Checking
+            game.betting()
+        } else if (game.gameState == GameState.SHOWDOWN) {
+            // Showdown
+            game.showdown()
+        } else if (game.gameState == GameState.NEXTROUND) {
+            // Next Round
+            game.nextRound()
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
     {
@@ -82,6 +99,7 @@ fun GameBoardOfflineScreen(navController : NavController)
         {
             Button(
                 onClick = {
+                    game.gameState = GameState.STOPPED
                     navController.navigate(route = Screen.MainMenu.route)
             }, modifier = Modifier
                 .fillMaxWidth(.15f)
@@ -105,21 +123,11 @@ fun GameBoardOfflineScreen(navController : NavController)
                 .height(CARD_HEIGHT), // However tall we need for a card
                 horizontalArrangement = Arrangement.Center)
             {
-                // Testing functionality of dealer
-                dealer.setupTable(table = table)
-                dealer.dealCard(player)
-                dealer.dealCard(player)
-                table.sharedDeck = mutableListOf<Card>(Card(0), Card(13), Card(26), Card(1), Card(14))
-                checkHand.currentHand = table.sharedDeck
-
-                var Test = player.getHighCard()
-
-
                 //The river will have 5 cards. we can do this by making 5 boxes to hold out images
-                addCard(card = table.sharedDeck?.getOrNull(0), curCardID = 1)
-                addCard(card = table.sharedDeck?.getOrNull(1), curCardID = 2)
-                addCard(card = table.sharedDeck?.getOrNull(2), curCardID = 3)
-                addCard(card = table.sharedDeck?.getOrNull(3), curCardID = 4)
+                addCard(card = game.table.sharedDeck[0], curCardID = 1)
+                addCard(card = game.table.sharedDeck[1], curCardID = 2)
+                addCard(card = game.table.sharedDeck[2], curCardID = 3)
+                addCard(card = game.table.sharedDeck[3], curCardID = 4)
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
@@ -131,7 +139,7 @@ fun GameBoardOfflineScreen(navController : NavController)
                 {
                     // The Pretty Picture
                     Image(
-                        painter = painterResource(id = table.sharedDeck?.getOrNull(4)!!.cardPicture),
+                        painter = painterResource(id = game.table.sharedDeck.getOrNull(4)!!.cardPicture),
                         contentDescription = "Card"
                     )
                 }
@@ -148,7 +156,8 @@ fun GameBoardOfflineScreen(navController : NavController)
             {
                 Button(//fold button
                     onClick = {
-                        //the dealer wins and the next round starts
+                              //the dealer wins and the next round starts
+                              game.fold()
                     },
                     modifier = Modifier
                         .fillMaxWidth(.3f)
@@ -168,7 +177,9 @@ fun GameBoardOfflineScreen(navController : NavController)
                     addText(text = "Bet: $userBet")
                     Button(
                         onClick = {
-                                  pot = dealerBet + userBet
+                            pot = dealerBet + userBet
+                            game.gameState = GameState.BETORCHECK
+                            game.betting(userBet)
                         },
                         modifier = Modifier
                             .fillMaxWidth(1f)
@@ -218,8 +229,8 @@ fun GameBoardOfflineScreen(navController : NavController)
                 horizontalArrangement = Arrangement.Center)
             {
                 //The river will have 5 cards. we can do this by making 5 boxes to hold out images
-                addCard(card = player.hand?.getOrNull(0), curCardID = 1)
-                addCard(card = player.hand?.getOrNull(1), curCardID = 2)
+                addCard(card = game.player.hand[0], curCardID = 1)
+                addCard(card = game.player.hand[1], curCardID = 2)
             }
         }
     }
@@ -259,7 +270,7 @@ private fun incrementRound()
 }
 
 @Composable
-private fun addCard(card: Card?, curCardID: Int = 0)
+private fun addCard(card: Card, curCardID: Int = 0)
 {
     val scale = remember { mutableStateOf(1f)}
 
@@ -285,15 +296,13 @@ private fun addCard(card: Card?, curCardID: Int = 0)
     )
     {
         // The Pretty Picture
-        if (card != null) {
-            Image(modifier = Modifier.graphicsLayer(
-                scaleX = maxOf(.1f, minOf(3f, scale.value)),
-                scaleY = maxOf(.1f, minOf(3f, scale.value)),
-            ),
-                painter = painterResource(id = card.cardPicture),
-                contentDescription = "Card"
-            )
-        }
+        Image(modifier = Modifier.graphicsLayer(
+            scaleX = maxOf(.1f, minOf(3f, scale.value)),
+            scaleY = maxOf(.1f, minOf(3f, scale.value)),
+        ),
+            painter = painterResource(id = card.cardPicture),
+            contentDescription = "Card"
+        )
     }
 }
 
@@ -324,5 +333,7 @@ private fun addText(text : String) {
 @Preview(showBackground = true)
 fun gamePreview()
 {
-    GameBoardOfflineScreen(navController = rememberNavController())
+    val game = Game()
+    game.startGame()
+    GameBoardOfflineScreen(navController = rememberNavController(), game = game)
 }

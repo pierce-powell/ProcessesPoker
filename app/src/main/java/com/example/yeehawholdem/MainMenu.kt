@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.yeehawholdem.LogicGoods.Game
 
 //TODO Need to keep track of whether or not the user is online and logged in.
 //TODO implement sign out functionality
@@ -30,12 +31,12 @@ public val SPACER_HEIGHT = 20.dp
 
 @Composable
 fun MainMenuScreen(
-    navController : NavController
+    navController : NavController,
+    game : Game
 ) {
     //Used to determine which buttons to show
     var isOnline by remember { mutableStateOf(false) }
     var isLoggedIn by remember { mutableStateOf(false) }
-
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -139,6 +140,7 @@ fun MainMenuScreen(
                 Button(
                     onClick = {
                         //TODO issue warning prompt that their progress will not be saved
+                        game.startGame()
                         navController.navigate(route = Screen.GameBoardOffline.route)
                     },
                     modifier = Modifier
@@ -150,9 +152,6 @@ fun MainMenuScreen(
                 }
             }
         }
-
-
-
     }
 }
 
@@ -162,6 +161,7 @@ fun MainMenuScreen(
 fun HomeScreenPreview()
 {
     MainMenuScreen(
-        navController = rememberNavController()
+        navController = rememberNavController(),
+        game = Game()
     )
 }

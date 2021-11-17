@@ -7,16 +7,19 @@ import androidx.navigation.compose.composable
 import com.example.yeehawholdem.GameBoardGoods.GameBoardOfflineScreen
 //import com.example.yeehawholdem.GameBoardGoods.GameBoardScreen
 import com.example.yeehawholdem.LeaderBoardGoods.LeaderBoardScreen
+import com.example.yeehawholdem.LogicGoods.Game
 import com.example.yeehawholdem.Login.LoginScreen
 
 @Composable
 fun setUpNavHost(navController: NavHostController)
 {
+    val game = Game()
+
     NavHost(navController = navController, startDestination = Screen.MainMenu.route)
     {
         composable(route = Screen.MainMenu.route)
         {
-            MainMenuScreen(navController = navController)
+            MainMenuScreen(navController = navController, game = game)
         }
         composable(route = Screen.Login.route)
         {
@@ -33,7 +36,7 @@ fun setUpNavHost(navController: NavHostController)
         composable(route = Screen.GameBoardOffline.route)
         {
             //TODO Play OFFLINE screen
-            GameBoardOfflineScreen(navController = navController)
+            GameBoardOfflineScreen(navController = navController, game = game)
         }
     }
 }
