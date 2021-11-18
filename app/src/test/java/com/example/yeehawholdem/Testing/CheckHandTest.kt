@@ -1,28 +1,88 @@
 package com.example.yeehawholdem.Testing
 
-import junit.framework.TestCase
+import com.example.yeehawholdem.LogicGoods.Card
+import com.example.yeehawholdem.LogicGoods.CheckHand
+import org.junit.Test
 
-class CheckHandTest : TestCase() {
+class CheckHandTest {
+    val hand = CheckHand()
+    val card1 = Card(0)
+    val card2 = Card(13)
+    val card3 = Card(18)
+    val card4 = Card(22)
+    val card5 = Card(45)
+    val handValue = 9
 
-    fun testIsRoyalFlush() {}
+    fun addCards(){
+        hand.currentHand.add(card1)
+        hand.currentHand.add(card2)
+        hand.currentHand.add(card3)
+        hand.currentHand.add(card4)
+        hand.currentHand.add(card5)
+    }
 
-    fun testIsStraightFlush() {}
+    @Test
+    fun testIsRoyalFlush() {
+        addCards()
+        assert(hand.isRoyalFlush())
+    }
 
-    fun testIsFourOfAKind() {}
+    @Test
+    fun testIsStraightFlush() {
+        addCards()
+        assert(hand.isStraightFlush())
+    }
 
-    fun testIsFullHouse() {}
+    @Test
+    fun testIsFourOfAKind() {
+        addCards()
+        assert(hand.isFourOfAKind())
+    }
 
-    fun testIsStraight() {}
+    @Test
+    fun testIsFullHouse() {
+        addCards()
+        assert(hand.isFullHouse())
+    }
 
-    fun testIsFlush() {}
+    @Test
+    fun testIsStraight() {
+        addCards()
+        assert(hand.isStraight())
+    }
 
-    fun testIsThreeOfAKind() {}
+    @Test
+    fun testIsFlush() {
+        addCards()
+        assert(hand.isFlush())
+    }
 
-    fun testIsTwoPairs() {}
+    @Test
+    fun testIsThreeOfAKind() {
+        addCards()
+        assert(hand.isThreeOfAKind())
+    }
 
-    fun testIsPair() {}
+    @Test
+    fun testIsTwoPairs() {
+        addCards()
+        assert(hand.isTwoPairs())
+    }
 
-    fun testBestHand() {}
+    @Test
+    fun testIsPair() {
+        addCards()
+        assert(hand.isPair())
+    }
 
-    fun testGetCurHandValue1() {}
+    @Test
+    fun testBestHand() {
+
+    }
+
+    @Test
+    fun testGetCurHandValue1() {
+        addCards()
+        assert(hand.getCurHandValue() == handValue)
+    }
 }
