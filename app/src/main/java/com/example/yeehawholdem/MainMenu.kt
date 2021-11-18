@@ -103,57 +103,21 @@ fun MainMenuScreen(
             Spacer(modifier = Modifier.padding(SPACER_HEIGHT))
 
             //User can only play online if they have an internet connection
-            if(isOnline && isLoggedIn) {
                 Button(
                     onClick = {
-                        navController.navigate(route = Screen.GameBoard.route)
+                        navController.navigate(route = Screen.Play.route)
                     },
                     modifier = Modifier
                         .fillMaxWidth(BUTTON_WIDTH)
                         .height(BUTTON_HEIGHT)
                 )
                 {
-                    Text(text = "PLAY ONLINE", fontSize = MaterialTheme.typography.h5.fontSize)
-                }
-            }
-
-            //Play online as guest button for those who have internet and no account
-            else if (isOnline && !isLoggedIn)
-            {
-                Button(
-                    onClick = {
-                        //TODO issue warning prompt that their progress will not be saved
-                        navController.navigate(route = Screen.GameBoard.route)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth(BUTTON_WIDTH)
-                        .height(BUTTON_HEIGHT)
-                )
-                {
-                    Text(text = "PLAY ONLINE AS GUEST", fontSize = MaterialTheme.typography.h5.fontSize)
-                }
-            }
-
-            // No internet connection means that they aren't logged in
-            else if(!isOnline)
-            {
-                Button(
-                    onClick = {
-                        //TODO issue warning prompt that their progress will not be saved
-                        game.startGame()
-                        navController.navigate(route = Screen.GameBoardOffline.route)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth(BUTTON_WIDTH)
-                        .height(BUTTON_HEIGHT)
-                )
-                {
-                    Text(text = "PLAY OFFLINE", fontSize = MaterialTheme.typography.h5.fontSize)
+                    Text(text = "PLAY", fontSize = MaterialTheme.typography.h5.fontSize)
                 }
             }
         }
     }
-}
+
 
 
 @Composable

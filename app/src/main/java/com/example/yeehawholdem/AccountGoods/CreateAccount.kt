@@ -76,8 +76,8 @@ fun CreateAccount(navController : NavController)
             .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
             .background(color = MaterialTheme.colors.background)
             .padding(10.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center) 
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center)
         {
             //Remind the user of the screen
             Text(text = "Create An Account ",

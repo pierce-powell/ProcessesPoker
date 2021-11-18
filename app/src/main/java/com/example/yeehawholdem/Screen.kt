@@ -11,4 +11,7 @@ sealed class Screen(val route : String)
     object PlayOnline: Screen(route = "PlayOnline_Screen")
     object CreateLobby: Screen(route = "CreateLobby_Screen")
     object JoinLobby: Screen(route = "JoinLobby_Screen")
+    object Play: Screen(route = "Play_Screen")
+
+
 }
