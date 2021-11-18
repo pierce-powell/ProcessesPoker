@@ -8,13 +8,13 @@ class Dealer {
     var checkHand = CheckHand()
 
     private fun shuffleUsable() {
-        usableDeck.shuffle()
+        usableDeck?.shuffle()
     }
 
     fun dealCard(player: Player?) {
         // TODO: Change to also work with the table's sharedDeck?
-        usableDeck.getOrNull(0)?.let { player?.hand?.add(it) }
-        usableDeck.removeAt(0)
+        usableDeck?.getOrNull(0)?.let { player?.hand?.add(it) }
+        usableDeck?.removeAt(0)
     }
 
     fun increaseCardCount() {
