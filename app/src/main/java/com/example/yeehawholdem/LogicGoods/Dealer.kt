@@ -49,8 +49,4 @@ class Dealer {
         }
     }
 
-    //testing functions
-    public fun printDeck(){
-        usableDeck?.forEach { System.out.println(it) }
-    }
 }

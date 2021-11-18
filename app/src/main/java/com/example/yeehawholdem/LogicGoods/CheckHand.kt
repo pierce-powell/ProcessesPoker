@@ -116,4 +116,13 @@ class CheckHand {
             curHandValue = 0
         return curHandValue
     }
+
+    fun validateHand(cards: IntArray): Boolean {
+        val card1 = Card(cards[0])
+        val card2 = Card(cards[1])
+        currentHand?.add(card1)
+        currentHand?.add(card2)
+        return isPair()
+    }
+
 }
