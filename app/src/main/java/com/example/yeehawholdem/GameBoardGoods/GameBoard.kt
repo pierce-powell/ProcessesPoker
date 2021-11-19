@@ -33,6 +33,7 @@ import com.example.yeehawholdem.Screen
 public val CARD_HEIGHT = 109.dp
 val SMALL_BLIND = 10
 val BIG_BLIND = 20
+val STARTING_BET = 10
 val STARTING_BALANCE = 1000
 
 //TODO: Diplay the current pot
@@ -65,12 +66,12 @@ Quit returns to Main Menu
 fun GameBoardOfflineScreen(navController : NavController)
 {
     //variables for later
-    val game by remember{ mutableStateOf(Game())}
+    val game by remember{ mutableStateOf(GameOffline())}
     // var gameState by remember{ mutableStateOf(game.gameState)}
     var pot by remember{ mutableStateOf(0)}
     var cardsFlipped = 0
-    var userBet by remember{ mutableStateOf(10) }
-    var dealerBet by remember{ mutableStateOf(10)}
+    var userBet by remember{ mutableStateOf(STARTING_BET) }
+    var dealerBet by remember{ mutableStateOf(STARTING_BET)}
     var card1 by remember{ mutableStateOf(false)}
     var card2 by remember{ mutableStateOf(false)}
     var card3 by remember{ mutableStateOf(false)}
@@ -96,6 +97,9 @@ fun GameBoardOfflineScreen(navController : NavController)
             card5 = false
             card6 = false
             card7 = false
+            userBet = STARTING_BET
+            dealerBet = STARTING_BET
+            pot = 0
         } else if (game.gameState == GameState.BETORCHECK) {
             // Betting or Checking
             game.betting()
@@ -109,14 +113,27 @@ fun GameBoardOfflineScreen(navController : NavController)
         }
     }
 
+
     card6 = true
     card7 = true
     if (round == 2) {
         card4 = true
-    } else if (round >= 3) {
+    } else if (round == 3) {
         card4 = true
         card5 = true
     }
+
+    if (round == 4) {
+        card1 = false
+        card2 = false
+        card3 = false
+        card4 = false
+        card5 = false
+        card6 = false
+        card7 = false
+    }
+
+
 
     if (game.gameState == GameState.STOPPED) {
         // Ask User If they want to keep playing?
@@ -208,8 +225,8 @@ fun GameBoardOfflineScreen(navController : NavController)
                     Text(text = "Fold", fontSize = MaterialTheme.typography.h5.fontSize)
                 }
                 Spacer(modifier = Modifier.padding(15.dp))
-                if(userBet < dealerBet)
-                    userBet = dealerBet
+                //if(userBet < dealerBet)
+                    //userBet = dealerBet
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
                     .fillMaxHeight()
                     .fillMaxWidth(.5f)
@@ -226,6 +243,8 @@ fun GameBoardOfflineScreen(navController : NavController)
                             game.nextRound()
                             round++
                             pot = dealerBet + userBet
+                            userBet = STARTING_BET
+                            dealerBet = STARTING_BET
                         },
                         modifier = Modifier
                             .fillMaxWidth(1f)
@@ -254,7 +273,7 @@ fun GameBoardOfflineScreen(navController : NavController)
                     Spacer(modifier = Modifier.padding(2.dp))
                     Button(//lower bet button
                         onClick = {
-                            if(userBet - 5 >= dealerBet)
+                            if(userBet - 5 > 0)
                                 userBet -= 5
                         },
                         modifier = Modifier
@@ -280,6 +299,8 @@ fun GameBoardOfflineScreen(navController : NavController)
                 if (!card7) addCardBacks()
                 else addCard(card = game.player.hand[1], curCardID = 2)
             }
+            Spacer(modifier = Modifier.padding(10.dp))
+            addText(text = "User balance: ${game.table.playerArray[0].balance}")
         }
     }
 }

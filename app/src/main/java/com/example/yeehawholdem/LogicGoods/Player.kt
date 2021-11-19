@@ -11,6 +11,7 @@ data class Player(
     var isStillIn = true
     var checkFlag = false
     var isMyTurn = false
+    //var currBet = 0
 
     fun getHighCard() : Int {
         return hand.maxByOrNull { it.value }!!.value

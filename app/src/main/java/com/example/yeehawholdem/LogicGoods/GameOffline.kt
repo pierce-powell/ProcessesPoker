@@ -1,19 +1,10 @@
 package com.example.yeehawholdem.LogicGoods
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import com.example.yeehawholdem.GameBoardGoods.BIG_BLIND
-import com.example.yeehawholdem.GameBoardGoods.SMALL_BLIND
 import com.example.yeehawholdem.GameBoardGoods.STARTING_BALANCE
 
-enum class GameState {
-    STOPPED, RUNNING, BETORCHECK, SHOWDOWN, NEXTGAME, NEXTROUND, RAISING, AIPLAYER
-}
-
-class Game {
+class GameOffline {
     var dealer = Dealer()
-    var dealer_player = Player(name = "Dealer Player 1")
+    var dealer_player = Player(name = "Dealer Player 2")
     var player = Player(name = "Test Player 1")
     var table = Table()
     var gameState = GameState.RUNNING
@@ -119,20 +110,19 @@ class Game {
 
     // TODO: Logic to prevent player from overbetting
     fun betting(userBet: Int = 0) {
-        var bet = userBet
+        /*var bet = userBet
+        val player = table.playersStillIn[turn]
 
-        while (!table.checkCalled()) {
-            // Keep betting until everyone has called or folded
-            val player = table.playersStillIn[turn]
-            if (player.name == "Dealer Player 1") {
-                // AI Player logic for betting
-                bet = dealer.aiBetOrFold(player, BIG_BLIND)
-            }
-            player.balance -= userBet
-            player.checkFlag = true
-            table.addToPot(bet)
-            incrementTurn()
-        }
+        if (player.name == "Dealer Player 2") {
+            // AI Player logic for betting
+            bet = userBet
+            table.addToPot(userBet)
+            // Calculate difference to subtract from balance
+        }*/
+
+        player.balance -= userBet
+        player.checkFlag = true
+        table.addToPot(userBet * 2)
         incrementTurn()
         gameState = GameState.NEXTROUND
     }

@@ -10,8 +10,9 @@ class CheckHandTest {
     val card2 = Card(13)
     val card3 = Card(26)
     val card4 = Card(14)
-    val card5 = Card(45)
-    val handValue = 9
+    val card5 = Card(27)
+    var handValue = -1
+    val actualHandVal = 6
     val communityCard = mutableListOf<Card>(Card(1), Card(2))
 
     // Constructor that runs first
@@ -74,11 +75,11 @@ class CheckHandTest {
 
     @Test
     fun testBestHand() {
-        hand.bestHand(hand.currentHand, communityCard)
+        this.handValue = hand.bestHand(hand.currentHand, communityCard)
     }
 
     @Test
     fun testGetCurHandValue1() {
-        assert(hand.getCurHandValue() == handValue)
+        assert(hand.getCurHandValue() == actualHandVal)
     }
 }
