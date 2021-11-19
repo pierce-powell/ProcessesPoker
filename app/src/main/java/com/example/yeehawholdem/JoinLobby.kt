@@ -1,5 +1,6 @@
 package com.example.yeehawholdem
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,6 +16,14 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.database.DatabaseError
+
+import com.google.firebase.database.DataSnapshot
+
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.DocumentSnapshot
+import kotlinx.coroutines.tasks.await
+import java.lang.Exception
 
 
 @Composable
@@ -78,8 +87,8 @@ fun Joinlobby(navController : NavController) {
             Spacer(modifier = Modifier.padding(20.dp))
 
             //Add the drop down list hither
-            //Text(text = "Lobby1: players: $lobby1Players")
-
+            val coroutineScope = rememberCoroutineScope()
+            //val lobby1Players
 
             //Add some space before the sign in button
             Spacer(modifier = Modifier.padding(10.dp))
@@ -109,27 +118,27 @@ fun Joinlobby(navController : NavController) {
 data class lobbyForList(val lobbyName: String, val numPlayers: Int)
 
 
-fun readLeaderBoardData() : String {
-    var result : String
-
-    var database = FirebaseDatabase.getInstance().getReference("Lobbys")
-    database.addValueEventListener(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            result = snapshot.child("Lobby1").value.toString()
-            //lobby2Players = snapshot.child("Lobby2").value.toString().toInt()
-           // lobby3Players = snapshot.child("Lobby3").value.toString().toInt()
-           // lobby4Players = snapshot.child("Lobby4").value.toString().toInt()
-           // lobby5Players = snapshot.child("Lobby5").value.toString().toInt()
-        }
-
-        //It will always have a value, so this should never get called
-        override fun onCancelled(error: DatabaseError) {
-          //  lobby1Players = -500
-        }
-    })
-
-    return ""
+// kotlin coroutine for getting lobby1
+suspend fun getLobby1(): DataSnapshot? {
+    val database = Firebase.database
+    val lobby1Ref = database.getReference("Lobby1")
+    val snapshot = lobby1Ref.get().await()
+    return snapshot
 }
+
+suspend fun getLobbys() : String {
+    try {
+        val lobbys = getLobby1()
+        return lobbys.toString()
+    }
+    catch (e: Exception)
+    {
+        Log.d("Error", e.toString())
+        return ""
+    }
+}
+
+
 
 
 //Get the list of all our lobbys with the respective player count
