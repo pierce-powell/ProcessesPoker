@@ -12,10 +12,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 @Composable
 fun CreateLobbyScreen(navController: NavController)
 {
+    val database = Firebase.database
+    val myRef = database.getReference("Lobby")
+
     //This will be the lobby ID, I.E. we will use this to reference the database calls
     val lobbyName = remember { mutableStateOf("") }
 
@@ -80,6 +85,8 @@ fun CreateLobbyScreen(navController: NavController)
                 // Otherwisem the information that was entered was correct
                 else
                 {
+                   val newRef = database.getReference("Lobby1")
+                    newRef.child("Bet").setValue(10)
 
                 }
             },
