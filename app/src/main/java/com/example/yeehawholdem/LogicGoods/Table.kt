@@ -4,7 +4,7 @@ class Table {
     var playerArray: MutableList<Player> = mutableListOf()
     var playersStillIn: MutableList<Player> = mutableListOf()
     var sharedDeck: MutableList<Card> = mutableListOf() // Community Cards
-    var currentPot: Float = 0f
+    var currentPot: Int = 0
 
     /*
     init {
@@ -23,9 +23,9 @@ class Table {
         }
     }
 
-    fun addToPot(amount: Float) {
+    fun addToPot(amount: Int) {
         try {
-            if (amount > 0) currentPot += amount
+            if (amount >= 0) currentPot += amount
             else throw IllegalArgumentException("Amount must be greater than 0")
         } catch (e: IllegalArgumentException) {
             // TODO: handle exception
@@ -51,27 +51,6 @@ class Table {
 
         return false
     }
-
-    /*
-    fun raising(turn : Int) {
-        for (i in 0..playersStillIn.size) {
-            playersStillIn[i].checkFlag = false
-        }
-        playersStillIn[turn].checkFlag = true
-    }
-
-    fun nextBet(turn: Int, userBet: Int = 0) {
-        // Prompt this person to raise, call, or fold
-        // TODO: Put in guard statements
-        val player = playersStillIn[turn]
-        if (player.name == "Dealer Player 1") {
-            // AI Player logic
-
-        }
-        playersStillIn[turn].balance -= userBet
-        addToPot(userBet.toFloat())
-    }
-    */
 
     fun resetPlayers() {
         playersStillIn.clear()

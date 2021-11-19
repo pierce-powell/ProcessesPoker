@@ -8,10 +8,16 @@ class CheckHandTest {
     val hand = CheckHand()
     val card1 = Card(0)
     val card2 = Card(13)
-    val card3 = Card(18)
-    val card4 = Card(22)
+    val card3 = Card(26)
+    val card4 = Card(14)
     val card5 = Card(45)
     val handValue = 9
+    val communityCard = mutableListOf<Card>(Card(1), Card(2))
+
+    // Constructor that runs first
+    init {
+        addCards()
+    }
 
     fun addCards(){
         hand.currentHand.add(card1)
@@ -23,66 +29,56 @@ class CheckHandTest {
 
     @Test
     fun testIsRoyalFlush() {
-        addCards()
         assert(hand.isRoyalFlush())
     }
 
     @Test
     fun testIsStraightFlush() {
-        addCards()
         assert(hand.isStraightFlush())
     }
 
     @Test
     fun testIsFourOfAKind() {
-        addCards()
         assert(hand.isFourOfAKind())
     }
 
     @Test
     fun testIsFullHouse() {
-        addCards()
         assert(hand.isFullHouse())
     }
 
     @Test
     fun testIsStraight() {
-        addCards()
         assert(hand.isStraight())
     }
 
     @Test
     fun testIsFlush() {
-        addCards()
         assert(hand.isFlush())
     }
 
     @Test
     fun testIsThreeOfAKind() {
-        addCards()
         assert(hand.isThreeOfAKind())
     }
 
     @Test
     fun testIsTwoPairs() {
-        addCards()
         assert(hand.isTwoPairs())
     }
 
     @Test
     fun testIsPair() {
-        addCards()
         assert(hand.isPair())
     }
 
     @Test
     fun testBestHand() {
-
+        hand.bestHand(hand.currentHand, communityCard)
     }
 
     @Test
     fun testGetCurHandValue1() {
-        addCards()
         assert(hand.getCurHandValue() == handValue)
     }
 }

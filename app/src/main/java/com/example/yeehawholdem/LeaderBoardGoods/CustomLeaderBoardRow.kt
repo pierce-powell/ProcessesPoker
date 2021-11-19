@@ -48,6 +48,6 @@ fun CustomRowPreview()
 {
     CustomLeaderBoardRow(curPlayer = Player(
         name = "Pierce",
-        balance = 5f
+        balance = 5
     ))
 }

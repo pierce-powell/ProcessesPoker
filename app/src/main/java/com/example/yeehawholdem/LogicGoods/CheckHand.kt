@@ -88,8 +88,31 @@ class CheckHand {
         return false
     }
 
-    fun bestHand(_hand: MutableList<Card>, communityCards: MutableList<Card>) {
+    // Go through all the combinations of hands and return the value of the hand with
+    // the highest value determine by getCurHandValue(). Does not check for differences
+    // between hands with equal values (e.g. different straights, flushes, etc.)
+    fun bestHand(_hand: MutableList<Card>, communityCards: MutableList<Card>) : Int {
+        val all7 = mutableSetOf<Card>()
+        mutableListOf<MutableList<Card>>()
+        val values = mutableListOf<Int>()
 
+        all7.addAll(_hand)
+        all7.addAll(communityCards)
+
+        // Creates a set containing all combinations of size 5 from the 7 available cards.
+        val set = com.google.common.collect.Sets.combinations(all7, 5)
+
+        // Calculate the value of each combination
+        for (comb in set) {
+            currentHand = comb.toMutableList()
+            values.add(getCurHandValue())
+        }
+
+        // val indexOfBestHand = values.lastIndexOf(values.maxOrNull())
+        // return set.elementAt(indexOfBestHand).toMutableList()
+
+        // Return the highest value of the set
+        return values.maxOrNull()!!
     }
 
     @JvmName("getCurHandValue1")

@@ -12,7 +12,7 @@ import androidx.navigation.NavController
 import com.example.yeehawholdem.LogicGoods.Game
 
 @Composable
-fun PlayScreen(navController : NavController, game : Game)
+fun PlayScreen(navController : NavController)
 {
 
 Box(
@@ -48,7 +48,7 @@ contentAlignment = Alignment.BottomCenter
                     .fillMaxWidth(BUTTON_WIDTH)
                     .height(BUTTON_HEIGHT))
             {
-                game.startGame()
+                // game.startGame()
                 Text(text = "PLAY OFFLINE", fontSize = MaterialTheme.typography.h5.fontSize)
             }
 

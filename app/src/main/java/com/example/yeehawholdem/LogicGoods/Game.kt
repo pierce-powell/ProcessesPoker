@@ -16,12 +16,11 @@ class Game {
     var dealer_player = Player(name = "Dealer Player 1")
     var player = Player(name = "Test Player 1")
     var table = Table()
-    var checkHand = CheckHand()
-    var gameState by mutableStateOf(GameState.RUNNING)
+    var gameState = GameState.RUNNING
     var dealerButton = 0
     var turn = 0
 
-    fun startGame() {
+    init {
         // For Offline Play
         addPlayer(player)
         addPlayer(dealer_player)
@@ -31,7 +30,37 @@ class Game {
         dealer.dealCard(player)
 
         // table.sharedDeck = mutableListOf<Card>(Card(0), Card(13), Card(26), Card(1), Card(14))
-        // checkHand.currentHand = table.sharedDeck
+        // dealer.checkHand.currentHand = table.sharedDeck
+        for (p in table.playerArray) {
+            p.balance = STARTING_BALANCE
+        }
+
+        // Do Small and Big Blind bets
+        table.addToPot(SMALL_BLIND)
+        table.playerArray.getOrNull(dealerButton + 1 % table.playerArray.size)!!.balance -= SMALL_BLIND
+        table.addToPot(BIG_BLIND)
+        table.playerArray.getOrNull(dealerButton + 2 % table.playerArray.size)!!.balance -= BIG_BLIND
+
+        gameState = GameState.RUNNING
+
+        // roundStart()
+        // theFlop()
+        // theRiver()
+        // dealerButton++
+    }
+
+    fun startGame() {
+        // For Offline Play
+        addPlayer(player)
+        addPlayer(dealer_player)
+        table.resetPlayers()
+        dealer.setupDeck(table = table)
+        dealer.dealCard(player)
+        dealer.dealCard(player)
+        dealer.cardCount = 3
+
+        // table.sharedDeck = mutableListOf<Card>(Card(0), Card(13), Card(26), Card(1), Card(14))
+        // dealer.checkHand.currentHand = table.sharedDeck
         for (p in table.playerArray) {
             p.balance = STARTING_BALANCE
         }
@@ -109,17 +138,20 @@ class Game {
         incrementTurn()
     }
 
+    // TODO: Logic to prevent player from overbetting
     fun betting(userBet: Int = 0) {
-        while (table.checkCalled()) {
+        var bet = userBet
+
+        while (!table.checkCalled()) {
             // Keep betting until everyone has called or folded
             val player = table.playersStillIn[turn]
             if (player.name == "Dealer Player 1") {
                 // AI Player logic for betting
-                dealer.aiBetOrFold(player)
+                bet = dealer.aiBetOrFold(player, BIG_BLIND)
             }
             player.balance -= userBet
             player.checkFlag = true
-            table.addToPot(userBet.toFloat())
+            table.addToPot(bet)
             incrementTurn()
         }
         incrementTurn()
@@ -134,6 +166,11 @@ class Game {
     fun nextRound() {
         turn = dealerButton; incrementTurn(); incrementTurn()
         gameState = GameState.BETORCHECK
+        dealer.cardCount++
+        table.resetCheck()
+
+        if (dealer.cardCount >= 5)
+            gameState = GameState.SHOWDOWN
     }
 
     fun showdown() {
@@ -141,14 +178,31 @@ class Game {
         gameState = GameState.NEXTGAME
     }
 
+    // TODO: Determine the winner among the remaining players, and distribute the pot accordingingly
+    // In the case of a tie, just split the pot.
+    fun determineWinner() {
+        var list = mutableListOf<Int>()
+        for (player in table.playersStillIn) {
+            list.add(dealer.checkHand.bestHand(player.hand, table.sharedDeck))
+        }
+
+        val test = list.maxOrNull()
+        val index = list.indexOf(list.maxOrNull())
+        table.playersStillIn[index]
+    }
+
     fun nextGame() {
         table.resetPlayers()
         table.resetHands()
+        table.resetCheck()
+        table.currentPot = 0
         dealer.setupDeck(table = table)
         dealer.dealCard(player)
         dealer.dealCard(player)
+        dealer.cardCount = 3
         dealerButton = (dealerButton + 1) % table.playerArray.size
         turn = dealerButton
+        gameState = GameState.RUNNING
     }
 
     fun incrementTurn() {

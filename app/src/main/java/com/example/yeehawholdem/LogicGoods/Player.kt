@@ -4,12 +4,13 @@ package com.example.yeehawholdem.LogicGoods
 
 data class Player(
     var name: String = "",
-    var balance: Float = 0f,
+    var balance: Int = 0,
     var playerID: Int = 0,
     var hand: MutableList<Card> = mutableListOf(),
 ) {
     var isStillIn = true
     var checkFlag = false
+    var isMyTurn = false
 
     fun getHighCard() : Int {
         return hand.maxByOrNull { it.value }!!.value

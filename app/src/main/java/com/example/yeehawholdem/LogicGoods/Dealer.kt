@@ -27,7 +27,6 @@ class Dealer {
     }
 
     fun determineWinner() {
-        TODO()
     }
 
     fun manageTurns() {
@@ -48,9 +47,14 @@ class Dealer {
         }
     }
 
-    fun aiBetOrFold(player: Player) {
+    // Betting decisionmaker for the AI player.
+    // Return an integer 0 for fold, and greater than for a bet.
+    // TODO: Logic to decide amount to bet (Maybe random)
+    fun aiBetOrFold(player: Player, minimumBet: Int) : Int {
         checkHand.currentHand = mutableListOf()
         checkHand.currentHand.addAll(player.hand)
         checkHand.currentHand.addAll(player.hand)
+
+        return 0
     }
 }

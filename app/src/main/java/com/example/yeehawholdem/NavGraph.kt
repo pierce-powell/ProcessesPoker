@@ -38,11 +38,11 @@ fun setUpNavHost(navController: NavHostController)
         composable(route = Screen.GameBoardOffline.route)
         {
             //TODO Play OFFLINE screen
-            GameBoardOfflineScreen(navController = navController, game = game)
+            GameBoardOfflineScreen(navController = navController)
         }
         composable(route = Screen.Play.route)
         {
-            PlayScreen(navController = navController, game = game)
+            PlayScreen(navController = navController)
         }
         composable(route = Screen.CreateLobby.route)
         {

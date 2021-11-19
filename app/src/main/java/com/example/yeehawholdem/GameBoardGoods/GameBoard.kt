@@ -31,9 +31,9 @@ import com.example.yeehawholdem.Screen
 
 //Global variables
 public val CARD_HEIGHT = 109.dp
-val SMALL_BLIND = 10f
-val BIG_BLIND = 20f
-val STARTING_BALANCE = 1000f
+val SMALL_BLIND = 10
+val BIG_BLIND = 20
+val STARTING_BALANCE = 1000
 
 //TODO: Diplay the current pot
 //TODO: Quit game button
@@ -62,13 +62,25 @@ Quit returns to Main Menu
  */
 
 @Composable
-fun GameBoardOfflineScreen(navController : NavController, game : Game)
+fun GameBoardOfflineScreen(navController : NavController)
 {
     //variables for later
+    val game by remember{ mutableStateOf(Game())}
+    // var gameState by remember{ mutableStateOf(game.gameState)}
     var pot by remember{ mutableStateOf(0)}
     var cardsFlipped = 0
     var userBet by remember{ mutableStateOf(10) }
     var dealerBet by remember{ mutableStateOf(10)}
+    var card1 by remember{ mutableStateOf(false)}
+    var card2 by remember{ mutableStateOf(false)}
+    var card3 by remember{ mutableStateOf(false)}
+    var card4 by remember{ mutableStateOf(false)}
+    var card5 by remember{ mutableStateOf(false)}
+    var card6 by remember{ mutableStateOf(false)}
+    var card7 by remember{ mutableStateOf(false)}
+    var round by remember{ mutableStateOf(0)}
+    var _card1 by remember{ mutableStateOf(game.table.sharedDeck[0])}
+    _card1 = game.table.sharedDeck[0]
 
     // Gameplay Loop
     // TODO: Implement proper game state logic. Get bet and fold parameters from user.
@@ -76,16 +88,38 @@ fun GameBoardOfflineScreen(navController : NavController, game : Game)
         if (game.gameState == GameState.NEXTGAME) {
             // Start the Next New Game
             game.nextGame()
+            round = 0
+            card1 = false
+            card2 = false
+            card3 = false
+            card4 = false
+            card5 = false
+            card6 = false
+            card7 = false
         } else if (game.gameState == GameState.BETORCHECK) {
             // Betting or Checking
             game.betting()
-        } else if (game.gameState == GameState.SHOWDOWN) {
+        } else if (round >= 4) {
             // Showdown
             game.showdown()
         } else if (game.gameState == GameState.NEXTROUND) {
             // Next Round
-            game.nextRound()
+            // game.gameState = GameState.BETORCHECK
+            // game.nextRound()
         }
+    }
+
+    card6 = true
+    card7 = true
+    if (round == 2) {
+        card4 = true
+    } else if (round >= 3) {
+        card4 = true
+        card5 = true
+    }
+
+    if (game.gameState == GameState.STOPPED) {
+        // Ask User If they want to keep playing?
     }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
@@ -102,8 +136,8 @@ fun GameBoardOfflineScreen(navController : NavController, game : Game)
                     game.gameState = GameState.STOPPED
                     navController.navigate(route = Screen.MainMenu.route)
             }, modifier = Modifier
-                .fillMaxWidth(.15f)
-                .height(BUTTON_HEIGHT))
+                    .fillMaxWidth(.15f)
+                    .height(BUTTON_HEIGHT))
             {
                 Text(text = "X", fontSize = MaterialTheme.typography.h5.fontSize)
             }
@@ -124,10 +158,18 @@ fun GameBoardOfflineScreen(navController : NavController, game : Game)
                 horizontalArrangement = Arrangement.Center)
             {
                 //The river will have 5 cards. we can do this by making 5 boxes to hold out images
-                addCard(card = game.table.sharedDeck[0], curCardID = 1)
-                addCard(card = game.table.sharedDeck[1], curCardID = 2)
-                addCard(card = game.table.sharedDeck[2], curCardID = 3)
-                addCard(card = game.table.sharedDeck[3], curCardID = 4)
+                if (!card1) addCardBacks()
+                else  addCard(card = _card1, curCardID = 1)
+                if (!card2) addCardBacks()
+                else addCard(card = game.table.sharedDeck[1], curCardID = 2)
+                if (!card3) addCardBacks()
+                else addCard(card = game.table.sharedDeck[2], curCardID = 3)
+                if (!card4) addCardBacks()
+                else addCard(card = game.table.sharedDeck[3], curCardID = 4)
+                if (!card5) addCardBacks()
+                else addCard(card = game.table.sharedDeck[4], curCardID = 5)
+
+                /*
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
@@ -142,9 +184,8 @@ fun GameBoardOfflineScreen(navController : NavController, game : Game)
                         painter = painterResource(id = game.table.sharedDeck.getOrNull(4)!!.cardPicture),
                         contentDescription = "Card"
                     )
-                }
+                }*/
             }
-            
             Spacer(modifier = Modifier.padding(15.dp))
             addText(text = "Pot: $pot")
             Spacer(modifier = Modifier.padding(15.dp))
@@ -177,9 +218,14 @@ fun GameBoardOfflineScreen(navController : NavController, game : Game)
                     addText(text = "Bet: $userBet")
                     Button(
                         onClick = {
-                            pot = dealerBet + userBet
                             game.gameState = GameState.BETORCHECK
                             game.betting(userBet)
+                            card1 = true
+                            card2 = true
+                            card3 = true
+                            game.nextRound()
+                            round++
+                            pot = dealerBet + userBet
                         },
                         modifier = Modifier
                             .fillMaxWidth(1f)
@@ -229,8 +275,10 @@ fun GameBoardOfflineScreen(navController : NavController, game : Game)
                 horizontalArrangement = Arrangement.Center)
             {
                 //The river will have 5 cards. we can do this by making 5 boxes to hold out images
-                addCard(card = game.player.hand[0], curCardID = 1)
-                addCard(card = game.player.hand[1], curCardID = 2)
+                if (!card6) addCardBacks()
+                else addCard(card = game.player.hand[0], curCardID = 1)
+                if (!card7) addCardBacks()
+                else addCard(card = game.player.hand[1], curCardID = 2)
             }
         }
     }
@@ -307,6 +355,43 @@ private fun addCard(card: Card, curCardID: Int = 0)
 }
 
 @Composable
+private fun addCardBacks(curCardID: Int = 0)
+{
+    val scale = remember { mutableStateOf(1f)}
+
+    // var card = table.sharedDeck?.getOrNull(curCardID - 1)
+    // var card: Card? = dealer?.usableDeck?.getOrNull(0) // TODO: Change to use dealer's deck
+    // dealer?.usableDeck?.removeAt(0) // TODO: Deal cards before removing from deck
+
+    //TODO: Add the proper card based on ID
+
+    //determine which drawable to use
+    Box(
+        modifier = Modifier
+            .fillMaxHeight()
+            .background(MaterialTheme.colors.background)
+            .padding(1.dp)
+            .clip(RectangleShape)
+            .pointerInput(Unit) {
+                detectTransformGestures { centroid, pan, zoom, rotation ->
+                    scale.value *= zoom
+                }
+            },
+        contentAlignment = Alignment.Center,
+    )
+    {
+        // The Pretty Picture
+        Image(modifier = Modifier.graphicsLayer(
+            scaleX = maxOf(.1f, minOf(3f, scale.value)),
+            scaleY = maxOf(.1f, minOf(3f, scale.value)),
+        ),
+            painter = painterResource(id = R.drawable.samplecard),
+            contentDescription = "Card"
+        )
+    }
+}
+
+@Composable
 private fun addText(text : String) {
     // Wrap in a surface so it can pick up on light-mode vs dark
     Surface() {
@@ -333,7 +418,7 @@ private fun addText(text : String) {
 @Preview(showBackground = true)
 fun gamePreview()
 {
-    val game = Game()
-    game.startGame()
-    GameBoardOfflineScreen(navController = rememberNavController(), game = game)
+    // val game = Game()
+    // game.startGame()
+    GameBoardOfflineScreen(navController = rememberNavController())
 }
