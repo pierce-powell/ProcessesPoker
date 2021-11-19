@@ -1,23 +1,59 @@
 package com.example.yeehawholdem
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.android.gms.tasks.Task
-import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+
 
 @Composable
 fun Joinlobby(navController : NavController)
 {
+    //Set up the values to give user and idea of the amount of players in each lobby
+    var lobby1Players = 0
+    var lobby2Players = 0
+    var lobby3Players = 0
+    var lobby4Players = 0
+    var lobby5Players = 0
+
+    //Get the real time values of the players in the lobby
+    var database = FirebaseDatabase.getInstance().getReference("Lobbys")
+    database!!.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            lobby1Players = snapshot.child("Lobby1").value.toString().toInt()
+            lobby2Players = snapshot.child("Lobby2").value.toString().toInt()
+            lobby3Players = snapshot.child("Lobby3").value.toString().toInt()
+            lobby4Players = snapshot.child("Lobby4").value.toString().toInt()
+            lobby5Players = snapshot.child("Lobby5").value.toString().toInt()
+        }
+        //It will always have a value, so this should never get called
+        override fun onCancelled(error: DatabaseError) {
+            TODO("Not yet implemented")
+        }
+    })
+
+    var lobby1 = lobbyForList("Lobby1", lobby1Players)
+    var lobby2 = lobbyForList("Lobby2", lobby2Players)
+    var lobby3 = lobbyForList("Lobby3", lobby3Players)
+    var lobby4 = lobbyForList("Lobby4", lobby4Players)
+    var lobby5 = lobbyForList("Lobby5", lobby5Players)
+
+    val lobbyList = listOf(lobby1, lobby2, lobby3, lobby4, lobby5)
+
+    var expanded by remember { mutableStateOf(false) }
+    var selectedIndex by remember { mutableStateOf(0) }
+
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
     {
@@ -50,10 +86,23 @@ fun Joinlobby(navController : NavController)
             Spacer(modifier = Modifier.padding(20.dp))
             Column(horizontalAlignment = Alignment.CenterHorizontally)
             {
-                Surface() {
-
+                Text(lobbyList[selectedIndex].toString(),modifier = Modifier.fillMaxWidth().clickable(onClick = { expanded = true }))
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.fillMaxWidth())
+                {
+                    lobbyList.forEachIndexed { index, s ->
+                        DropdownMenuItem(onClick = {
+                            selectedIndex = index
+                            expanded = false
+                        })
+                        {}
+                    }
                 }
+
             }
+        }
 
             //Add some space before the sign in button
             Spacer(modifier = Modifier.padding(10.dp))
@@ -73,10 +122,19 @@ fun Joinlobby(navController : NavController)
         Spacer(modifier = Modifier.height(150.dp))
     }
 
-}
+
+
+
 
 //A little helper for showing the lobbys
-data class lobbyForList(val lobbyName: String, val numPlayers: Task<DataSnapshot>)
+data class lobbyForList(val lobbyName: String, val numPlayers: Int)
+
+
+fun readLeaderBoardData() {
+
+
+
+}
 
 
 //Get the list of all our lobbys with the respective player count
