@@ -43,8 +43,6 @@ val STARTING_BALANCE = 1000
 //TODO: Display Best Hand at the end of the round
 //TODO: Make the height connected to the individual box instead of the row, so we can click to enlarge?
 
-//private val howManyFlips = 0 (Just ask the dealer obj)
-
 /*
 Use Case:
 User clicks play offline
@@ -59,7 +57,6 @@ Pot is added to the users balance
 Then Quit or Continue prompt is displayed
 Continue restarts the game
 Quit returns to Main Menu
-
  */
 
 @Composable
@@ -68,10 +65,10 @@ fun GameBoardOfflineScreen(navController : NavController)
     //variables for later
     val game by remember{ mutableStateOf(GameOffline())}
     // var gameState by remember{ mutableStateOf(game.gameState)}
-    var pot by remember{ mutableStateOf(0)}
+    //var pot by remember{ mutableStateOf(0)}
     var cardsFlipped = 0
     var userBet by remember{ mutableStateOf(STARTING_BET) }
-    var dealerBet by remember{ mutableStateOf(STARTING_BET)}
+    //var dealerBet by remember{ mutableStateOf(STARTING_BET)}
     var card1 by remember{ mutableStateOf(false)}
     var card2 by remember{ mutableStateOf(false)}
     var card3 by remember{ mutableStateOf(false)}
@@ -98,8 +95,9 @@ fun GameBoardOfflineScreen(navController : NavController)
             card6 = false
             card7 = false
             userBet = STARTING_BET
-            dealerBet = STARTING_BET
-            pot = 0
+            //dealerBet = STARTING_BET
+            game.table.currentPot = 0
+            //pot = 0
         } else if (game.gameState == GameState.BETORCHECK) {
             // Betting or Checking
             game.betting()
@@ -133,8 +131,6 @@ fun GameBoardOfflineScreen(navController : NavController)
         card7 = false
     }
 
-
-
     if (game.gameState == GameState.STOPPED) {
         // Ask User If they want to keep playing?
     }
@@ -158,7 +154,7 @@ fun GameBoardOfflineScreen(navController : NavController)
             {
                 Text(text = "X", fontSize = MaterialTheme.typography.h5.fontSize)
             }
-            addText(text = "Dealer bet: $dealerBet")
+            addText(text = "Dealer bet: $userBet")//changed from dealerBet
         }
 
         //Outer Column to store our two rows
@@ -204,7 +200,7 @@ fun GameBoardOfflineScreen(navController : NavController)
                 }*/
             }
             Spacer(modifier = Modifier.padding(15.dp))
-            addText(text = "Pot: $pot")
+            addText(text = "Pot: ${game.table.currentPot}")//changed from pot
             Spacer(modifier = Modifier.padding(15.dp))
 
             Row(modifier = Modifier
@@ -225,8 +221,6 @@ fun GameBoardOfflineScreen(navController : NavController)
                     Text(text = "Fold", fontSize = MaterialTheme.typography.h5.fontSize)
                 }
                 Spacer(modifier = Modifier.padding(15.dp))
-                //if(userBet < dealerBet)
-                    //userBet = dealerBet
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
                     .fillMaxHeight()
                     .fillMaxWidth(.5f)
@@ -242,9 +236,9 @@ fun GameBoardOfflineScreen(navController : NavController)
                             card3 = true
                             game.nextRound()
                             round++
-                            pot = dealerBet + userBet
+                            //pot = dealerBet + userBet
                             userBet = STARTING_BET
-                            dealerBet = STARTING_BET
+                            //dealerBet = STARTING_BET
                         },
                         modifier = Modifier
                             .fillMaxWidth(1f)
