@@ -6,6 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,7 +53,8 @@ fun Joinlobby(navController : NavController) {
 
 
     var expanded by remember { mutableStateOf(false) }
-    var selectedIndex by remember { mutableStateOf(0) }
+    var selectedLobby by remember { mutableStateOf("Lobby1") }
+    var selectedLobbyPlayers by remember { mutableStateOf(0) }
 
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
@@ -94,20 +97,93 @@ fun Joinlobby(navController : NavController) {
             val coroutineScope = rememberCoroutineScope()
             //val lobby1Players
 
+            //This won't actually get any values because its assigned outside of the scope, but lets instantiate it here
             var hasMapOfLobbys = ArrayList<lobbyForList>()
 
+                //Launch our co-routine scope so that we can change all the mutable states
                 coroutineScope.launch {
+                    // Call the function that we defined earlier
                     hasMapOfLobbys = getLobbys()
+                    //Set up all of the mutable states, we can also use these bois outside the coroutine scope
                     lobby1Players = hasMapOfLobbys[0].numPlayers!!.toInt()
+                    lobby2Players = hasMapOfLobbys[1].numPlayers!!.toInt()
+                    lobby3Players = hasMapOfLobbys[2].numPlayers!!.toInt()
+                    lobby4Players = hasMapOfLobbys[3].numPlayers!!.toInt()
+                    lobby5Players = hasMapOfLobbys[4].numPlayers!!.toInt()
                 }
 
 
+            //Make the anchor point for our drop down menu
+            Row(Modifier.clickable {
+                //When you click it, it expands or contracts
+                expanded = !expanded
+            }) {
+                //Surface the text for darkmode users
+                Surface() {
+                    //Print the users current lobby selections, defaults to lobby 1
+                    Text(text = "Current Lobby Selected: $selectedLobby")
+                }
+                //Surface the Icon for darkmode users
+                Surface() {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowDropDown,
+                        contentDescription = "Drop Down Error for Lobby Selection"
+                    )
+                }
+                    //Make our drop down menu for all of the lobbys
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        DropdownMenuItem(onClick = {
+                            //If they click it, change the users selected var
+                            selectedLobby = "Lobby1"
+                            //And then contract the menu
+                            expanded = false
+                        })
+                            {
+                                //Surface the rows text for darkmode users
+                                Surface() {
+                                    Text(text = "Lobby1: Number of players: $lobby1Players")
+                                }
+                            }
+                        DropdownMenuItem(onClick = {
+                            selectedLobby = "Lobby2"
+                            expanded = false
+                        })
+                        {
+                            Surface() {
+                                Text(text = "Lobby2: Number of players: $lobby2Players")
+                            }
+                        }
+                        DropdownMenuItem(onClick = {
+                            selectedLobby = "Lobby3"
+                            expanded = false
+                        })
+                        {
+                            Surface() {
+                                Text(text = "Lobby 3: Number of players: $lobby3Players")
+                            }
+                        }
+                        DropdownMenuItem(onClick = {
+                            selectedLobby = "Lobby4"
+                            expanded = false
+                        })
+                        {
+                            Surface() {
+                                Text(text = "Lobby 4: Number of players: $lobby4Players")
+                            }
+                        }
+                        DropdownMenuItem(onClick = {
+                            selectedLobby = "Lobby5"
+                            expanded = false
+                        })
+                        {
+                            Surface() {
+                                Text(text = "Lobby 5: Number of players: $lobby5Players")
+                            }
+                        }
+                    }
+                }
 
-            Text("Lobby1: $lobby1Players")
-           // Text("Lobby2: $lobby2Players")
-            //Text("Lobby3: $lobby3Players")
-            //Text("Lobby4: $lobby4Players")
-            //Text("Lobby5: $lobby5Players")
+
 
 
 
@@ -142,46 +218,44 @@ data class lobbyForList(var lobbyName: String? = "", var numPlayers: Long? = 0)
 
 // kotlin coroutine for getting lobby1
 suspend fun getLobby(): DataSnapshot? {
+    //Instantiate the database
     val database = Firebase.database
+    //get the reference to the parent in the database we want to use
     val lobby1Ref = database.getReference("Lobbys")
+    //wait for the database to get all the information stored under that reference
     val snapshot = lobby1Ref.get().await()
+    //return the snapshot of data for the other function to use
     return snapshot
 }
 
+
+//Another coroutine that stores all the lobby info to array Lists
 suspend fun getLobbys() : ArrayList<lobbyForList> {
+    //Since we have 5 lobbys, lets make an arraylist to store them all
     var allLobbys = ArrayList<lobbyForList>()
+    //Call the previous helper that we made and then make a reference for each of its children (Lobby1 - 5)
     val lobbys = getLobby()?.children
 
+    //Go through each of the parents kiddos
     lobbys?.forEach {
+        //Assign the player count to the current value
         var curLobbyPlayers = it.value
+        //Instantiate the data object we're using
         var curLobby = lobbyForList()
 
+        //Go through each memember of the data object
         with(curLobby) {
+            //the name of the lobby is the key
+                //Note: we never actuall use this name, as we already know all the names of the lobbys,
+                    //This was just to illustrate the example of how its possible
             lobbyName = it.key
+            //The players are it.value itself as we have already made note of, so lets cast it
+                //Note: Here we use a long instead of int, because this is how firebase stores its values
             numPlayers = curLobbyPlayers as Long?
         }
+        //Append the new object to our list
         allLobbys.add(curLobby)
     }
-
+    //Return our list
     return allLobbys
 }
-
-
-
-
-//Get the list of all our lobbys with the respective player count
-/*fun getAllLobbys() : ArrayList<lobbyForList>
-{
-    val database = Firebase.database
-    val lobby1Ref = database.getReference("Lobby1")
-    val lobby1PlayerCount = 0
-
-    lobby1Ref.child("NumPlayers").get()
-
-    it.value
-
-
-    var lobby1 = lobbyForList("Lobby1", )
-
-    return null
-}*/
