@@ -22,29 +22,33 @@ import com.google.firebase.database.DataSnapshot
 
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.DocumentSnapshot
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.lang.Exception
 
 
 @Composable
 fun Joinlobby(navController : NavController) {
-    //Set up the values to give user and idea of the amount of players in each lobby
-    var lobby1Players : Int
-    var lobby2Players : Int
-    var lobby3Players : Int
-    var lobby4Players : Int
-    var lobby5Players : Int
+    var lobby1Players by remember {
+        mutableStateOf(0)
+    }
 
-    //Get the real time values of the players in the lobby
+    var lobby2Players by remember {
+        mutableStateOf(0)
+    }
 
+    var lobby3Players by remember {
+        mutableStateOf(0)
+    }
 
-   /* var lobby1 = lobbyForList("Lobby1", lobby1Players)
-    var lobby2 = lobbyForList("Lobby2", lobby2Players)
-    var lobby3 = lobbyForList("Lobby3", lobby3Players)
-    var lobby4 = lobbyForList("Lobby4", lobby4Players)
-    var lobby5 = lobbyForList("Lobby5", lobby5Players)*/
+    var lobby4Players by remember {
+        mutableStateOf(0)
+    }
 
-    //val lobbyList = listOf(lobby1, lobby2, lobby3, lobby4, lobby5)
+    var lobby5Players by remember {
+        mutableStateOf(0)
+    }
+
 
     var expanded by remember { mutableStateOf(false) }
     var selectedIndex by remember { mutableStateOf(0) }
@@ -90,6 +94,24 @@ fun Joinlobby(navController : NavController) {
             val coroutineScope = rememberCoroutineScope()
             //val lobby1Players
 
+            var hasMapOfLobbys = ArrayList<lobbyForList>()
+
+                coroutineScope.launch {
+                    hasMapOfLobbys = getLobbys()
+                    lobby1Players = hasMapOfLobbys[0].numPlayers!!.toInt()
+                }
+
+
+
+            Text("Lobby1: $lobby1Players")
+           // Text("Lobby2: $lobby2Players")
+            //Text("Lobby3: $lobby3Players")
+            //Text("Lobby4: $lobby4Players")
+            //Text("Lobby5: $lobby5Players")
+
+
+
+
             //Add some space before the sign in button
             Spacer(modifier = Modifier.padding(10.dp))
             Button(
@@ -115,27 +137,33 @@ fun Joinlobby(navController : NavController) {
 
 
 //A little helper for showing the lobbys
-data class lobbyForList(val lobbyName: String, val numPlayers: Int)
+data class lobbyForList(var lobbyName: String? = "", var numPlayers: Long? = 0)
 
 
 // kotlin coroutine for getting lobby1
-suspend fun getLobby1(): DataSnapshot? {
+suspend fun getLobby(): DataSnapshot? {
     val database = Firebase.database
-    val lobby1Ref = database.getReference("Lobby1")
+    val lobby1Ref = database.getReference("Lobbys")
     val snapshot = lobby1Ref.get().await()
     return snapshot
 }
 
-suspend fun getLobbys() : String {
-    try {
-        val lobbys = getLobby1()
-        return lobbys.toString()
+suspend fun getLobbys() : ArrayList<lobbyForList> {
+    var allLobbys = ArrayList<lobbyForList>()
+    val lobbys = getLobby()?.children
+
+    lobbys?.forEach {
+        var curLobbyPlayers = it.value
+        var curLobby = lobbyForList()
+
+        with(curLobby) {
+            lobbyName = it.key
+            numPlayers = curLobbyPlayers as Long?
+        }
+        allLobbys.add(curLobby)
     }
-    catch (e: Exception)
-    {
-        Log.d("Error", e.toString())
-        return ""
-    }
+
+    return allLobbys
 }
 
 
