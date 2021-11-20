@@ -14,19 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.google.android.gms.tasks.Task
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.database.DatabaseError
-
 import com.google.firebase.database.DataSnapshot
-
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.launch
+
 import kotlinx.coroutines.tasks.await
-import java.lang.Exception
+
 
 
 @Composable
@@ -184,7 +179,7 @@ fun Joinlobby(navController : NavController) {
                 }
 
 
-
+            Spacer(modifier = Modifier.padding(150.dp))
 
 
 
@@ -192,6 +187,12 @@ fun Joinlobby(navController : NavController) {
             Spacer(modifier = Modifier.padding(10.dp))
             Button(
                 onClick = {
+                          //TODO: actually have the user join the lobby, this would feed their unique player ID into
+                                // the repective lobby as well as updating the number of players for the lobby they joined
+                                // in both the "Lobbys" reference and the respective lobby they joined
+                                // This also may be where we update host information (writting some for of check
+                                // to see if another user is already host, and if there isn't we set this user)
+                                // furthermore, we should update navgraph to go to the multiplayer screen
 
                 },
                 modifier = Modifier
@@ -216,7 +217,7 @@ fun Joinlobby(navController : NavController) {
 data class lobbyForList(var lobbyName: String? = "", var numPlayers: Long? = 0)
 
 
-// kotlin coroutine for getting lobby1
+// kotlin coroutine for getting the lobby snapshot and passing it to our other worker
 suspend fun getLobby(): DataSnapshot? {
     //Instantiate the database
     val database = Firebase.database

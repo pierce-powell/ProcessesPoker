@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.yeehawholdem.LogicGoods.Player
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -192,6 +193,8 @@ fun CreateAccount(navController : NavController)
                         OnCompleteListener {
                             if( it.isSuccessful ) {
                                 //TODO Update Player OBJ to reflect successful Login
+                                    //Need to figure out to what extent the database can track our current user.
+                                        //Might store everything into the cloud instead of making a class.
 
                                 userCreatedSuccessfully = true
                             }
