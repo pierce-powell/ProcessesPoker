@@ -17,6 +17,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.yeehawholdem.LogicGoods.Game
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 //TODO Need to keep track of whether or not the user is online and logged in.
 //TODO implement sign out functionality
@@ -33,9 +37,13 @@ public val SPACER_HEIGHT = 20.dp
 fun MainMenuScreen(
     navController : NavController,
 ) {
-    //Used to determine which buttons to show
-    var isOnline by remember { mutableStateOf(false) }
+
     var isLoggedIn by remember { mutableStateOf(false) }
+    lateinit var auth: FirebaseAuth;
+    auth = Firebase.auth
+
+    if (auth.currentUser != null)
+        isLoggedIn = true
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -77,6 +85,8 @@ fun MainMenuScreen(
             {
                 Button(onClick = {
                     //TODO implement sign out functionality
+                        auth.signOut()
+                        isLoggedIn = false
                 },
                     modifier = Modifier
                         .fillMaxWidth(BUTTON_WIDTH)
