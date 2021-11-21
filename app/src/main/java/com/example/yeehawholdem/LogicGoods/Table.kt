@@ -5,6 +5,7 @@ class Table {
     var playersStillIn: MutableList<Player> = mutableListOf()
     var sharedDeck: MutableList<Card> = mutableListOf() // Community Cards
     var currentPot: Int = 0
+    val dealer = Dealer()
 
     /*
     init {
@@ -71,5 +72,35 @@ class Table {
         for (p in playerArray) {
             p.hand.clear()
         }
+    }
+
+    // Deal two cards to all players
+    fun dealAllCards() {
+        for (player in playersStillIn) {
+            dealer.dealCard(player)
+            dealer.dealCard(player)
+        }
+    }
+
+    // Setup the full deck and user deck
+    fun setupDeck () {
+        sharedDeck.clear()
+        dealer.setupUsableDeck()
+        for (i in 0..4) {
+            dealer.usableDeck.getOrNull(0)?.let { sharedDeck.add(it) }
+            dealer.usableDeck.removeFirstOrNull()
+        }
+    }
+
+    // Returns the player with the highest hand value
+    // TODO: Detect if there is a tie. Return multiple players?
+    fun playerWithHighestHand(): Player {
+        var list = mutableListOf<Int>()
+        for (player in playersStillIn) {
+            list.add(dealer.checkHand.bestHand(player.hand, sharedDeck))
+        }
+        // Get player with the highest hand value
+        val index = list.indexOf(list.maxOrNull())
+        return playersStillIn[index]
     }
 }

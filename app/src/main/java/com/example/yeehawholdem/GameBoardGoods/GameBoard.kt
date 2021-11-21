@@ -27,16 +27,10 @@ import com.example.yeehawholdem.R
 import com.example.yeehawholdem.Screen
 
 //Global variables
-public val CARD_HEIGHT = 109.dp
-val SMALL_BLIND = 10
-val BIG_BLIND = 20
-val STARTING_BET = 10
-val STARTING_BALANCE = 1000
+val CARD_HEIGHT = 109.dp
+const val STARTING_BET = 10
+const val STARTING_BALANCE = 1000
 
-//TODO: Diplay the current pot
-//TODO: Quit game button
-//TODO: Hold, Bet, Raise
-//TODO: Make the image correspond to the actual card in play
 //TODO: Display Best Hand at the end of the round
 //TODO: Make the height connected to the individual box instead of the row, so we can click to enlarge?
 
@@ -62,89 +56,72 @@ fun GameBoardOfflineScreen(navController : NavController)
     //variables for later
     var showWinner by remember { mutableStateOf(false) }
     var playerWins by remember { mutableStateOf(false) }
-    val game by remember{ mutableStateOf(GameOffline())}
-    // var gameState by remember{ mutableStateOf(game.gameState)}
-    //var pot by remember{ mutableStateOf(0)}
-    var cardsFlipped = 0
+    val game by remember{ mutableStateOf(GameOffline()) }
     var userBet by remember{ mutableStateOf(STARTING_BET) }
-    //var dealerBet by remember{ mutableStateOf(STARTING_BET)}
-    //the rivers cards
-    var card1 by remember{ mutableStateOf(false)}
-    var card2 by remember{ mutableStateOf(false)}
-    var card3 by remember{ mutableStateOf(false)}
-    var card4 by remember{ mutableStateOf(false)}
-    var card5 by remember{ mutableStateOf(false)}
-    //players cards
-    var card6 by remember{ mutableStateOf(false)}
-    var card7 by remember{ mutableStateOf(false)}
-    //dealers cards
-    var card8 by remember{ mutableStateOf(false)}
-    var card9 by remember{ mutableStateOf(false)}
-    var round by remember{ mutableStateOf(0)}
-    var _card1 by remember{ mutableStateOf(game.table.sharedDeck[0])}
-    _card1 = game.table.sharedDeck[0]
+    var round by remember{ mutableStateOf(0) }
+    var fold by remember{ mutableStateOf(false) }
+    val cardsFlags by remember{ mutableStateOf( BooleanArray(9)) }
 
+    // Some functions for the cards display flags,
+    // 0-4 = Community cards, 5-6 = player's, 7-8 = dealer's
+    fun hideAllCards() {
+        for (i in cardsFlags.indices) {
+            cardsFlags[i] = false
+        }
+    }
+    fun revealAllCards() {
+        for (i in cardsFlags.indices) {
+            cardsFlags[i] = true
+        }
+    }
+    fun revealFirstThree() {
+        cardsFlags[0] = true
+        cardsFlags[1] = true
+        cardsFlags[2] = true
+    }
+    fun revealFourth() {
+        cardsFlags[3] = true
+    }
+    fun revealFifth() {
+        cardsFlags[4] = true
+    }
     // Gameplay Loop
-    // TODO: Implement proper game state logic. Get bet and fold parameters from user.
     if (game.gameState != GameState.STOPPED) {
-        if (game.gameState == GameState.NEXTGAME) {
-            // Start the Next New Game
-            game.nextGame()
-            round = 0
-            card1 = false
-            card2 = false
-            card3 = false
-            card4 = false
-            card5 = false
-            card6 = false
-            card7 = false
-            card8 = false
-            card9 = false
-            userBet = STARTING_BET
-            //dealerBet = STARTING_BET
-            game.table.currentPot = 0
-            //pot = 0
-        } else if (game.gameState == GameState.BETORCHECK) {
-            // Betting or Checking
-            game.betting()
-        } else if (round >= 4) {
-            // Showdown
-            if(game.showdown().equals("Test Player 1")){
-                playerWins = true
+        when {
+            game.gameState == GameState.NEXTGAME -> {
+                // Start the Next New Game
+                game.nextGame()
+                hideAllCards()
+                round = 0
+                fold = false
+                userBet = STARTING_BET
+                game.table.currentPot = 0
             }
-            showWinner = true
-            card8 = true
-            card9 = true
-        } else if (game.gameState == GameState.NEXTROUND) {
-            // Next Round
-            // game.gameState = GameState.BETORCHECK
-            // game.nextRound()
+            game.gameState == GameState.BETORCHECK -> {
+                // Betting or Checking
+                game.betting()
+            }
+            round >= 4 -> {
+                // Showdown after the 5th card is revealed
+                if(game.showdown() == "Test Player 1"){
+                    playerWins = true
+                }
+                showWinner = true
+                cardsFlags[7] = true
+                cardsFlags[8] = true
+            }
         }
     }
 
-    card6 = true
-    card7 = true
+    if (fold) {
+        playerWins = false
+        showWinner = true
+    }
     if (round == 2) {
-        card4 = true
+        revealFourth()
     } else if (round == 3) {
-        card4 = true
-        card5 = true
-    }
-
-    if (round == 4) {
-        card1 = false
-        card2 = false
-        card3 = false
-        card4 = false
-        card5 = false
-        card6 = false
-        card7 = false
-        card8 = false//get rid of these eventually
-        card9 = false//get rid of these eventually
-    }
-
-    if (game.gameState == GameState.STOPPED) {
-        // Ask User If they want to keep playing?
+        revealFourth()
+        revealFifth()
     }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
@@ -166,7 +143,7 @@ fun GameBoardOfflineScreen(navController : NavController)
             {
                 Text(text = "X", fontSize = MaterialTheme.typography.h5.fontSize)
             }
-            addText(text = "Dealer bet: $userBet")//changed from dealerBet
+            AddText(text = "Dealer bet: $userBet")//changed from dealerBet
         }
         //Outer Column to store our two rows
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
@@ -179,49 +156,32 @@ fun GameBoardOfflineScreen(navController : NavController)
                 .height(70.dp),
                 horizontalArrangement = Arrangement.Center)
             {
-                if (!card8) addCardBacks()
-                else  addCard(card = game.dealer_player.hand[0], curCardID = 8)
-                if (!card9) addCardBacks()
-                else addCard(card = game.dealer_player.hand[1], curCardID = 9)
+                if (!cardsFlags[7]) AddCardBacks()
+                else AddCard(card = game.dealer_player.hand.getOrNull(0))
+                if (!cardsFlags[8]) AddCardBacks()
+                else AddCard(card = game.dealer_player.hand.getOrNull(1))
             }
-            addText(text = "The River")
+            AddText(text = "The River")
             //The River :tm:
             Row(modifier = Modifier
                 .fillMaxWidth()
                 .height(CARD_HEIGHT), // However tall we need for a card
                 horizontalArrangement = Arrangement.Center)
             {
-                //The river will have 5 cards. we can do this by making 5 boxes to hold out images
-                if (!card1) addCardBacks()
-                else  addCard(card = _card1, curCardID = 1)
-                if (!card2) addCardBacks()
-                else addCard(card = game.table.sharedDeck[1], curCardID = 2)
-                if (!card3) addCardBacks()
-                else addCard(card = game.table.sharedDeck[2], curCardID = 3)
-                if (!card4) addCardBacks()
-                else addCard(card = game.table.sharedDeck[3], curCardID = 4)
-                if (!card5) addCardBacks()
-                else addCard(card = game.table.sharedDeck[4], curCardID = 5)
-
-                /*
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .background(MaterialTheme.colors.background)
-                        .padding(1.dp)
-                        .clip(RectangleShape),
-                    contentAlignment = Alignment.Center,
-                )
-                {
-                    // The Pretty Picture
-                    Image(
-                        painter = painterResource(id = game.table.sharedDeck.getOrNull(4)!!.cardPicture),
-                        contentDescription = "Card"
-                    )
-                }*/
+                // The River, Display cards facedown until they are revealed
+                if (!cardsFlags[0]) AddCardBacks()
+                else AddCard(card = game.table.sharedDeck.getOrNull(0))
+                if (!cardsFlags[1]) AddCardBacks()
+                else AddCard(card = game.table.sharedDeck.getOrNull(1))
+                if (!cardsFlags[2]) AddCardBacks()
+                else AddCard(card = game.table.sharedDeck.getOrNull(2))
+                if (!cardsFlags[3]) AddCardBacks()
+                else AddCard(card = game.table.sharedDeck.getOrNull(3))
+                if (!cardsFlags[4]) AddCardBacks()
+                else AddCard(card = game.table.sharedDeck.getOrNull(4))
             }
             Spacer(modifier = Modifier.padding(10.dp))
-            addText(text = "Pot: ${game.table.currentPot}")//changed from pot
+            AddText(text = "Pot: ${game.table.currentPot}")//changed from pot
             Spacer(modifier = Modifier.padding(10.dp))
 
             Row(modifier = Modifier
@@ -232,7 +192,7 @@ fun GameBoardOfflineScreen(navController : NavController)
                 Button(//fold button
                     onClick = {
                               //the dealer wins and the next round starts
-                              game.fold()
+                              fold = true
                     },
                     modifier = Modifier
                         .fillMaxWidth(.3f)
@@ -247,24 +207,15 @@ fun GameBoardOfflineScreen(navController : NavController)
                     .fillMaxWidth(.5f)
                 )
                 {
-                    addText(text = "Bet: $userBet")
+                    AddText(text = "Bet: $userBet")
                     Button(
                         onClick = {
                             game.gameState = GameState.BETORCHECK
                             game.betting(userBet)
-                            card1 = true
-                            card2 = true
-                            card3 = true
+                            revealFirstThree()
                             game.nextRound()
                             round++
-                            //pot = dealerBet + userBet
-                            userBet = STARTING_BET
-                            //dealerBet = STARTING_BET
-                            if(round == 4)
-                            {
-                                card8 = true
-                                card9 = true
-                            }
+                            userBet = 0
                         },
                         modifier = Modifier
                             .fillMaxWidth(1f)
@@ -293,7 +244,9 @@ fun GameBoardOfflineScreen(navController : NavController)
                     Spacer(modifier = Modifier.padding(2.dp))
                     Button(//lower bet button
                         onClick = {
-                            if(userBet - 5 > 0)
+                            if(userBet - 5 >= 0 && (round != 0))
+                                userBet -= 5
+                            else if (userBet - 5 > 0)
                                 userBet -= 5
                         },
                         modifier = Modifier
@@ -306,30 +259,28 @@ fun GameBoardOfflineScreen(navController : NavController)
                 }
             }
             Spacer(modifier = Modifier.padding(10.dp))
-            addText(text = "User Hand")
+            AddText(text = "User Hand")
             //The users hand
             Row(modifier = Modifier
                 .fillMaxWidth()
                 .height(CARD_HEIGHT), // However tall we need for a card
                 horizontalArrangement = Arrangement.Center)
             {
-                //The river will have 5 cards. we can do this by making 5 boxes to hold out images
-                if (!card6) addCardBacks()
-                else addCard(card = game.player.hand[0], curCardID = 1)
-                if (!card7) addCardBacks()
-                else addCard(card = game.player.hand[1], curCardID = 2)
+                // Display Player Hand
+                AddCard(card = game.player.hand.getOrNull(0))
+                AddCard(card = game.player.hand.getOrNull(1))
             }
             Spacer(modifier = Modifier.padding(10.dp))
-            addText(text = "User balance: ${game.table.playerArray[0].balance}")
+            AddText(text = "User balance: ${game.table.playerArray[0].balance}")
         }
     }
 
     // pop up message to say you won or lost at end of round
-    if (showWinner == true) {
-        //Thread.sleep(5000)
+    if (showWinner) {
+        revealAllCards()
         AlertDialog(onDismissRequest = {},
             title = {
-                if(playerWins == true){
+                if(playerWins){
                     Text(text = "You won!")
                 }
                 else{
@@ -340,59 +291,21 @@ fun GameBoardOfflineScreen(navController : NavController)
                 Button(onClick = {
                     showWinner = false
                     playerWins = false
-                    //game.gameState = GameState.NEXTGAME
+                    // Wait till user presses the button to continue
+                    game.gameState = GameState.NEXTGAME
                 })
                 {
-                    Text(text = "cool")
+                    Text(text = "Cool")
                 }
             }
         )
     }
 }
 
-fun setIsGameActive() {
-    //table.getGameStatus()
-}
-
-private fun FoldBetConfirm()
-{
-    /*
-    Fold : Button they can click (no user input)
-    Bet : Mini pop up populated with the dealers bet locked,
-    ______________________________________
-    |  INT BET                       ^    |
-    | (Default to dealers)        adjust  |
-    |  CONFIRM                       v    |
-    --------------------------------------
-     */
-
-
-   /* //On click functionality for confirm button
-    if (cardsFlipped == 0)
-        //Flip 3
-    else if (cardsFlipped == 3)
-        //flip the 4th
-    else if (cardsFlipped == 4)
-        //flip the 5th
-
-    */
-}
-
-private fun incrementRound()
-{
-
-}
-
 @Composable
-private fun addCard(card: Card, curCardID: Int = 0)
+private fun AddCard(card: Card?)
 {
     val scale = remember { mutableStateOf(1f)}
-
-    // var card = table.sharedDeck?.getOrNull(curCardID - 1)
-    // var card: Card? = dealer?.usableDeck?.getOrNull(0) // TODO: Change to use dealer's deck
-    // dealer?.usableDeck?.removeAt(0) // TODO: Deal cards before removing from deck
-
-    //TODO: Add the proper card based on ID
 
     //determine which drawable to use
     Box(
@@ -410,28 +323,23 @@ private fun addCard(card: Card, curCardID: Int = 0)
     )
     {
         // The Pretty Picture
-        Image(modifier = Modifier.graphicsLayer(
-            scaleX = maxOf(.1f, minOf(3f, scale.value)),
-            scaleY = maxOf(.1f, minOf(3f, scale.value)),
-        ),
-            painter = painterResource(id = card.cardPicture),
-            contentDescription = "Card"
-        )
+        if (card != null) {
+            Image(modifier = Modifier.graphicsLayer(
+                scaleX = maxOf(.1f, minOf(3f, scale.value)),
+                scaleY = maxOf(.1f, minOf(3f, scale.value)),
+            ),
+                painter = painterResource(id = card.cardPicture),
+                contentDescription = "Card"
+            )
+        }
     }
 }
 
 @Composable
-private fun addCardBacks(curCardID: Int = 0)
+private fun AddCardBacks()
 {
     val scale = remember { mutableStateOf(1f)}
 
-    // var card = table.sharedDeck?.getOrNull(curCardID - 1)
-    // var card: Card? = dealer?.usableDeck?.getOrNull(0) // TODO: Change to use dealer's deck
-    // dealer?.usableDeck?.removeAt(0) // TODO: Deal cards before removing from deck
-
-    //TODO: Add the proper card based on ID
-
-    //determine which drawable to use
     Box(
         modifier = Modifier
             .fillMaxHeight()
@@ -458,9 +366,9 @@ private fun addCardBacks(curCardID: Int = 0)
 }
 
 @Composable
-private fun addText(text : String) {
+private fun AddText(text : String) {
     // Wrap in a surface so it can pick up on light-mode vs dark
-    Surface() {
+    Surface {
         //Row for the river text
         Row(
             modifier = Modifier
@@ -482,9 +390,7 @@ private fun addText(text : String) {
 
 @Composable
 @Preview(showBackground = true)
-fun gamePreview()
+fun GamePreview()
 {
-    // val game = Game()
-    // game.startGame()
     GameBoardOfflineScreen(navController = rememberNavController())
 }
