@@ -24,6 +24,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.yeehawholdem.R
 import com.example.yeehawholdem.Screen
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 //TODO add the sign in functionality, implement a forgot password button as well as the corresponding code for that
 //Probably change the image used as well
@@ -31,13 +34,19 @@ import com.example.yeehawholdem.Screen
 
 @Composable
 fun LoginScreen(navController : NavController) {
+    lateinit var auth: FirebaseAuth;
 
+    // Our authentication database
+    auth = Firebase.auth
     //username
-    val usernameValue = remember { mutableStateOf("")}
+    val emailValue = remember { mutableStateOf("")}
     //password
     val passwordValue = remember { mutableStateOf("")}
     //visibility controller
     var passwordVisibility by remember { mutableStateOf(false) }
+
+    var userSignedInSuccessfully by remember { mutableStateOf(false) }
+    var userNotSignedInSuccessfully by remember { mutableStateOf(false) }
 
     //determine the visibility Icon
     val icon = if (passwordVisibility)
@@ -88,10 +97,10 @@ fun LoginScreen(navController : NavController) {
             Surface() {
                 //Username text field
                 OutlinedTextField(
-                    value = usernameValue.value,
-                    onValueChange = { usernameValue.value = it },
-                    label = { Text(text = "Username") },
-                    placeholder = { Text(text = "Username") },
+                    value = emailValue.value,
+                    onValueChange = { emailValue.value = it },
+                    label = { Text(text = "Email") },
+                    placeholder = { Text(text = "Email") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(.8f)
                 )
@@ -125,10 +134,20 @@ fun LoginScreen(navController : NavController) {
             //Add some space before the sign in button
             Spacer(modifier = Modifier.padding(10.dp))
             Button(onClick = {
-                             //TODO HERE
-                //Sign in functionality
-                //Something like check the user name and password in the database
-                //If it exists, then send em back to the main menu
+                            //sign them in
+                             auth.signInWithEmailAndPassword(emailValue.value, passwordValue.value).addOnCompleteListener {
+                                 if( it.isSuccessful ) {
+                                     //trigger our dialog to let them know it worked
+                                     userSignedInSuccessfully = true
+
+
+                                 }
+                                 else {
+                                     //trigger the dialog to let them know it failed
+                                     userNotSignedInSuccessfully = true
+                                 }
+                             }
+
             },
                 modifier = Modifier
                     .fillMaxWidth(.8f)
@@ -148,7 +167,44 @@ fun LoginScreen(navController : NavController) {
         }
 
     }
+
+    if (userSignedInSuccessfully == true) {
+
+        AlertDialog(onDismissRequest = {},
+            title = {
+                Text(text = "Sign In Successful!")
+            },
+            confirmButton = {
+                Button(onClick = {
+                    userSignedInSuccessfully = false
+                    navController.navigate(route = Screen.MainMenu.route)
+                })
+                {
+                    Text(text = "Ok")
+                }
+            }
+        )
+    }
+
+    if (userNotSignedInSuccessfully == true) {
+
+        AlertDialog(onDismissRequest = {},
+            title = {
+                Text(text = "Error signing in, please double check information!")
+            },
+            confirmButton = {
+                Button(onClick = {
+                    userNotSignedInSuccessfully = false
+                })
+                {
+                    Text(text = "Ok")
+                }
+            }
+        )
+    }
+
 }
+
 
 
 

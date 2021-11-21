@@ -201,8 +201,11 @@ fun CreateAccount(navController : NavController)
                                 //TODO Update Player OBJ to reflect successful Login
                                     //Need to figure out to what extent the database can track our current user.
                                         //Might store everything into the cloud instead of making a class.
+                                //store the users authenitcated id
                                 val userId = auth!!.currentUser!!.uid
+                                //reference the realtime database and make a child out of the user ID
                                 val myPlayerRef = database!!.reference.child(userId)
+                                //under that new id reference, add the users personal username
                                 myPlayerRef.child("username").setValue(username.value)
 
 
