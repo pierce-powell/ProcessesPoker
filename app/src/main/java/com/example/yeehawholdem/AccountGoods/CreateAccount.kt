@@ -20,6 +20,7 @@ import com.example.yeehawholdem.LogicGoods.Player
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 @SuppressLint("UnrememberedMutableState")
@@ -32,7 +33,12 @@ fun CreateAccount(navController : NavController)
 
     lateinit var auth: FirebaseAuth;
 
+    // Our authentication database
     auth = Firebase.auth
+
+    //Our realtime database to store username and the id they are generated.
+    val database = Firebase.database
+    // val myRef = database.getReference("Lobby")
 
 
     //Variables
@@ -195,6 +201,11 @@ fun CreateAccount(navController : NavController)
                                 //TODO Update Player OBJ to reflect successful Login
                                     //Need to figure out to what extent the database can track our current user.
                                         //Might store everything into the cloud instead of making a class.
+                                val userId = auth!!.currentUser!!.uid
+                                val myPlayerRef = database!!.reference.child(userId)
+                                myPlayerRef.child("username").setValue(username.value)
+
+
 
                                 userCreatedSuccessfully = true
                             }
