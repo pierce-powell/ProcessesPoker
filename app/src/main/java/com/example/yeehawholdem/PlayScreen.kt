@@ -5,15 +5,28 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.yeehawholdem.LogicGoods.Game
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 @Composable
 fun PlayScreen(navController : NavController)
 {
+
+    //database calls for the dynamic button
+    var isLoggedIn by remember { mutableStateOf(false) }
+    lateinit var auth: FirebaseAuth;
+    auth = Firebase.auth
+
+    //if it returns null, the user is not signed in and can't join a lobby
+    if (auth.currentUser != null)
+        isLoggedIn = true
+
 
 Box(
 modifier = Modifier.fillMaxSize(),
@@ -40,35 +53,30 @@ contentAlignment = Alignment.BottomCenter
         modifier = Modifier.fillMaxHeight(.6f))
     {
 
-            //Play Offline
-            Button(onClick = {
+        //Play Offline
+        Button(
+            onClick = {
                 navController.navigate(route = Screen.GameBoardOffline.route)
             },
-                modifier = Modifier
-                    .fillMaxWidth(BUTTON_WIDTH)
-                    .height(BUTTON_HEIGHT))
-            {
-                // game.startGame()
-                Text(text = "PLAY OFFLINE", fontSize = MaterialTheme.typography.h5.fontSize)
-            }
-
-
-        Spacer(modifier = Modifier.padding(SPACER_HEIGHT))
-
-        //Leaderboard button
-        Button(onClick = {
-            navController.navigate(route = Screen.CreateLobby.route)
-        },
             modifier = Modifier
                 .fillMaxWidth(BUTTON_WIDTH)
-                .height(BUTTON_HEIGHT))
+                .height(BUTTON_HEIGHT)
+        )
         {
-            Text(text = "CREATE LOBBY", fontSize = MaterialTheme.typography.h5.fontSize)
+            // game.startGame()
+            Text(text = "PLAY OFFLINE", fontSize = MaterialTheme.typography.h5.fontSize)
         }
+
 
         Spacer(modifier = Modifier.padding(SPACER_HEIGHT))
 
-        //User can only play online if they have an internet connection
+
+
+        Spacer(modifier = Modifier.padding(SPACER_HEIGHT))
+
+        if (isLoggedIn) {
+
+            //User can only play online if they have an internet connection
 
             Button(
                 onClick = {
@@ -82,6 +90,24 @@ contentAlignment = Alignment.BottomCenter
                 Text(text = "JOIN LOBBY", fontSize = MaterialTheme.typography.h5.fontSize)
             }
         }
+
+        else
+        {
+            Button(
+                onClick = {
+                    navController.navigate(route = Screen.Login.route)
+                },
+                modifier = Modifier
+                    .fillMaxWidth(BUTTON_WIDTH)
+                    .height(BUTTON_HEIGHT)
+            )
+            {
+                Text(text = "LOGIN TO PLAY ONLINE", fontSize = MaterialTheme.typography.h5.fontSize)
+            }
+        }
+
+    }
+
 
 
         }
