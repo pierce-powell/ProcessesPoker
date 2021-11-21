@@ -32,7 +32,6 @@ public val SPACER_HEIGHT = 20.dp
 @Composable
 fun MainMenuScreen(
     navController : NavController,
-    game : Game
 ) {
     //Used to determine which buttons to show
     var isOnline by remember { mutableStateOf(false) }
@@ -126,6 +125,5 @@ fun HomeScreenPreview()
 {
     MainMenuScreen(
         navController = rememberNavController(),
-        game = Game()
     )
 }

@@ -23,4 +23,15 @@ class GameTest : TestCase() {
 
     }
 
+    @Test
+    fun stbetting() {
+        println(game.table.currentPot)
+        game.betting(50)
+        game.nextRound()
+        println(game.table.currentPot)
+        game.betting(50)
+        game.nextRound()
+        println(game.table.currentPot)
+
+    }
 }

@@ -3,12 +3,13 @@ package com.example.yeehawholdem.LogicGoods
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.example.yeehawholdem.GameBoardGoods.BIG_BLIND
-import com.example.yeehawholdem.GameBoardGoods.SMALL_BLIND
 import com.example.yeehawholdem.GameBoardGoods.STARTING_BALANCE
 
+val SMALL_BLIND = 10
+val BIG_BLIND = 20
+
 enum class GameState {
-    STOPPED, RUNNING, BETORCHECK, SHOWDOWN, NEXTGAME, NEXTROUND, RAISING, AIPLAYER
+    STOPPED, RUNNING, BETORCHECK, SHOWDOWN, NEXTGAME, NEXTROUND, RAISING, FOLD
 }
 
 class Game {
@@ -29,7 +30,7 @@ class Game {
         addPlayer(player)
         addPlayer(dealer_player)
         table.resetPlayers()
-        dealer.setupDeck(table = table)
+        table.setupDeck()
 
         for (player in table.playersStillIn) {
             dealer.dealCard(player)
@@ -124,10 +125,6 @@ class Game {
         while (!table.checkCalled()) {
             // Keep betting until everyone has called or folded
             val player = table.playersStillIn[turn]
-            if (player.name == "Dealer Player 1") {
-                // AI Player logic for betting
-                bet = dealer.aiBetOrFold(player, BIG_BLIND)
-            }
             player.balance -= userBet
             player.checkFlag = true
             table.addToPot(bet)
@@ -152,10 +149,11 @@ class Game {
             gameState = GameState.SHOWDOWN
     }
 
-    fun showdown() {
+    fun showdown() : String {
         var player = determineWinner()
         player.balance += table.currentPot
         gameState = GameState.NEXTGAME
+        return player.name
     }
 
     // TODO: Determine the winner among the remaining players, and distribute the pot accordingingly
@@ -180,7 +178,7 @@ class Game {
         table.resetHands()
         table.resetCheck()
         table.currentPot = 0
-        dealer.setupDeck(table = table)
+        table.setupDeck()
         dealer.dealCard(player)
         dealer.dealCard(player)
         dealer.cardCount = 3

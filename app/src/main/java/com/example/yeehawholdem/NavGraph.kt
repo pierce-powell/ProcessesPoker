@@ -15,13 +15,11 @@ import com.example.yeehawholdem.Login.LoginScreen
 @Composable
 fun setUpNavHost(navController: NavHostController)
 {
-    val game = Game()
-
     NavHost(navController = navController, startDestination = Screen.MainMenu.route)
     {
         composable(route = Screen.MainMenu.route)
         {
-            MainMenuScreen(navController = navController, game = game)
+            MainMenuScreen(navController = navController)
         }
         composable(route = Screen.Login.route)
         {
