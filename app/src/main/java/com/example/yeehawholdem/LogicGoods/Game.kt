@@ -152,10 +152,11 @@ class Game {
             gameState = GameState.SHOWDOWN
     }
 
-    fun showdown() {
+    fun showdown() : String {
         var player = determineWinner()
         player.balance += table.currentPot
         gameState = GameState.NEXTGAME
+        return player.name
     }
 
     // TODO: Determine the winner among the remaining players, and distribute the pot accordingingly

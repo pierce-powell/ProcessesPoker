@@ -6,10 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,19 +60,26 @@ Quit returns to Main Menu
 fun GameBoardOfflineScreen(navController : NavController)
 {
     //variables for later
+    var showWinner by remember { mutableStateOf(false) }
+    var playerWins by remember { mutableStateOf(false) }
     val game by remember{ mutableStateOf(GameOffline())}
     // var gameState by remember{ mutableStateOf(game.gameState)}
     //var pot by remember{ mutableStateOf(0)}
     var cardsFlipped = 0
     var userBet by remember{ mutableStateOf(STARTING_BET) }
     //var dealerBet by remember{ mutableStateOf(STARTING_BET)}
+    //the rivers cards
     var card1 by remember{ mutableStateOf(false)}
     var card2 by remember{ mutableStateOf(false)}
     var card3 by remember{ mutableStateOf(false)}
     var card4 by remember{ mutableStateOf(false)}
     var card5 by remember{ mutableStateOf(false)}
+    //players cards
     var card6 by remember{ mutableStateOf(false)}
     var card7 by remember{ mutableStateOf(false)}
+    //dealers cards
+    var card8 by remember{ mutableStateOf(false)}
+    var card9 by remember{ mutableStateOf(false)}
     var round by remember{ mutableStateOf(0)}
     var _card1 by remember{ mutableStateOf(game.table.sharedDeck[0])}
     _card1 = game.table.sharedDeck[0]
@@ -94,6 +98,8 @@ fun GameBoardOfflineScreen(navController : NavController)
             card5 = false
             card6 = false
             card7 = false
+            card8 = false
+            card9 = false
             userBet = STARTING_BET
             //dealerBet = STARTING_BET
             game.table.currentPot = 0
@@ -103,14 +109,18 @@ fun GameBoardOfflineScreen(navController : NavController)
             game.betting()
         } else if (round >= 4) {
             // Showdown
-            game.showdown()
+            if(game.showdown().equals("Test Player 1")){
+                playerWins = true
+            }
+            showWinner = true
+            card8 = true
+            card9 = true
         } else if (game.gameState == GameState.NEXTROUND) {
             // Next Round
             // game.gameState = GameState.BETORCHECK
             // game.nextRound()
         }
     }
-
 
     card6 = true
     card7 = true
@@ -129,6 +139,8 @@ fun GameBoardOfflineScreen(navController : NavController)
         card5 = false
         card6 = false
         card7 = false
+        card8 = false//get rid of these eventually
+        card9 = false//get rid of these eventually
     }
 
     if (game.gameState == GameState.STOPPED) {
@@ -156,13 +168,22 @@ fun GameBoardOfflineScreen(navController : NavController)
             }
             addText(text = "Dealer bet: $userBet")//changed from dealerBet
         }
-
         //Outer Column to store our two rows
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
-            .fillMaxHeight(.8f)
+            .fillMaxHeight(.93f)
             .fillMaxWidth()
         )
         {
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .height(70.dp),
+                horizontalArrangement = Arrangement.Center)
+            {
+                if (!card8) addCardBacks()
+                else  addCard(card = game.dealer_player.hand[0], curCardID = 8)
+                if (!card9) addCardBacks()
+                else addCard(card = game.dealer_player.hand[1], curCardID = 9)
+            }
             addText(text = "The River")
             //The River :tm:
             Row(modifier = Modifier
@@ -199,9 +220,9 @@ fun GameBoardOfflineScreen(navController : NavController)
                     )
                 }*/
             }
-            Spacer(modifier = Modifier.padding(15.dp))
+            Spacer(modifier = Modifier.padding(10.dp))
             addText(text = "Pot: ${game.table.currentPot}")//changed from pot
-            Spacer(modifier = Modifier.padding(15.dp))
+            Spacer(modifier = Modifier.padding(10.dp))
 
             Row(modifier = Modifier
                 .fillMaxWidth()
@@ -220,7 +241,7 @@ fun GameBoardOfflineScreen(navController : NavController)
                 {
                     Text(text = "Fold", fontSize = MaterialTheme.typography.h5.fontSize)
                 }
-                Spacer(modifier = Modifier.padding(15.dp))
+                Spacer(modifier = Modifier.padding(10.dp))
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
                     .fillMaxHeight()
                     .fillMaxWidth(.5f)
@@ -239,6 +260,11 @@ fun GameBoardOfflineScreen(navController : NavController)
                             //pot = dealerBet + userBet
                             userBet = STARTING_BET
                             //dealerBet = STARTING_BET
+                            if(round == 4)
+                            {
+                                card8 = true
+                                card9 = true
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth(1f)
@@ -296,6 +322,31 @@ fun GameBoardOfflineScreen(navController : NavController)
             Spacer(modifier = Modifier.padding(10.dp))
             addText(text = "User balance: ${game.table.playerArray[0].balance}")
         }
+    }
+
+    // pop up message to say you won or lost at end of round
+    if (showWinner == true) {
+        //Thread.sleep(5000)
+        AlertDialog(onDismissRequest = {},
+            title = {
+                if(playerWins == true){
+                    Text(text = "You won!")
+                }
+                else{
+                    Text(text = "You lost!")
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    showWinner = false
+                    playerWins = false
+                    //game.gameState = GameState.NEXTGAME
+                })
+                {
+                    Text(text = "cool")
+                }
+            }
+        )
     }
 }
 
