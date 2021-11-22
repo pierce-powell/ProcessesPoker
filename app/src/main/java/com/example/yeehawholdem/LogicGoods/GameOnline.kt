@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import com.example.yeehawholdem.GameBoardGoods.STARTING_BALANCE
 
 enum class GameState {
+    //Start, firstRound, SecondRound, ThirdRound, Showdown, End
     STOPPED, RUNNING, BETORCHECK, SHOWDOWN, NEXTGAME, NEXTROUND
 }
 
@@ -19,8 +20,8 @@ class Game {
 
 
     //When creating a Game object, initialize with list of players for the game
-    constructor(mutableList: MutableList<Player>){
-        for(player in mutableList){
+    constructor(mutableList: MutableList<Player>) {
+        for (player in mutableList) {
             table.addPlayer(player)
         }
     }
@@ -34,7 +35,9 @@ class Game {
     fun startGame() {
         table.setupDeck()
         table.dealAllCards()
-
+        //TODO: first player = host
+        //TODO: Send all players in waitlist to active users
+        //TODO: Populate database.activeUsers hands with cards if host
         gameState = GameState.RUNNING
     }
 
@@ -46,7 +49,9 @@ class Game {
         checkCalled()
     }
 
+    // fun playRound(){
 
+    //}
 
     /*
     fun roundOfBetting() {
