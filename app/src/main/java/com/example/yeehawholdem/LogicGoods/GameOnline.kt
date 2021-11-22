@@ -7,7 +7,7 @@ import androidx.compose.runtime.setValue
 import com.example.yeehawholdem.GameBoardGoods.STARTING_BALANCE
 
 enum class GameState {
-    STOPPED, RUNNING, BETORCHECK, SHOWDOWN, NEXTGAME, NEXTROUND, RAISING, FOLD
+    STOPPED, RUNNING, BETORCHECK, SHOWDOWN, NEXTGAME, NEXTROUND
 }
 
 class Game {
@@ -29,20 +29,20 @@ class Game {
         startGame()
     }
 
+    //Shuffles the deck of cards, deals a set of two cards to each player, and sets the game state
+    //running
     fun startGame() {
         table.setupDeck()
         table.dealAllCards()
 
-        dealer.cardCount = 3
-
         gameState = GameState.RUNNING
     }
 
-    fun roundStart() {
+    fun round() {
         for (_player in table.playerArray) {
             table.playersStillIn.add(_player)
         }
-        //
+
         checkCalled()
     }
 
@@ -161,4 +161,5 @@ class Game {
     fun incrementTurn() {
         turn = (turn + 1) % table.playerArray.size
     }
+
 }
