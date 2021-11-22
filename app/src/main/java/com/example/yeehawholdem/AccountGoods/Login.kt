@@ -150,7 +150,7 @@ fun LoginScreen(navController : NavController){
                 if ((errorResults.isNotEmpty())) {
                     showDialog = true
                 }
-                // Otherwisem the information that was entered was correct
+                // Otherwise the information that was entered was correct
                 else {
                     //sign them in
                     try {
