@@ -61,6 +61,7 @@ fun Joinlobby(navController : NavController) {
 
     //state to show the user they're being added to the wait room
     var showWaitWarning by remember { mutableStateOf(false) }
+    var showThatRoomIsFull by remember { mutableStateOf(false) }
 
 
     lateinit var auth: FirebaseAuth;
@@ -228,44 +229,81 @@ fun Joinlobby(navController : NavController) {
                     //Reference the lobby that the user selected
                     val lobbyRef = database.getReference(selectedLobby)
 
-
-
-                    //Lets check if we need this user to step in as the host
-                    if (currentHost.isEmpty())
+                    //TODO: Cap the lobby
+                    if(selectedLobbyPlayers > 6)
                     {
-                        //then we need to make this user the host
-                        lobbyRef.child("Host").setValue(userUid.toString())
-                        //Add the selected lobby to the host's Uid
-                        database.getReference(userUid.toString()).child("HostOfLobby").setValue(selectedLobby)
+                        //Trigger a dialog telling them to join another lobby
+                        showThatRoomIsFull = true
                     }
+                    //Theres room in the lobby, so have them join it
+                    else {
 
-                    //Now lets update the player count
-                    lobbyRef.child("NumPlayers").setValue(selectedLobbyPlayers + 1)
-
-                    //We also need to update the Lobbys section for the realtime player counts
-                    val lobbysSectionRef = database.getReference("Lobbys").child(selectedLobby)
-                    lobbysSectionRef.setValue(numberOfPlayers + 1)
+                        //TODO: Add a users cards reference to -1
+                        //TODO: Add bet
+                        //The users hand
 
 
-                    //Now we need to check if the game is in progress,
-                    //if it isn't, just join the game
-                    if(isGameInProgress == 0)
-                    {
-                        //Now lets add the player so we can keep track of them
-                        lobbyRef.child("ActiveUsers").child(userUid.toString()).child("username").setValue(playerUsername)
-                        lobbyRef.child("ActiveUsers").child(userUid.toString()).child("balance").setValue(playerBalance)
+                        //Lets check if we need this user to step in as the host
+                        if (currentHost.isEmpty()) {
+                            //then we need to make this user the host
+                            lobbyRef.child("Host").setValue(userUid.toString())
+                            //Add the selected lobby to the host's Uid
+                            database.getReference(userUid.toString()).child("HostOfLobby")
+                                .setValue(selectedLobby)
+                        }
 
-                        //Now we need to navigate to the next screen
-                        navController.navigate(route = Screen.GameBoardOnline.route)
-                    }
-                    else
-                    {
-                        //Add them to the waiting room so we don't need to worry about integrating them mid game
-                        lobbyRef.child("WaitingRoom").child(userUid.toString()).child("username").setValue(playerUsername)
-                        lobbyRef.child("WaitingRoom").child(userUid.toString()).child("balance").setValue(playerBalance)
+                        //Now lets update the player count
+                        lobbyRef.child("NumPlayers").setValue(selectedLobbyPlayers + 1)
 
-                        //Now we need to navigate to the next screen
-                        showWaitWarning = true
+                        //We also need to update the Lobbys section for the realtime player counts
+                        val lobbysSectionRef = database.getReference("Lobbys").child(selectedLobby)
+                        lobbysSectionRef.setValue(numberOfPlayers + 1)
+
+
+                        //Now we need to check if the game is in progress,
+                        //if it isn't, just join the game
+                        if (isGameInProgress == 0) {
+                            //Now lets add the player so we can keep track of them
+                            lobbyRef.child("ActiveUsers").child(userUid.toString())
+                                .child("username").setValue(playerUsername)
+                            lobbyRef.child("ActiveUsers").child(userUid.toString()).child("balance")
+                                .setValue(playerBalance)
+
+                            //Give the players some cards when they join in as well
+                            lobbyRef.child("ActiveUsers").child(userUid.toString()).child("Cards").child("Card1")
+                                .setValue(-1)
+                            lobbyRef.child("ActiveUsers").child(userUid.toString()).child("Cards").child("Card2")
+                                .setValue(-1)
+
+                            //Give them a nice flag to tell if they've folded
+                            lobbyRef.child("ActiveUsers").child(userUid.toString()).child("IsStillIn").setValue(true)
+                            lobbyRef.child("ActiveUsers").child(userUid.toString()).child("IsStillIn").setValue(true)
+
+                            //Now we need to navigate to the next screen
+                            navController.navigate(route = Screen.GameBoardOnline.route)
+                        } else {
+                            //Add them to the waiting room so we don't need to worry about integrating them mid game
+                            lobbyRef.child("WaitingRoom").child(userUid.toString())
+                                .child("username").setValue(playerUsername)
+                            lobbyRef.child("WaitingRoom").child(userUid.toString()).child("balance")
+                                .setValue(playerBalance)
+
+                            //Give the players some cards when they join in as well
+                            lobbyRef.child("WaitingRoom").child(userUid.toString()).child("Cards").child("Card1")
+                                .setValue(-1)
+                            lobbyRef.child("WaitingRoom").child(userUid.toString()).child("Cards").child("Card2")
+                                .setValue(-1)
+
+                            //Now give them the is still in flag to check if they folded
+
+                            lobbyRef.child("WaitingRoom").child(userUid.toString()).child("IsStillIn").setValue(1)
+                            lobbyRef.child("WaitingRoom").child(userUid.toString()).child("IsStillIn").setValue(1)
+
+
+
+                            //Now we need to navigate to the next screen
+                            showWaitWarning = true
+                        }
                     }
 
                 },
@@ -295,6 +333,24 @@ fun Joinlobby(navController : NavController) {
                 Button(onClick = {
                     showWaitWarning = false
                     navController.navigate(route = Screen.GameBoardOnline.route)
+                })
+                {
+                    Text(text = "Ok")
+                }
+            }
+        )
+    }
+
+
+    if (showThatRoomIsFull == true) {
+
+        AlertDialog(onDismissRequest = {},
+            title = {
+                Text(text = "The lobby you are trying to join is currently at its maximum capacity! Please join another lobby.")
+            },
+            confirmButton = {
+                Button(onClick = {
+                    showThatRoomIsFull = false
                 })
                 {
                     Text(text = "Ok")
