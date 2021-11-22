@@ -59,7 +59,8 @@ fun Joinlobby(navController : NavController) {
     // we use 0 for a game thats not active and 1 for one that is
     var isGameInProgress by remember { mutableStateOf(0) }
 
-    //TODO: Pop ups to let the user know they're being added to the waiting room
+    //state to show the user they're being added to the wait room
+    var showWaitWarning by remember { mutableStateOf(false) }
 
 
     lateinit var auth: FirebaseAuth;
@@ -209,6 +210,7 @@ fun Joinlobby(navController : NavController) {
                 playerBalance = lobbyDetails.playerBalance.toInt()
                 currentHost = lobbyDetails.isHost
                 selectedLobbyPlayers = lobbyDetails.numPlayers.toInt()
+                isGameInProgress = lobbyDetails.isInProgress.toInt()
 
             }
 
@@ -263,7 +265,7 @@ fun Joinlobby(navController : NavController) {
                         lobbyRef.child("WaitingRoom").child(userUid.toString()).child("balance").setValue(playerBalance)
 
                         //Now we need to navigate to the next screen
-                        navController.navigate(route = Screen.GameBoardOnline.route)
+                        showWaitWarning = true
                     }
 
                 },
@@ -280,6 +282,27 @@ fun Joinlobby(navController : NavController) {
 
         Spacer(modifier = Modifier.height(150.dp))
     }
+
+
+    if (showWaitWarning == true) {
+
+        AlertDialog(onDismissRequest = {},
+            title = {
+                Text(text = "The lobby your joining is currently mid hand. Please sit tight," +
+                        " and we'll add you into the next hand!")
+            },
+            confirmButton = {
+                Button(onClick = {
+                    showWaitWarning = false
+                    navController.navigate(route = Screen.GameBoardOnline.route)
+                })
+                {
+                    Text(text = "Ok")
+                }
+            }
+        )
+    }
+
 }
 
 
