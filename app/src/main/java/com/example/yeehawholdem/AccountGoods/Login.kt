@@ -24,6 +24,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.yeehawholdem.R
 import com.example.yeehawholdem.Screen
+import com.example.yeehawholdem.checkInputFields
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -47,6 +48,10 @@ fun LoginScreen(navController : NavController) {
 
     var userSignedInSuccessfully by remember { mutableStateOf(false) }
     var userNotSignedInSuccessfully by remember { mutableStateOf(false) }
+
+
+    var showDialog by remember { mutableStateOf(false) }
+    var errorResults by remember { mutableStateOf("") }
 
     //determine the visibility Icon
     val icon = if (passwordVisibility)
@@ -131,22 +136,33 @@ fun LoginScreen(navController : NavController) {
                         PasswordVisualTransformation()
                 )
             }
+
+
             //Add some space before the sign in button
             Spacer(modifier = Modifier.padding(10.dp))
             Button(onClick = {
-                            //sign them in
-                             auth.signInWithEmailAndPassword(emailValue.value, passwordValue.value).addOnCompleteListener {
-                                 if( it.isSuccessful ) {
-                                     //trigger our dialog to let them know it worked
-                                     userSignedInSuccessfully = true
+                errorResults = checkInputFields(email = emailValue, password1 = passwordValue)
+
+                // This triggers a pop up if something is wrong
+                if ((errorResults.isNotEmpty())) {
+                    showDialog = true
+                }
+                // Otherwisem the information that was entered was correct
+                else {
+                    //sign them in
+                    auth.signInWithEmailAndPassword(emailValue.value, passwordValue.value)
+                        .addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                //trigger our dialog to let them know it worked
+                                userSignedInSuccessfully = true
 
 
-                                 }
-                                 else {
-                                     //trigger the dialog to let them know it failed
-                                     userNotSignedInSuccessfully = true
-                                 }
-                             }
+                            } else {
+                                //trigger the dialog to let them know it failed
+                                userNotSignedInSuccessfully = true
+                            }
+                        }
+                }
 
             },
                 modifier = Modifier
@@ -167,6 +183,27 @@ fun LoginScreen(navController : NavController) {
         }
 
     }
+
+    // The pop up error message previously mentioned
+    if (showDialog == true) {
+
+        AlertDialog(onDismissRequest = {},
+            title = {
+                Text(text = errorResults)
+            },
+            confirmButton = {
+                Button(onClick = {
+                    showDialog = false
+                })
+                {
+                    Text(text = "Dismiss")
+                }
+            }
+        )
+    }
+
+
+
 
     if (userSignedInSuccessfully == true) {
 
@@ -203,6 +240,15 @@ fun LoginScreen(navController : NavController) {
         )
     }
 
+}
+
+
+fun checkInputFields(email: MutableState<String>, password1: MutableState<String>): String {
+    if ((email?.value == "") or (password1?.value == "")){
+        return "One or more fields are empty, please fill in appropriate values for all fields!"
+    }
+    else
+        return ""
 }
 
 

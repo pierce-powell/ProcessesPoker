@@ -1,6 +1,7 @@
 package com.example.yeehawholdem
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -208,11 +209,10 @@ fun CreateAccount(navController : NavController)
                                 //under that new id reference, add the users personal username
                                 myPlayerRef.child("username").setValue(username.value)
 
-
-
                                 userCreatedSuccessfully = true
                             }
                             else {
+                                //Log.w("Sign in failed: ", it.result.toString())
                                 userNotCreatedSuccessfully = true
                             }
                         })
@@ -290,7 +290,8 @@ fun CreateAccount(navController : NavController)
 
 
 fun checkInputFields(username: MutableState<String>, email: MutableState<String>, password1: MutableState<String>, password2: MutableState<String>): String {
-    if ((username.value == "") or (email.value == "") or (password1.value == "") or (password2.value == "")){
+    if ((username?.value == "") or (email?.value == "") or (password1?.value == "") or (password2?.value == "") or
+        (username.value == null) or (email.value == null) or (password1.value == null) or (password2.value == null)){
         return "One or more fields are empty, please fill in appropriate values for all fields!"
     }
     else if (password1.value != password2.value){
