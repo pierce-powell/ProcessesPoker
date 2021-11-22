@@ -1,12 +1,10 @@
 package com.example.yeehawholdem.LogicGoods
 
+import android.os.CountDownTimer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.yeehawholdem.GameBoardGoods.STARTING_BALANCE
-
-val SMALL_BLIND = 10
-val BIG_BLIND = 20
 
 enum class GameState {
     STOPPED, RUNNING, BETORCHECK, SHOWDOWN, NEXTGAME, NEXTROUND, RAISING, FOLD
@@ -14,57 +12,30 @@ enum class GameState {
 
 class Game {
     var dealer = Dealer()
-    var dealer_player = Player(name = "Dealer Player 1")
-    var player = Player(name = "Test Player 1")
     var table = Table()
     var gameState = GameState.RUNNING
     var dealerButton = 0
     var turn = 0
+
+
+    //When creating a Game object, initialize with list of players for the game
+    constructor(mutableList: MutableList<Player>){
+        for(player in mutableList){
+            table.addPlayer(player)
+        }
+    }
 
     init {
         startGame()
     }
 
     fun startGame() {
-        // For Offline Play
-        addPlayer(player)
-        addPlayer(dealer_player)
-        table.resetPlayers()
         table.setupDeck()
-
-        for (player in table.playersStillIn) {
-            dealer.dealCard(player)
-            dealer.dealCard(player)
-        }
+        table.dealAllCards()
 
         dealer.cardCount = 3
 
-        // table.sharedDeck = mutableListOf<Card>(Card(0), Card(13), Card(26), Card(1), Card(14))
-        // dealer.checkHand.currentHand = table.sharedDeck
-        for (p in table.playerArray) {
-            p.balance = STARTING_BALANCE
-        }
-
-        // Do Small and Big Blind bets
-        // table.addToPot(SMALL_BLIND)
-        //table.playerArray.getOrNull(dealerButton + 1 % table.playerArray.size)!!.balance -= SMALL_BLIND
-        // table.addToPot(BIG_BLIND)
-        // table.playerArray.getOrNull(dealerButton + 2 % table.playerArray.size)!!.balance -= BIG_BLIND
-
         gameState = GameState.RUNNING
-
-        // roundStart()
-        // theFlop()
-        // theRiver()
-        // dealerButton++
-    }
-
-    fun addPlayer(_player : Player) {
-        table.playerArray.add(_player)
-    }
-
-    fun removePlayer(_player : Player) {
-        table.playerArray.remove(_player)
     }
 
     fun roundStart() {
@@ -74,6 +45,8 @@ class Game {
         //
         checkCalled()
     }
+
+
 
     /*
     fun roundOfBetting() {
@@ -179,8 +152,6 @@ class Game {
         table.resetCheck()
         table.currentPot = 0
         table.setupDeck()
-        dealer.dealCard(player)
-        dealer.dealCard(player)
         dealer.cardCount = 3
         dealerButton = (dealerButton + 1) % table.playerArray.size
         turn = dealerButton
