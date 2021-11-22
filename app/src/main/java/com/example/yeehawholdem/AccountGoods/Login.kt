@@ -1,5 +1,6 @@
 package com.example.yeehawholdem.Login
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +27,8 @@ import com.example.yeehawholdem.R
 import com.example.yeehawholdem.Screen
 import com.example.yeehawholdem.checkInputFields
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -34,7 +37,7 @@ import com.google.firebase.ktx.Firebase
 
 
 @Composable
-fun LoginScreen(navController : NavController) {
+fun LoginScreen(navController : NavController){
     lateinit var auth: FirebaseAuth;
 
     // Our authentication database
@@ -150,18 +153,31 @@ fun LoginScreen(navController : NavController) {
                 // Otherwisem the information that was entered was correct
                 else {
                     //sign them in
-                    auth.signInWithEmailAndPassword(emailValue.value, passwordValue.value)
-                        .addOnCompleteListener {
-                            if (it.isSuccessful) {
-                                //trigger our dialog to let them know it worked
-                                userSignedInSuccessfully = true
+                    try {
+                        auth.signInWithEmailAndPassword(emailValue.value, passwordValue.value)
+                            .addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    //trigger our dialog to let them know it worked
+                                    userSignedInSuccessfully = true
+                                    Log.i("Sign in passed: ", it.result.toString())
 
-
-                            } else {
-                                //trigger the dialog to let them know it failed
+                                } else {
+                                    //trigger the dialog to let them know it failed
+                                    Log.i("Sign in failed: ", it.result.toString())
+                                    userNotSignedInSuccessfully = true
+                                }
+                            }.addOnFailureListener {
                                 userNotSignedInSuccessfully = true
                             }
-                        }
+                    }
+                     catch (e : FirebaseAuthInvalidCredentialsException)
+                     {
+                        userNotSignedInSuccessfully = true
+                     }
+                    catch (e : FirebaseAuthInvalidCredentialsException)
+                    {
+                        userNotSignedInSuccessfully = true
+                    }
                 }
 
             },

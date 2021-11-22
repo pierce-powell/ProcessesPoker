@@ -208,6 +208,8 @@ fun CreateAccount(navController : NavController)
                                 val myPlayerRef = database!!.reference.child(userId)
                                 //under that new id reference, add the users personal username
                                 myPlayerRef.child("username").setValue(username.value)
+                                //under that new id ref, add the starting balance
+                                myPlayerRef.child("balance").setValue(10000)
 
                                 userCreatedSuccessfully = true
                             }

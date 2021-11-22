@@ -85,8 +85,7 @@ fun CreateLobbyScreen(navController: NavController)
                 // Otherwisem the information that was entered was correct
                 else
                 {
-                   val newRef = database.getReference("Lobby1")
-                    newRef.child("Bet").setValue(10)
+
 
                 }
             },

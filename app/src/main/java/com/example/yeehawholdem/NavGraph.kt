@@ -50,6 +50,10 @@ fun setUpNavHost(navController: NavHostController)
         {
             Joinlobby(navController = navController)
         }
+        composable(route = Screen.GameBoardOnline.route)
+        {
+            GameBoardOnline(navController = navController)
+        }
 
     }
 }

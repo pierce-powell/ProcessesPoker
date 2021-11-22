@@ -9,8 +9,6 @@ data class Player(
     var playerFirebaseId: String = "",
     var playerID: Int = 0,
     var hand: MutableList<Card> = mutableListOf(),
-    //Pierce - this will be used to track the state of the user easily
-    var isLoggedIn: Boolean = false
 ) {
     var isStillIn = true
     var checkFlag = false
