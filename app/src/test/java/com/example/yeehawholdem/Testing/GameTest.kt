@@ -5,7 +5,7 @@ import junit.framework.TestCase
 import org.junit.Test
 
 class GameTest : TestCase() {
-    val game = Game()
+    /*val game = Game()
 
     init {
 
@@ -33,5 +33,5 @@ class GameTest : TestCase() {
         game.nextRound()
         println(game.table.currentPot)
 
-    }
+    }*/
 }

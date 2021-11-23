@@ -1,13 +1,17 @@
 package com.example.yeehawholdem
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.yeehawholdem.GameBoardGoods.GameBoardOfflineScreen
 import kotlinx.coroutines.delay
 
 /*
@@ -48,44 +52,64 @@ fun GameBoardOnline(navController : NavController)
 
     //communcations.addEventListener("Lobby1", list)
 
-    Box{
-        Surface() {
-            Text("Online Screen")
-            Button(
-                onClick = {
-                },
-                modifier = Modifier
-                    .fillMaxWidth(1f)
-                    .height(45.dp)
-            )
-            {
-                Text("${list[0]}")
-            }
-
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
+    {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth())
+        {
+            AddText(text = "Bet: ")
+            AddText(text = "Pot: ")
         }
+    }
 
-        if (showDialog == true) {
+    if (showDialog == true) {
 
-            AlertDialog(onDismissRequest = {},
-                title = {
-                    Text(list[0].toString())
-                },
-                confirmButton = {
-                    Button(onClick = {
-                        showDialog = false
-                    })
-                    {
-                        Text(text = "Ok")
-                    }
+        AlertDialog(onDismissRequest = {},
+            title = {
+                Text(list[0].toString())
+            },
+            confirmButton = {
+                Button(onClick = {
+                    showDialog = false
+                })
+                {
+                    Text(text = "Ok")
                 }
-            )
+            }
+        )
+    }
+}
+
+@Composable
+private fun AddText(text : String) {
+    // Wrap in a surface so it can pick up on light-mode vs dark
+    Surface {
+        //Row for the river text
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp), // However tall we need for a card
+            horizontalArrangement = Arrangement.Center
+        ) {
+            //Box to put the text in
+            Box(contentAlignment = Alignment.Center) {
+                Text(
+                    textAlign = TextAlign.Center,
+                    fontSize = MaterialTheme.typography.h5.fontSize,
+                    text = text
+                )
+            }
         }
     }
 }
 
 
-
-
-
+@Composable
+@Preview(showBackground = true)
+fun GamePreview()
+{
+    GameBoardOnline(navController = rememberNavController())
+}
 
 
