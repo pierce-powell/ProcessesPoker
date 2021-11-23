@@ -1,5 +1,7 @@
 package com.example.yeehawholdem.LogicGoods
 
+import kotlinx.coroutines.CoroutineScope
+
 class Table {
     var playerArray: MutableList<Player> = mutableListOf()
     var playersStillIn: MutableList<Player> = mutableListOf()
@@ -15,6 +17,7 @@ class Table {
     fun getPlayerID(player: Int): Int {
         return playerArray.getOrNull(player)!!.playerID
     }
+
 
     fun addCardToSharedDeck(card: Card){
         try {

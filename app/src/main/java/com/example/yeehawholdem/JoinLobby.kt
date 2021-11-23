@@ -70,7 +70,6 @@ fun Joinlobby(navController : NavController) {
     auth = Firebase.auth
 
 
-
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
     {
         //Inner box for our pretty picture
@@ -125,6 +124,7 @@ fun Joinlobby(navController : NavController) {
                     lobby4Players = hasMapOfLobbys[3].numPlayers!!.toInt()
                     lobby5Players = hasMapOfLobbys[4].numPlayers!!.toInt()
                 }
+
 
 
             //Make the anchor point for our drop down menu
@@ -393,7 +393,6 @@ suspend fun getUsernameHelper(): DataSnapshot? {
 
     //send those results to the other function
     return snapshot
-
 }
 
 
@@ -532,8 +531,6 @@ suspend fun getLobbyInfo(selectedLobby: String): lobbyInfo {
     return lobbyInfoValues
 
 }
-
-
 
 
 // kotlin coroutine for getting the lobby snapshot and passing it to our other worker

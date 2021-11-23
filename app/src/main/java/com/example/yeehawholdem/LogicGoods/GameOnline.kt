@@ -38,6 +38,8 @@ class Game {
         //TODO: first player = host
         //TODO: Send all players in waitlist to active users
         //TODO: Populate database.activeUsers hands with cards if host
+
+        // get all the states, and then set up the listeners
         gameState = GameState.RUNNING
     }
 
