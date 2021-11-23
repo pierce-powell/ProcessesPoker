@@ -21,8 +21,8 @@ class LeaderBoardDataManager {
                     var key = it.key
 
 
-                    var playerBalance = it.child("balance").getValue() as Long
-                    var playerName = it.child("username").getValue() as String
+                    var playerBalance = it.child("balance").getValue() as Long?
+                    var playerName = it.child("username").getValue() as String?
 
 
                     mutableMap[key.toString()] = LeaderBoardPlayer(playerName, playerBalance)

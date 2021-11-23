@@ -37,7 +37,7 @@ fun LeaderBoardScreen(navController : NavController)
     //val getAllData = fakeRepository.getListOfPlayers()
 
     //The data for our leaderboards
-    var mapOfPlayers by remember { mutableStateOf(mutableMapOf<String, LeaderBoardPlayer>("AoPcdkz7lzTdB2eG6s2xlZw3qdL2" to LeaderBoardPlayer("John Doe", 500))) }
+    var mapOfPlayers by remember { mutableStateOf(mutableMapOf<String, LeaderBoardPlayer>()) }
 
     //We use this to update the list and force recompostion
     val myLazyList = remember { mutableStateListOf<LeaderBoardPlayer>() }
