@@ -8,12 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.yeehawholdem.LogicGoods.Communications
-import com.example.yeehawholdem.LogicGoods.GameState
 import kotlinx.coroutines.delay
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.concurrent.fixedRateTimer
 
 /*
 Heyo peeps, heres some important notes to consider with how the lobby works, I tried to make it
