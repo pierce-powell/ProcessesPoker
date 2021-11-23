@@ -51,6 +51,7 @@ fun CreateAccount(navController : NavController)
     //These used to display an error message if needed
     var showDialog by remember { mutableStateOf(false) }
     var errorResults by remember { mutableStateOf("") }
+    var errorMakingAccount by remember { mutableStateOf("Error creating account, please double check information!")}
 
 
     //This is used to display a successful or failure
@@ -215,7 +216,8 @@ fun CreateAccount(navController : NavController)
                             }
                             else {
                                 //Log.w("Sign in failed: ", it.result.toString())
-                                userNotCreatedSuccessfully = true
+                                    errorMakingAccount =  it.exception.message.toString()
+                                    userNotCreatedSuccessfully = true
                             }
                         })
                 }
@@ -274,7 +276,7 @@ fun CreateAccount(navController : NavController)
 
         AlertDialog(onDismissRequest = {},
             title = {
-                Text(text = "Error creating account, please double check information!")
+                Text(text = errorMakingAccount)
             },
             confirmButton = {
                 Button(onClick = {

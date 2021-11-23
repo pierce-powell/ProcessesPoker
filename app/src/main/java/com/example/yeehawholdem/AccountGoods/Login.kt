@@ -58,6 +58,7 @@ fun LoginScreen(navController : NavController){
     var showDialog by remember { mutableStateOf(false) }
     var errorResults by remember { mutableStateOf("") }
     var errorSigningInMessage by remember { mutableStateOf("")}
+    var forgotPassword by remember { mutableStateOf(false)}
 
     //determine the visibility Icon
     val icon = if (passwordVisibility)
@@ -182,6 +183,13 @@ fun LoginScreen(navController : NavController){
             }
 
             Spacer(modifier = Modifier.padding(20.dp))
+
+            Text(text = "Forgot Password", modifier = Modifier
+                .clickable(onClick = {
+                    forgotPassword = true
+                }),
+                color = MaterialTheme.colors.primary)
+
             Text(text = "Create An Account", modifier = Modifier
                 .clickable(onClick = {
                     navController.navigate(route = Screen.CreateAccount.route)
@@ -248,6 +256,26 @@ fun LoginScreen(navController : NavController){
             }
         )
     }
+
+
+    if (forgotPassword == true) {
+
+        AlertDialog(onDismissRequest = {},
+            title = {
+                Text(text = "If you have forgoten login information please send an email to: piercepowell94@gmail.com with the email tied to your account")
+            },
+            confirmButton = {
+                Button(onClick = {
+                    forgotPassword = false
+                })
+                {
+                    Text(text = "Ok")
+                }
+            }
+        )
+    }
+
+
 }
 
 
