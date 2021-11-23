@@ -20,17 +20,15 @@ class Game {
     var gameState = GameState.RUNNING
     var dealerButton = 0
     var turn = 0
+    var gameVals: GameValues? = null
     private var mDatabase: DatabaseReference? = null
     private var lobbyCloudEndpoint: DatabaseReference? = null
     private var betCloudEndpoint: DatabaseReference? = null
 
 
     //When creating a Game object, initialize with list of players for the game
-    constructor(mutableList: MutableList<Player>, lobbyStr: String) {
-        for (player in mutableList) {
-            table.addPlayer(player)
-        }
-        mDatabase =  FirebaseDatabase.getInstance().getReference()
+    constructor(gameVals: GameValues) {
+        this.gameVals = gameVals
     }
 
     init {

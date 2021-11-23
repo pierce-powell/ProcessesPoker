@@ -12,6 +12,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.yeehawholdem.GameBoardGoods.GameBoardOfflineScreen
+import com.example.yeehawholdem.LogicGoods.GameValues
+import com.example.yeehawholdem.OnlineGameGoods.Communications
 import kotlinx.coroutines.delay
 
 /*
@@ -46,11 +48,13 @@ fun GameBoardOnline(navController : NavController)
     }
 
 
-    //var communcations = Communications()
+    var communcations = Communications()
+    var game by remember { mutableStateOf(GameValues())}
     var list by remember { mutableStateOf(mutableListOf<Long>(-1)) }
     var showDialog by remember { mutableStateOf(false) }
 
     //communcations.addEventListener("Lobby1", list)
+    communcations.setupLobbyEventListener(game, "Lobby1")
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
     {
@@ -58,8 +62,13 @@ fun GameBoardOnline(navController : NavController)
             .fillMaxHeight()
             .fillMaxWidth())
         {
-            AddText(text = "Bet: ")
-            AddText(text = "Pot: ")
+            AddText(text = "Bet: ${game.betToString()}")
+            AddText(text = "Pot: ${game.potToString()}")
+            AddText(text = "Pot: ${game.card1ToString()}")
+            AddText(text = "Pot: ${game.card2ToString()}")
+            AddText(text = "Pot: ${game.card3ToString()}")
+            AddText(text = "Pot: ${game.card4ToString()}")
+            AddText(text = "Pot: ${game.card5ToString()}")
         }
     }
 

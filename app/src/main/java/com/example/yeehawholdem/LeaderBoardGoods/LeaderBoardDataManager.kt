@@ -12,7 +12,7 @@ import com.example.yeehawholdem.LeaderBoardGoods.LeaderBoardPlayer
 class LeaderBoardDataManager {
 
     fun usersEventListener(mutableMap: MutableMap<String, LeaderBoardPlayer>) {
-        val dbReference = Firebase.database.getReference("Users").addValueEventListener(object : ValueEventListener {
+        Firebase.database.getReference("Users").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val lobbyBet  = dataSnapshot.children
 
