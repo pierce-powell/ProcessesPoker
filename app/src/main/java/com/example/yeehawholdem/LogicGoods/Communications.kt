@@ -18,12 +18,14 @@ class Communications
         dbReference.child("Bet").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val lobbyBet  = dataSnapshot.getValue()
-                mutableList.add(lobbyBet as Long)
+
 
                 // Check for null
                 if (lobbyBet == null) {
                     return
                 }
+
+                mutableList[0] = lobbyBet as Long
             }
 
             override fun onCancelled(error: DatabaseError) {

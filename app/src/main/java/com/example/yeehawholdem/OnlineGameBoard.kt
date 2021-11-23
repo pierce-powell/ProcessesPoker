@@ -10,6 +10,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.yeehawholdem.LogicGoods.Communications
 import com.example.yeehawholdem.LogicGoods.GameState
+import kotlinx.coroutines.delay
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.concurrent.fixedRateTimer
 
 /*
 Heyo peeps, heres some important notes to consider with how the lobby works, I tried to make it
@@ -35,26 +39,32 @@ If they were the host, delete the HostOfLobby variable under their Uid
 @Composable
 fun GameBoardOnline(navController : NavController)
 {
+    var dummy by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = dummy) {
+        delay(1000)
+        dummy =! dummy
+    }
+
+
     var communcations = Communications()
-    var list by remember { mutableStateOf(mutableListOf<Long>()) }
-    var size by remember { mutableStateOf(0) }
+    var list by remember { mutableStateOf(mutableListOf<Long>(-1)) }
     var showDialog by remember { mutableStateOf(false) }
-    size = list.size
+
+    communcations.addEventListener("Lobby1", list)
 
     Box{
         Surface() {
             Text("Online Screen")
             Button(
                 onClick = {
-                    communcations.addEventListener("Lobby1", list)
-                    showDialog = true
                 },
                 modifier = Modifier
                     .fillMaxWidth(1f)
                     .height(45.dp)
             )
             {
-                Text(text = "Test something", fontSize = MaterialTheme.typography.h5.fontSize)
+                Text("${list[0]}")
             }
 
         }
@@ -63,7 +73,7 @@ fun GameBoardOnline(navController : NavController)
 
             AlertDialog(onDismissRequest = {},
                 title = {
-                    Text(list.getOrNull(0).toString())
+                    Text(list[0].toString())
                 },
                 confirmButton = {
                     Button(onClick = {
@@ -76,6 +86,10 @@ fun GameBoardOnline(navController : NavController)
             )
         }
     }
+}
+
+suspend fun startTimer(time: Long) {
+    delay(timeMillis = time)
 }
 
 
