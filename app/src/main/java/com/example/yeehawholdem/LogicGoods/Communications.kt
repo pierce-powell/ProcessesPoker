@@ -1,7 +1,6 @@
 package com.example.yeehawholdem.LogicGoods
 
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.room.Database
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.*
 import com.google.firebase.auth.UserInfo
@@ -14,11 +13,12 @@ class Communications
 {
     lateinit var auth: FirebaseAuth
 
-    fun addEventListener(lobby: String) : Long {
+    fun addEventListener(lobby: String, mutableList: MutableList<Long>){
         val dbReference = Firebase.database.getReference(lobby)
         dbReference.child("Bet").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val lobbyBet  = dataSnapshot.value
+                val lobbyBet  = dataSnapshot.getValue()
+                mutableList.add(lobbyBet as Long)
 
                 // Check for null
                 if (lobbyBet == null) {

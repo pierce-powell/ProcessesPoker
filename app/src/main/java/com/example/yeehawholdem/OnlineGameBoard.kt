@@ -3,11 +3,8 @@ package com.example.yeehawholdem
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -39,12 +36,18 @@ If they were the host, delete the HostOfLobby variable under their Uid
 fun GameBoardOnline(navController : NavController)
 {
     var communcations = Communications()
+    var list by remember { mutableStateOf(mutableListOf<Long>()) }
+    var size by remember { mutableStateOf(0) }
+    var showDialog by remember { mutableStateOf(false) }
+    size = list.size
+
     Box{
         Surface() {
             Text("Online Screen")
             Button(
                 onClick = {
-                    communcations.addEventListener("Lobby1")
+                    communcations.addEventListener("Lobby1", list)
+                    showDialog = true
                 },
                 modifier = Modifier
                     .fillMaxWidth(1f)
@@ -55,8 +58,28 @@ fun GameBoardOnline(navController : NavController)
             }
 
         }
+
+        if (showDialog == true) {
+
+            AlertDialog(onDismissRequest = {},
+                title = {
+                    Text(list.getOrNull(0).toString())
+                },
+                confirmButton = {
+                    Button(onClick = {
+                        showDialog = false
+                    })
+                    {
+                        Text(text = "Ok")
+                    }
+                }
+            )
+        }
     }
 }
+
+
+
 
 
 
