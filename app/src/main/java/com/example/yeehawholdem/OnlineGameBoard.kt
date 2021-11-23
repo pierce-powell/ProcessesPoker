@@ -1,10 +1,18 @@
 package com.example.yeehawholdem
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.yeehawholdem.LogicGoods.Communications
+import com.example.yeehawholdem.LogicGoods.GameState
 
 /*
 Heyo peeps, heres some important notes to consider with how the lobby works, I tried to make it
@@ -30,9 +38,22 @@ If they were the host, delete the HostOfLobby variable under their Uid
 @Composable
 fun GameBoardOnline(navController : NavController)
 {
+    var communcations = Communications()
     Box{
         Surface() {
             Text("Online Screen")
+            Button(
+                onClick = {
+                    communcations.addEventListener("Lobby1")
+                },
+                modifier = Modifier
+                    .fillMaxWidth(1f)
+                    .height(45.dp)
+            )
+            {
+                Text(text = "Test something", fontSize = MaterialTheme.typography.h5.fontSize)
+            }
+
         }
     }
 }
