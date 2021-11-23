@@ -56,6 +56,7 @@ fun LeaderBoardScreen(navController : NavController)
         dummy =! dummy
     }
 
+    //commenty
     //Get the list values intially
     myLazyList.swapList(mapOfPlayers.values.map { it })
 

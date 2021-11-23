@@ -544,7 +544,7 @@ suspend fun getLobby(): DataSnapshot? {
     //return the snapshot of data for the other function to use
     return snapshot
 }
-
+//comment
 
 //Another coroutine that stores all the lobby info to array Lists
 suspend fun getLobbys() : ArrayList<lobbyForList> {

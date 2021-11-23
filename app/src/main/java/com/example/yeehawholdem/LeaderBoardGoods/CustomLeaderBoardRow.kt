@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.yeehawholdem.LogicGoods.Player
 import com.example.yeehawholdem.ui.theme.Typography
-
+//coment
 @Composable
 fun CustomLeaderBoardRow(curPlayer: LeaderBoardPlayer) {
     Row(

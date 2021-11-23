@@ -47,11 +47,11 @@ fun GameBoardOnline(navController : NavController)
     }
 
 
-    var communcations = Communications()
+    //var communcations = Communications()
     var list by remember { mutableStateOf(mutableListOf<Long>(-1)) }
     var showDialog by remember { mutableStateOf(false) }
 
-    communcations.addEventListener("Lobby1", list)
+    //communcations.addEventListener("Lobby1", list)
 
     Box{
         Surface() {
