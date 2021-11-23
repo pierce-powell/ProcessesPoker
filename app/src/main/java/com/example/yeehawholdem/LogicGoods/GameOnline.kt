@@ -5,6 +5,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.yeehawholdem.GameBoardGoods.STARTING_BALANCE
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+
 
 enum class GameState {
     //Start, firstRound, SecondRound, ThirdRound, Showdown, End
@@ -17,17 +20,22 @@ class Game {
     var gameState = GameState.RUNNING
     var dealerButton = 0
     var turn = 0
+    private var mDatabase: DatabaseReference? = null
+    private var lobbyCloudEndpoint: DatabaseReference? = null
+    private var betCloudEndpoint: DatabaseReference? = null
 
 
     //When creating a Game object, initialize with list of players for the game
-    constructor(mutableList: MutableList<Player>) {
+    constructor(mutableList: MutableList<Player>, lobbyStr: String) {
         for (player in mutableList) {
             table.addPlayer(player)
         }
+        mDatabase =  FirebaseDatabase.getInstance().getReference()
     }
 
     init {
         startGame()
+
     }
 
     //Shuffles the deck of cards, deals a set of two cards to each player, and sets the game state
