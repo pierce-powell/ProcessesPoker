@@ -15,7 +15,7 @@ import com.example.yeehawholdem.LogicGoods.Player
 import com.example.yeehawholdem.ui.theme.Typography
 
 @Composable
-fun CustomLeaderBoardRow(curPlayer: Player) {
+fun CustomLeaderBoardRow(curPlayer: LeaderBoardPlayer) {
     Row(
         modifier = Modifier
             .background(Color.LightGray)
@@ -26,12 +26,12 @@ fun CustomLeaderBoardRow(curPlayer: Player) {
         horizontalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         Text(
-            text = "${curPlayer.balance}",
+            text = "${curPlayer.playerBalance}",
             color = Color.Black,
             fontSize = Typography.h4.fontSize,
             fontWeight = FontWeight.Bold
         )
-        curPlayer.name?.let {
+        curPlayer.playerName?.let {
             Text(
                 text = it,
                 color = Color.Black,
@@ -46,8 +46,5 @@ fun CustomLeaderBoardRow(curPlayer: Player) {
 @Preview
 fun CustomRowPreview()
 {
-    CustomLeaderBoardRow(curPlayer = Player(
-        name = "Pierce",
-        balance = 5
-    ))
+
 }

@@ -190,6 +190,8 @@ fun LoginScreen(navController : NavController){
                 }),
                 color = MaterialTheme.colors.primary)
 
+            Spacer(modifier = Modifier.padding(5.dp))
+
             Text(text = "Create An Account", modifier = Modifier
                 .clickable(onClick = {
                     navController.navigate(route = Screen.CreateAccount.route)

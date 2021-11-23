@@ -212,6 +212,13 @@ fun CreateAccount(navController : NavController)
                                 //under that new id ref, add the starting balance
                                 myPlayerRef.child("balance").setValue(10000)
 
+                                //Now lets add the same information under a users tag so that we can pull everything at once to populate the leaderboard
+                                val myUsersPlayerRef = database!!.reference.child("Users").child(userId)
+                                //under that new id reference, add the users personal username
+                                myUsersPlayerRef.child("username").setValue(username.value)
+                                //under that new id ref, add the starting balance
+                                myUsersPlayerRef.child("balance").setValue(10000)
+
                                 userCreatedSuccessfully = true
                             }
                             else {
