@@ -26,6 +26,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.yeehawholdem.R
 import com.example.yeehawholdem.Screen
 import com.example.yeehawholdem.checkInputFields
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -55,6 +57,7 @@ fun LoginScreen(navController : NavController){
 
     var showDialog by remember { mutableStateOf(false) }
     var errorResults by remember { mutableStateOf("") }
+    var errorSigningInMessage by remember { mutableStateOf("")}
 
     //determine the visibility Icon
     val icon = if (passwordVisibility)
@@ -153,31 +156,21 @@ fun LoginScreen(navController : NavController){
                 // Otherwise the information that was entered was correct
                 else {
                     //sign them in
-                    try {
-                        auth.signInWithEmailAndPassword(emailValue.value, passwordValue.value)
-                            .addOnCompleteListener {
-                                if (it.isSuccessful) {
-                                    //trigger our dialog to let them know it worked
-                                    userSignedInSuccessfully = true
-                                    Log.i("Sign in passed: ", it.result.toString())
-
-                                } else {
-                                    //trigger the dialog to let them know it failed
-                                    Log.i("Sign in failed: ", it.result.toString())
+                    //First we need to check if the information exists
+                    auth.signInWithEmailAndPassword(emailValue.value, passwordValue.value)
+                        .addOnCompleteListener {
+                            //If its not successful
+                            if (!it.isSuccessful) {
+                                try {
+                                    throw it.exception
+                                } catch (e: FirebaseAuthException) {
+                                    errorSigningInMessage = e.message.toString()
                                     userNotSignedInSuccessfully = true
                                 }
-                            }.addOnFailureListener {
-                                userNotSignedInSuccessfully = true
+                            } else {
+                                userSignedInSuccessfully = true
                             }
-                    }
-                     catch (e : FirebaseAuthInvalidCredentialsException)
-                     {
-                        userNotSignedInSuccessfully = true
-                     }
-                    catch (e : FirebaseAuthInvalidCredentialsException)
-                    {
-                        userNotSignedInSuccessfully = true
-                    }
+                        }
                 }
 
             },
@@ -243,7 +236,7 @@ fun LoginScreen(navController : NavController){
 
         AlertDialog(onDismissRequest = {},
             title = {
-                Text(text = "Error signing in, please double check information!")
+                Text(text = errorSigningInMessage)
             },
             confirmButton = {
                 Button(onClick = {
@@ -256,6 +249,9 @@ fun LoginScreen(navController : NavController){
         )
     }
 }
+
+
+
 
 
 fun checkInputFields(email: MutableState<String>, password1: MutableState<String>): String {

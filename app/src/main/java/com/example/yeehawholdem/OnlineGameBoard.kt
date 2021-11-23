@@ -88,9 +88,6 @@ fun GameBoardOnline(navController : NavController)
     }
 }
 
-suspend fun startTimer(time: Long) {
-    delay(timeMillis = time)
-}
 
 
 
