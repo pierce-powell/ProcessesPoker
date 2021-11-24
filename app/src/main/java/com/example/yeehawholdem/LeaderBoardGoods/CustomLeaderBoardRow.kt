@@ -3,6 +3,7 @@ package com.example.yeehawholdem.LeaderBoardGoods
 import android.app.Person
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -11,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.yeehawholdem.LogicGoods.Player
 import com.example.yeehawholdem.ui.theme.Typography
 //coment
@@ -18,26 +20,29 @@ import com.example.yeehawholdem.ui.theme.Typography
 fun CustomLeaderBoardRow(curPlayer: LeaderBoardPlayer) {
     Row(
         modifier = Modifier
-            .background(Color.LightGray)
+            .background(Color.Yellow)
             .fillMaxWidth()
-            .padding(12.dp)
-            .height(36.dp),
+            .padding(6.dp)
+            .height(30.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        Text(
-            text = "${curPlayer.playerBalance}",
-            color = Color.Black,
-            fontSize = Typography.h4.fontSize,
-            fontWeight = FontWeight.Bold
-        )
-        curPlayer.playerName?.let {
+        Box(Modifier.fillMaxWidth(.3f))
+        {
             Text(
-                text = it,
-                color = Color.Black,
-                fontSize = Typography.h4.fontSize,
-                fontWeight = FontWeight.Normal
+                text = "${curPlayer.playerBalance}",
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold
             )
+        }
+        Spacer(modifier = Modifier.padding(3.dp))
+        Box(Modifier.fillMaxWidth(.7f)) {
+            curPlayer.playerName?.let {
+                Text(
+                    text = it,
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }
@@ -46,5 +51,5 @@ fun CustomLeaderBoardRow(curPlayer: LeaderBoardPlayer) {
 @Preview
 fun CustomRowPreview()
 {
-
+    CustomLeaderBoardRow(curPlayer = LeaderBoardPlayer("shit", 69))
 }

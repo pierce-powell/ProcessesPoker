@@ -5,6 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -24,6 +27,11 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
+import com.example.yeehawholdem.Screen
 
 
 @Composable
@@ -61,32 +69,19 @@ fun LeaderBoardScreen(navController : NavController)
     myLazyList.swapList(mapOfPlayers.toList().sortedBy { (k, v) -> v }.toMap().values.map { it })
 
     //Box to store everything in
-    Box(modifier = Modifier.fillMaxSize(),
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState()),
         contentAlignment = Alignment.BottomCenter)
     {
-        //A box to put our pretty picture in
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.background),
-            contentAlignment = Alignment.TopCenter
-        )
-        {
-           /* Image(
-                painter = painterResource(id = R.drawable.pain),
-                contentDescription = "Login Image"
-            )*/
-        }
-
-
         Box(modifier = Modifier
             .fillMaxHeight(.8f)
             .fillMaxWidth(),
             contentAlignment = Alignment.BottomCenter)
         {
             LazyColumn(
-                contentPadding = PaddingValues(all = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                contentPadding = PaddingValues(all = 6.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             )
             {
                 items(items = myLazyList) { player ->
@@ -94,6 +89,40 @@ fun LeaderBoardScreen(navController : NavController)
                 }
             }
         }
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Top
+        )
+        {
+            Button(//lower bet button
+                onClick = {
+                        navController.navigate(Screen.MainMenu.route)
+                },
+                modifier = Modifier
+                    .fillMaxWidth(.23f)
+                    .height(44.dp)
+            )
+            {
+                Text(text = "Back", fontSize = MaterialTheme.typography.h5.fontSize)
+            }
+            
+            Spacer(modifier = Modifier.padding(10.dp))
+
+
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
+                verticalAlignment = Alignment.Top) {
+                androidx.compose.material.Surface() {
+                    Text("Money:   Player:", fontSize = 30.sp, fontWeight = FontWeight.ExtraBold)
+                }
+
+            }
+        }
+        Spacer(modifier = Modifier.padding(30.dp))
 
     }
 }
@@ -104,3 +133,10 @@ fun <T> SnapshotStateList<T>.swapList(newList: List<T>){
     addAll(newList)
 }
 
+
+@Composable
+@Preview
+fun myPreview()
+{
+    LeaderBoardScreen(navController = rememberNavController())
+}
