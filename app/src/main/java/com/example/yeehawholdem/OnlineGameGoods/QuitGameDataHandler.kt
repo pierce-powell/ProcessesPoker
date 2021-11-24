@@ -1,6 +1,7 @@
 package com.example.yeehawholdem.OnlineGameGoods
 
 import com.example.yeehawholdem.LeaderBoardGoods.LeaderBoardPlayer
+import com.example.yeehawholdem.usersLobby
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -10,37 +11,23 @@ import com.google.firebase.ktx.Firebase
 
 class QuitGameDataHandler {
 
-    fun getTheHostAndPlayer(mutableMap: MutableMap<String, LeaderBoardPlayer>) {
+    fun getTheLobbyName(lobbyName: usersLobby) {
 
-        var auth = Firebase.auth
+        val auth = Firebase.auth
 
-        var playerId = auth.currentUser?.uid
+        val playerUid = auth.currentUser?.uid
 
 
-
-        val HostReference = Firebase.database.getReference("Users").addValueEventListener(object :
+        val HostReference = Firebase.database.getReference(playerUid.toString()).child("InLobby").addValueEventListener(object :
             ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val lobbyBet = dataSnapshot.children
-
-                var curPlayer = LeaderBoardPlayer()
-                lobbyBet.forEach {
-                    var key = it.key
-
-
-                    var playerBalance = it.child("balance").getValue() as Long?
-                    var playerName = it.child("username").getValue() as String?
-
-
-                    mutableMap[key.toString()] = LeaderBoardPlayer(playerName, playerBalance)
-
-
-                }
 
                 // Check for null
-                if (lobbyBet == null) {
+                if (lobbyName == null) {
                     return
                 }
+
+                lobbyName.lobby = dataSnapshot.value.toString()
 
             }
 

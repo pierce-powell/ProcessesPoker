@@ -1,6 +1,5 @@
 package com.example.yeehawholdem
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -11,9 +10,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.yeehawholdem.GameBoardGoods.GameBoardOfflineScreen
 import com.example.yeehawholdem.LogicGoods.GameValues
 import com.example.yeehawholdem.OnlineGameGoods.Communications
+import com.example.yeehawholdem.OnlineGameGoods.QuitGameDataHandler
 import kotlinx.coroutines.delay
 
 /*
@@ -110,6 +109,37 @@ private fun AddText(text : String) {
                 )
             }
         }
+    }
+}
+
+
+data class usersLobby(var lobby : String? = "")
+
+@Composable
+fun addQuitButton()
+{
+
+    var lobbyName by remember {
+        mutableStateOf(usersLobby())
+    }
+
+    var quitDataHandler = QuitGameDataHandler()
+
+    quitDataHandler.getTheLobbyName(lobbyName)
+
+
+    Button(//lower bet button
+        onClick = {
+
+
+
+        },
+        modifier = Modifier
+            .fillMaxWidth(.4f)
+            .height(40.dp)
+    )
+    {
+        Text(text = "Quit Game", fontSize = MaterialTheme.typography.h5.fontSize)
     }
 }
 
