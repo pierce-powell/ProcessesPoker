@@ -2,9 +2,9 @@ package com.example.yeehawholdem.GameBoardGoods
 
 import android.view.Surface
 import android.widget.Toast
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -27,7 +27,7 @@ import com.example.yeehawholdem.R
 import com.example.yeehawholdem.Screen
 
 //Global variables
-val CARD_HEIGHT = 109.dp
+val CARD_HEIGHT = 120.dp
 const val STARTING_BET = 10
 const val STARTING_BALANCE = 10
 
@@ -124,36 +124,45 @@ fun GameBoardOfflineScreen(navController : NavController)
         revealFifth()
     }
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
+    Box(modifier = Modifier.fillMaxSize()
+        , contentAlignment = Alignment.TopCenter)
     {
-        Row(//exit game button
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.background),
-            horizontalArrangement = Arrangement.End
-        )
-        {
-            Button(
-                onClick = {
-                    game.gameState = GameState.STOPPED
-                    navController.navigate(route = Screen.MainMenu.route)
-            }, modifier = Modifier
-                    .fillMaxWidth(.15f)
-                    .height(BUTTON_HEIGHT))
-            {
-                Text(text = "X", fontSize = MaterialTheme.typography.h5.fontSize)
-            }
-            AddText(text = "Dealer bet: $userBet")//changed from dealerBet
-        }
         //Outer Column to store our two rows
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
-            .fillMaxHeight(.93f)
-            .fillMaxWidth()
+        Column(horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Bottom,
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .horizontalScroll(rememberScrollState())
         )
         {
+            Row(//exit game button
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colors.background),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.Top
+            )
+            {
+                Button(
+                    onClick = {
+                        game.gameState = GameState.STOPPED
+                        navController.navigate(route = Screen.MainMenu.route)
+                    }, modifier = Modifier
+                        .fillMaxWidth(.15f)
+                        .height(BUTTON_HEIGHT))
+                {
+                    Text(text = "X", fontSize = MaterialTheme.typography.h5.fontSize)
+                }
+                Spacer(modifier = Modifier.padding(30.dp))
+                AddText(text = "Dealer bet: $userBet                     ")//Jank space to center
+            }
+
+
             Row(modifier = Modifier
                 .fillMaxWidth()
-                .height(70.dp),
+                .height(CARD_HEIGHT),
                 horizontalArrangement = Arrangement.Center)
             {
                 if (!cardsFlags[7]) AddCardBacks()
@@ -161,11 +170,13 @@ fun GameBoardOfflineScreen(navController : NavController)
                 if (!cardsFlags[8]) AddCardBacks()
                 else AddCard(card = game.dealer_player.hand.getOrNull(1))
             }
+            Spacer(modifier = Modifier.padding(20.dp))
             AddText(text = "The River")
             //The River :tm:
             Row(modifier = Modifier
                 .fillMaxWidth()
-                .height(CARD_HEIGHT), // However tall we need for a card
+                .height(CARD_HEIGHT),
+                //.horizontalScroll(rememberScrollState()), // However tall we need for a card
                 horizontalArrangement = Arrangement.Center)
             {
                 // The River, Display cards facedown until they are revealed
@@ -191,8 +202,8 @@ fun GameBoardOfflineScreen(navController : NavController)
             {
                 Button(//fold button
                     onClick = {
-                              //the dealer wins and the next round starts
-                              fold = true
+                        //the dealer wins and the next round starts
+                        fold = true
                     },
                     modifier = Modifier
                         .fillMaxWidth(.3f)
@@ -272,6 +283,7 @@ fun GameBoardOfflineScreen(navController : NavController)
             }
             Spacer(modifier = Modifier.padding(10.dp))
             AddText(text = "User balance: ${game.table.playerArray[0].balance}")
+            Spacer(modifier = Modifier.padding(20.dp))
         }
     }
 
