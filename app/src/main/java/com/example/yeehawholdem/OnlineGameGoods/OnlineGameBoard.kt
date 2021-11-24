@@ -280,7 +280,8 @@ fun GameBoardOnline(navController : NavController) {
     }
 }
 
-data class quitInfo(var lobby : String? = "", var playerID: String? = "", var didPlayerQuit: Long? = 0)
+data class quitInfo(var lobby : String? = "", var playerID: String? = "", var didPlayerQuit: Long? = 0, var playerList : MutableMap<String?, Long?> = mutableMapOf<String?, Long?>())
+
 
 @Composable
 fun addQuitButton(navController : NavController)
@@ -300,10 +301,10 @@ fun addQuitButton(navController : NavController)
     }
 
 
-
     var quitDataHandler = QuitGameDataHandler()
 
     quitDataHandler.getTheLobbyName(quitData)
+
 
     if(quitData.didPlayerQuit?.toInt() == 1) {
         trigerQuitDialog = true
@@ -324,11 +325,17 @@ fun addQuitButton(navController : NavController)
         onClick = {
             if(quitData.lobby.isNullOrEmpty())
             {
-                //We don't have the data yet, so issue a dialog telling them to retry
-
+                triggerFailedQuitDialog = true
             }
             else
             {
+                //Before we start deleting all of the data, lets edit the balance for every player
+                quitData.playerList.map {
+                    //First update the floating uid balance
+                    Firebase.database.getReference(it.key.toString()).child("balance").setValue(it.value)
+                    Firebase.database.getReference("Users").child(it.key.toString()).child("balance").setValue(it.value)
+                }
+
                 //We have the lobby name to make a refernece, so lets reference it and update all the stuff we need
                 //Lets get the realtime database referenced at the lobby
                 val lobbyRef = Firebase.database.getReference(quitData.lobby.toString())

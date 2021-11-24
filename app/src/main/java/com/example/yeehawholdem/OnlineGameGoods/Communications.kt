@@ -73,7 +73,7 @@ class Communications {
                     lobbyBet.forEach {
                         var playerBalance = it.child("balance").getValue() as Long?
                         var playerName = it.child("username").getValue() as String?
-                        var player = playerName?.let { it1 -> Player(name = it1, balance = playerBalance!!.toInt()) }
+                        var player = playerName?.let { it1 -> playerBalance?.let { it2 -> Player(name = it1, balance = it2.toInt()) } }
                         if (player != null) {
                             game.playerList.add(player)
                         }

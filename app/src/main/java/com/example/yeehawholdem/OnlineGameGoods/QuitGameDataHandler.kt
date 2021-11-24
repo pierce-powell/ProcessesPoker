@@ -1,8 +1,8 @@
 package com.example.yeehawholdem.OnlineGameGoods
 
-import com.example.yeehawholdem.LeaderBoardGoods.LeaderBoardPlayer
 import com.example.yeehawholdem.quitInfo
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -32,7 +32,6 @@ class QuitGameDataHandler {
                 quitData.playerID = playerUid.toString()
 
 
-
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -52,9 +51,44 @@ class QuitGameDataHandler {
                 //failed
             }
 
+            val activePlayerReference = Firebase.database.getReference(quitData.lobby.toString()).child("ActiveUsers").addChildEventListener(object : ChildEventListener{
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+
+                        quitData.playerList[snapshot.key.toString()] = snapshot.child("balance").value as Long?
+
+
+                    }
+
+
+
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                        quitData.playerList[snapshot.key.toString()] = snapshot.child("balance").value as Long?
+
+
+
+                }
+
+                override fun onChildRemoved(snapshot: DataSnapshot) {
+
+                        quitData.playerList.remove(snapshot.key.toString())
+
+
+                }
+
+                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            })
+
         })
 
     }
+
 }
 
 //Data that we need
