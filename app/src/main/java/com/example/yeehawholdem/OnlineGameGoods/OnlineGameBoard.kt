@@ -13,6 +13,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.yeehawholdem.LogicGoods.GameValues
 import com.example.yeehawholdem.OnlineGameGoods.Communications
 import com.example.yeehawholdem.OnlineGameGoods.QuitGameDataHandler
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 
 /*
@@ -71,6 +73,10 @@ fun GameBoardOnline(navController : NavController)
             AddText(text = "Card4: ${game.card4ToString()}")
             AddText(text = "Card5: ${game.card5ToString()}")
         }
+
+        addQuitButton(navController)
+
+        Spacer(modifier = Modifier.height(10.dp))
     }
 
     if (showDialog == true) {
@@ -115,14 +121,24 @@ private fun AddText(text : String) {
 }
 
 
-data class usersLobby(var lobby : String? = "")
+data class usersLobby(var lobby : String? = "", var playerID: String? = "")
 
 @Composable
-fun addQuitButton()
+fun addQuitButton(navController : NavController)
 {
 
     var lobbyName by remember {
         mutableStateOf(usersLobby())
+    }
+
+    //Tells all the users that they someone quit and the game is ending
+    var trigerQuitDialog by remember {
+        mutableStateOf(false)
+    }
+
+    //Tells the user that something went wrong with the quit and they should try again
+    var triggerFailedQuitDialog by remember {
+        mutableStateOf(false)
     }
 
     var quitDataHandler = QuitGameDataHandler()
@@ -130,10 +146,72 @@ fun addQuitButton()
     quitDataHandler.getTheLobbyName(lobbyName)
 
 
+    if(trigerQuitDialog)
+    {
+        LaunchedEffect(key1 = trigerQuitDialog) {
+            delay(5000)
+            Firebase.database.getReference(lobbyName.lobby.toString()).child("DidPlayerQuit")
+            navController.navigate(Screen.MainMenu.route)
+        }
+    }
+
+
     Button(//lower bet button
         onClick = {
+                if(lobbyName.lobby.isNullOrEmpty())
+                {
+                    //We don't have the data yet, so issue a dialog telling them to retry
+                }
+            else
+                {
+                    //We have the lobby name to make a refernece, so lets reference it and update all the stuff we need
+                    //Lets get the realtime database referenced at the lobby
+                    val lobbyRef = Firebase.database.getReference(lobbyName.lobby.toString())
+                    //Now lets start making changes.
+                    //Firstly, we want to issue the flag to all users that someone has quit the game
+                    //and interfered with the lobby progress
+                    lobbyRef.child("DidPlayerQuit").setValue(1)
+
+                    //Now with that set, all the players should first receive the dialog that the game has ended
+                    //So lets just start making everything the defaults
+                    lobbyRef.child("Bet").setValue(0)
+
+                    //Now the pot
+                    lobbyRef.child("Pot").setValue(0)
+
+                    //Change the number of players in the lobby back to 0
+                    lobbyRef.child("NumPlayers").setValue(0)
+
+                    //Remove the waiting room
+                    lobbyRef.child("WaitingRoom").removeValue()
+
+                    //Now lets change the Active Players
+                    lobbyRef.child("CurrentActivePlayer").setValue(0)
+
+                    //Now the Host
+                    lobbyRef.child("Host").setValue("")
+
+                    //Change the lobby status
+                    lobbyRef.child("IsGameInProgress").setValue(0)
+
+                    //Reset all the river values
+                    lobbyRef.child("River").child("Card1").setValue(-1)
+                    lobbyRef.child("River").child("Card2").setValue(-1)
+                    lobbyRef.child("River").child("Card3").setValue(-1)
+                    lobbyRef.child("River").child("Card4").setValue(-1)
+                    lobbyRef.child("River").child("Card5").setValue(-1)
 
 
+                    //Now the active users
+                    lobbyRef.child("ActiveUsers").removeValue()
+
+                    //Finally, lets remove the lobby reference from the player, this might goof
+                    val playerRef = Firebase.database.getReference(lobbyName.playerID.toString())
+
+                    playerRef.child("InLobby").removeValue()
+
+
+                }
 
         },
         modifier = Modifier
@@ -142,6 +220,40 @@ fun addQuitButton()
     )
     {
         Text(text = "Quit Game", fontSize = MaterialTheme.typography.h5.fontSize)
+    }
+
+
+    //Someone quit the game!
+    if (trigerQuitDialog == true) {
+
+        AlertDialog(onDismissRequest = {},
+            title = {
+                Text(text = "Oh No! Someone Quit the Game!")
+            },
+            text = {
+                Text(text = "Returning to the MainMenu in 5 seconds!")
+            },
+            confirmButton = {}
+        )
+    }
+
+
+    //If we don't have the lobby name by the time they try to quit
+    if (triggerFailedQuitDialog == true) {
+
+        AlertDialog(onDismissRequest = {},
+            title = {
+                Text(text = "There was an error quiting, please try again!")
+            },
+            confirmButton = {
+                Button(onClick = {
+                    triggerFailedQuitDialog = false
+                })
+                {
+                    Text(text = "Ok")
+                }
+            }
+        )
     }
 }
 

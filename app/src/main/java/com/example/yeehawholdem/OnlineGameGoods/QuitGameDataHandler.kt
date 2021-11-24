@@ -28,6 +28,7 @@ class QuitGameDataHandler {
                 }
 
                 lobbyName.lobby = dataSnapshot.value.toString()
+                lobbyName.playerID = playerUid.toString()
 
             }
 
