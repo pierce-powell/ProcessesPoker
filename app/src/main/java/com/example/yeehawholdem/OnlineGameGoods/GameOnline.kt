@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.yeehawholdem.GameBoardGoods.STARTING_BALANCE
+import com.example.yeehawholdem.OnlineGameGoods.Communications
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
@@ -21,19 +22,23 @@ class Game {
     var dealerButton = 0
     var turn = 0
     var gameVals: GameValues? = null
+    var communicator: Communications? = null
+    var lobbyStr: String = ""
     private var mDatabase: DatabaseReference? = null
     private var lobbyCloudEndpoint: DatabaseReference? = null
     private var betCloudEndpoint: DatabaseReference? = null
 
 
     //When creating a Game object, initialize with list of players for the game
-    constructor(gameVals: GameValues) {
+    constructor(gameVals: GameValues, communicator: Communications, lobbyStr: String) {
         this.gameVals = gameVals
+        this.communicator = communicator
+        //this.lobbyStr = lobbyStr
+        this.lobbyStr = "Lobby1"
     }
 
     init {
         startGame()
-
     }
 
     //Shuffles the deck of cards, deals a set of two cards to each player, and sets the game state
@@ -58,8 +63,17 @@ class Game {
     }
 
     fun setCardsRound1(){
-        //TODO: Check if host
+        communicator?.setCard1(lobbyStr, table.dealer.dealCard())
+        communicator?.setCard2(lobbyStr, table.dealer.dealCard())
+        communicator?.setCard3(lobbyStr, table.dealer.dealCard())
+    }
 
+    fun setCardsRound2(){
+        communicator?.setCard4(lobbyStr, table.dealer.dealCard())
+    }
+
+    fun setCardsRound3(){
+        communicator?.setCard5(lobbyStr, table.dealer.dealCard())
     }
 
     // fun playRound(){

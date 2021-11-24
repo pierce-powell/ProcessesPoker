@@ -27,6 +27,10 @@ class Card(cardID: Int) {
         this.cardPicture = imageResource(suit, value)
     }
 
+    fun getCardValue(): Int{
+        return (this.suit.value * 13) + this.value
+    }
+
     fun imageResource(suit: SuitType, value: Int): Int {
         return when (suit) {
             SuitType.CLUBS -> {

@@ -15,6 +15,13 @@ class Dealer {
         usableDeck.removeFirstOrNull()
     }
 
+    fun dealCard(): Long{
+        var card = -1
+        usableDeck.getOrNull(0)?.let { card = it.getCardValue()}
+        usableDeck.removeFirstOrNull()
+        return card.toLong()
+    }
+
     // Resets and shuffles the full deck
     fun setupUsableDeck() {
         usableDeck.clear()

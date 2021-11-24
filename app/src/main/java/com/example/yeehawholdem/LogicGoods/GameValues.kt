@@ -3,11 +3,11 @@ package com.example.yeehawholdem.LogicGoods
 class GameValues {
     private var bet: Long = 0
     private var pot: Long = 0
-    private var card1: Long = 0
-    private var card2: Long = 0
-    private var card3: Long = 0
-    private var card4: Long = 0
-    private var card5: Long = 0
+    private var card1: Long = -1
+    private var card2: Long = -1
+    private var card3: Long = -1
+    private var card4: Long = -1
+    private var card5: Long = -1
     private var currentActivePlayer: Long = 0
 
     @JvmName("getBet1")

@@ -10,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.yeehawholdem.LogicGoods.Game
 import com.example.yeehawholdem.LogicGoods.GameValues
 import com.example.yeehawholdem.OnlineGameGoods.Communications
 import com.example.yeehawholdem.OnlineGameGoods.QuitGameDataHandler
@@ -48,16 +49,17 @@ fun GameBoardOnline(navController : NavController)
         dummy =! dummy
     }
 
+    val ls = "Lobby1"
 
-    var communcations = Communications()
+    var communications = Communications()
     var game by remember { mutableStateOf(GameValues())}
     var list by remember { mutableStateOf(mutableListOf<Long>(-1)) }
     var showDialog by remember { mutableStateOf(false) }
 
-    val ls = "Lobby1"
+    var gameClass by remember { mutableStateOf(Game(game, communications, ls))}
 
     //communcations.addEventListener("Lobby1", list)
-    communcations.setupLobbyEventListener(game, "Lobby1")
+    communications.setupLobbyEventListener(game, ls)
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
     {
@@ -72,12 +74,32 @@ fun GameBoardOnline(navController : NavController)
             AddText(text = "Card3: ${game.card3ToString()}")
             AddText(text = "Card4: ${game.card4ToString()}")
             AddText(text = "Card5: ${game.card5ToString()}")
+
+            Button(
+                onClick = {gameClass.setCardsRound1() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)) { Text("Round1") }
+            Spacer(modifier = Modifier.height(10.dp))
+            Button(
+                onClick = {gameClass.setCardsRound2() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)) { Text("Round2") }
+            Spacer(modifier = Modifier.height(10.dp))
+            Button(
+                onClick = {gameClass.setCardsRound3() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)) { Text("Round3")}
         }
 
         addQuitButton(navController)
 
         Spacer(modifier = Modifier.height(10.dp))
     }
+
+
 
     if (showDialog == true) {
 
@@ -117,6 +139,7 @@ private fun AddText(text : String) {
                 )
             }
         }
+
     }
 }
 
