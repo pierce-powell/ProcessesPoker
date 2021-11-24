@@ -166,8 +166,8 @@ fun addQuitButton(navController : NavController)
     if(trigerQuitDialog)
     {
         LaunchedEffect(key1 = trigerQuitDialog) {
-            Firebase.database.getReference(quitData.lobby.toString()).child("DidPlayerQuit").setValue(0)
             delay(5000)
+            Firebase.database.getReference(quitData.lobby.toString()).child("DidPlayerQuit").setValue(0)
             navController.navigate(Screen.MainMenu.route)
         }
     }
