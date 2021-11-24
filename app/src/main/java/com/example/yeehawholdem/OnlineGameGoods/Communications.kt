@@ -53,4 +53,64 @@ class Communications
 
         database.addValueEventListener(lobbyListener)
     }
+
+    fun setBet(lobbyStr: String, changeBet: Long){
+        val database = Firebase.database.getReference(lobbyStr)
+        database.child("Bet").setValue(changeBet)
+    }
+
+    fun setCurrentActivePlayer(lobbyStr: String, changeCurrentActivePlayer: Long){
+        val database = Firebase.database.getReference(lobbyStr)
+        database.child("CurrentActivePlayer").setValue(changeCurrentActivePlayer)
+    }
+
+    fun setDidPlayerQuit(lobbyStr: String, changeDidPlayerQuick: Long){
+        val database = Firebase.database.getReference(lobbyStr)
+        database.child("DidPlayerQuit").setValue(changeDidPlayerQuick)
+    }
+
+    fun setHost(lobbyStr: String, changeHost: String){
+        val database = Firebase.database.getReference(lobbyStr)
+        database.child("Host").setValue(changeHost)
+    }
+
+    fun setIsGameInProgress(lobbyStr: String, changeIsGameInProgress: Long){
+        val database = Firebase.database.getReference(lobbyStr)
+        database.child("IsGameInProgress").setValue(changeIsGameInProgress)
+    }
+
+    fun setNumPlayers(lobbyStr: String, changeNumPlayers: Long){
+        val database = Firebase.database.getReference(lobbyStr)
+        database.child("NumPlayers").setValue(changeNumPlayers)
+    }
+
+    fun setPot(lobbyStr: String, changePot: Long){
+        val database = Firebase.database.getReference(lobbyStr)
+        database.child("Pot").setValue(changePot)
+    }
+
+    fun setCard1(lobbyStr: String, changeCard1: Long){
+        val database = Firebase.database.getReference(lobbyStr)
+        database.child("River").child("Card1").setValue(changeCard1)
+    }
+
+    fun setCard2(lobbyStr: String, changeCard2: Long){
+        val database = Firebase.database.getReference(lobbyStr)
+        database.child("River").child("Card2").setValue(changeCard2)
+    }
+
+    fun setCard3(lobbyStr: String, changeCard3: Long){
+        val database = Firebase.database.getReference(lobbyStr)
+        database.child("River").child("Card3").setValue(changeCard3)
+    }
+
+    fun setCard4(lobbyStr: String, changeCard4: Long){
+        val database = Firebase.database.getReference(lobbyStr)
+        database.child("River").child("Card4").setValue(changeCard4)
+    }
+
+    fun setCard5(lobbyStr: String, changeCard5: Long){
+        val database = Firebase.database.getReference(lobbyStr)
+        database.child("River").child("Card5").setValue(changeCard5)
+    }
 }

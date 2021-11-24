@@ -52,6 +52,8 @@ fun GameBoardOnline(navController : NavController)
     var list by remember { mutableStateOf(mutableListOf<Long>(-1)) }
     var showDialog by remember { mutableStateOf(false) }
 
+    val ls = "Lobby1"
+
     //communcations.addEventListener("Lobby1", list)
     communcations.setupLobbyEventListener(game, "Lobby1")
 
@@ -63,11 +65,11 @@ fun GameBoardOnline(navController : NavController)
         {
             AddText(text = "Bet: ${game.betToString()}")
             AddText(text = "Pot: ${game.potToString()}")
-            AddText(text = "Pot: ${game.card1ToString()}")
-            AddText(text = "Pot: ${game.card2ToString()}")
-            AddText(text = "Pot: ${game.card3ToString()}")
-            AddText(text = "Pot: ${game.card4ToString()}")
-            AddText(text = "Pot: ${game.card5ToString()}")
+            AddText(text = "Card1: ${game.card1ToString()}")
+            AddText(text = "Card2: ${game.card2ToString()}")
+            AddText(text = "Card3: ${game.card3ToString()}")
+            AddText(text = "Card4: ${game.card4ToString()}")
+            AddText(text = "Card5: ${game.card5ToString()}")
         }
     }
 

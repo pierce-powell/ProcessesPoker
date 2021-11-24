@@ -57,6 +57,11 @@ class Game {
         checkCalled()
     }
 
+    fun setCardsRound1(){
+        //TODO: Check if host
+
+    }
+
     // fun playRound(){
 
     //}
