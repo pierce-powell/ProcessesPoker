@@ -6,6 +6,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -22,6 +23,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 import com.example.yeehawholdem.LogicGoods.Card
+import com.example.yeehawholdem.LogicGoods.GameState
 
 /*
 Heyo peeps, heres some important notes to consider with how the lobby works, I tried to make it
@@ -45,8 +47,9 @@ If they were the host, delete the HostOfLobby variable under their Uid
  */
 
 // TODO: Start button for Host?
+// TODO: Add timer to timeout players who take too long
 @Composable
-fun GameBoardOnline(navController : NavController) {
+fun GameBoardOnline(navController: NavController) {
     var dummy by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = dummy) {
@@ -58,6 +61,7 @@ fun GameBoardOnline(navController : NavController) {
 
     var communications = Communications()
     var gameVals by remember { mutableStateOf(GameValues()) }
+    var listener by remember { mutableStateOf(communications.usersEventListener(gameVals, ls)) }
     var list by remember { mutableStateOf(mutableListOf<Long>(-1)) }
     var showDialog by remember { mutableStateOf(false) }
     var card1 by remember { mutableStateOf(false) }
@@ -67,16 +71,20 @@ fun GameBoardOnline(navController : NavController) {
     var card5 by remember { mutableStateOf(false) }
     var card6 by remember { mutableStateOf(false) }
     var card7 by remember { mutableStateOf(false) }
+    var bet by remember { mutableStateOf(0) }
+    var curBet by remember { mutableStateOf(0) }
+    var pot by remember { mutableStateOf(0) }
+    var balance by remember { mutableStateOf(gameVals.getBalance().toInt()) }
+    var isStillIn by remember { mutableStateOf(gameVals.getBalance().toInt()) }
     var isHost by remember { mutableStateOf(false) }
     var IsGameInProgress by remember { mutableStateOf(false) }
     var startGame by remember { mutableStateOf(false) }
-
     var gameClass by remember { mutableStateOf(Game(gameVals, communications, ls)) }
 
-    //communcations.addEventListener("Lobby1", list)
     communications.setupLobbyEventListener(gameVals, ls)
     communications.usersEventListener(gameVals, ls)
 
+    // flags for the UI to display the cards
     card1 = gameVals.getCard1() != -1L
     card2 = gameVals.getCard2() != -1L
     card3 = gameVals.getCard3() != -1L
@@ -84,12 +92,22 @@ fun GameBoardOnline(navController : NavController) {
     card5 = gameVals.getCard5() != -1L
     card6 = gameVals.getHandCard1() != -1L
     card7 = gameVals.getHandCard2() != -1L
-    IsGameInProgress = gameVals.getIsGameInProgress() != -1L
+    balance = gameVals.getBalance().toInt()
+    curBet = gameVals.getBet().toInt()
+    pot = gameVals.getPot().toInt()
+    // IsGameInProgress = gameVals.getIsGameInProgress() != -1L
 
-    isHost = gameVals.getIsHost() != -1L
+    // This is the isHost check for the composable, use with if statement
+    isHost = gameVals.getIsHost()
 
-    if (isHost && (gameVals.playerList.size != 0)) {
-        gameClass.startGame()
+
+    // Gameplay Loop for Host
+    if (isHost) {
+        if ((startGame) && (gameClass.gameState == GameState.STARTGAME)) {
+            gameClass.startGame()
+        }
+        if (gameClass.gameState == GameState.RUNNING)
+            gameClass.round()
     }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
@@ -144,18 +162,36 @@ fun GameBoardOnline(navController : NavController) {
                 Text(text = "X", fontSize = MaterialTheme.typography.h5.fontSize)
             }*/
             //addQuitButton()
-            AddText(text = "Dealer bet")
+            //AddText(text = "Dealer bet")
         }
         //Outer Column to store our two rows
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
-            .fillMaxHeight(.93f)
-            .fillMaxWidth()
-        )
-        {
-            Row(modifier = Modifier
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+                .fillMaxHeight(0.97f)
                 .fillMaxWidth()
-                .height(70.dp),
-                horizontalArrangement = Arrangement.Center)
+        )
+
+        {
+            if (isHost) {
+                Button(//Start button
+                    onClick = {
+                        startGame = true
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(.27f)
+                        .height(BUTTON_HEIGHT)
+                )
+                {
+                    Text(text = "Start Game", fontSize = MaterialTheme.typography.h5.fontSize, textAlign = TextAlign.Center)
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(70.dp),
+                horizontalArrangement = Arrangement.Center
+            )
             {
                 /*if (!cardsFlags[7]) AddCardBacks()
                 else AddCard(card = game.dealer_player.hand.getOrNull(0))
@@ -164,10 +200,12 @@ fun GameBoardOnline(navController : NavController) {
             }
             AddText(text = "The River")
             //The River :tm:
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .height(CARD_HEIGHT), // However tall we need for a card
-                horizontalArrangement = Arrangement.Center)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(CARD_HEIGHT), // However tall we need for a card
+                horizontalArrangement = Arrangement.Center
+            )
             {
                 // The River, Display cards facedown until they are revealed
                 if (card1) AddCard(card = Card(gameVals.getCard1().toInt()))
@@ -182,16 +220,19 @@ fun GameBoardOnline(navController : NavController) {
                 else AddCardBacks()
             }
             Spacer(modifier = Modifier.padding(10.dp))
-            AddText(text = "Pot: ")
+            AddText(text = "Pot: ${gameVals.getPot()}")
             Spacer(modifier = Modifier.padding(10.dp))
 
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .height(90.dp),
-                horizontalArrangement = Arrangement.Center)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(90.dp),
+                horizontalArrangement = Arrangement.Center
+            )
             {
                 Button(//fold button
                     onClick = {
+                        startGame = true
                         //the dealer wins and the next round starts
                         //fold = true
                     },
@@ -203,20 +244,23 @@ fun GameBoardOnline(navController : NavController) {
                     Text(text = "Fold", fontSize = MaterialTheme.typography.h5.fontSize)
                 }
                 Spacer(modifier = Modifier.padding(10.dp))
-                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(.5f)
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth(.5f)
                 )
                 {
-                    AddText(text = "Bet: ")
+                    AddText(text = "Bet: $bet")
                     Button(
                         onClick = {
-                            /*game.gameState = GameState.BETORCHECK
-                            game.betting(userBet)
-                            revealFirstThree()
-                            game.nextRound()
-                            round++
-                            userBet = 0*/
+                            if (bet >= curBet) {
+                                communications.setBet(ls, bet.toLong())
+                                balance -= bet - curBet
+                                communications.setBalance(ls, balance.toLong())
+                                communications.setPot(ls, bet - curBet + gameVals.getPot())
+                            } else {
+                                // TODO: Not valid bet
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth(1f)
@@ -226,14 +270,16 @@ fun GameBoardOnline(navController : NavController) {
                         Text(text = "Lock in", fontSize = MaterialTheme.typography.h5.fontSize)
                     }
                 }
-                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(.4f)
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth(.4f)
                 )
                 {
                     Button(//raise bet button
                         onClick = {
-                            //userBet += 5
+                            bet += 5
+                            //communications.setBet(ls, bet.toLong())
                         },
                         modifier = Modifier
                             .fillMaxWidth(.9f)
@@ -245,11 +291,10 @@ fun GameBoardOnline(navController : NavController) {
                     Spacer(modifier = Modifier.padding(2.dp))
                     Button(//lower bet button
                         onClick = {
-                            startGame = true
-                            /*if(userBet - 5 >= 0 && (round != 0))
-                                userBet -= 5
-                            else if (userBet - 5 > 0)
-                                userBet -= 5*/
+                            if (bet - 5 >= 0 && (card1))
+                                bet -= 5
+                            else if (bet - 5 > 0)
+                                bet -= 5
                         },
                         modifier = Modifier
                             .fillMaxWidth(.9f)
@@ -263,32 +308,38 @@ fun GameBoardOnline(navController : NavController) {
             Spacer(modifier = Modifier.padding(10.dp))
             AddText(text = "User Hand")
             //The users hand
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .height(CARD_HEIGHT), // However tall we need for a card
-                horizontalArrangement = Arrangement.Center)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(CARD_HEIGHT), // However tall we need for a card
+                horizontalArrangement = Arrangement.Center
+            )
             {
                 // Display Player Hand
                 if (card6) AddCard(card = Card(gameVals.getHandCard1().toInt()))
                 else AddCardBacks()
                 if (card7) AddCard(card = Card(gameVals.getHandCard2().toInt()))
                 else AddCardBacks()
-                AddText(text = "player cards goes here")
+                // AddText(text = "player cards goes here")
             }
             Spacer(modifier = Modifier.padding(10.dp))
-            AddText(text = "User balance: ")//${game.table.playerArray[0].balance}")
+            AddText(text = "User balance: ${balance}")
         }
-        
+
         addQuitButton(navController = navController)
     }
 }
 
-data class quitInfo(var lobby : String? = "", var playerID: String? = "", var didPlayerQuit: Long? = 0, var playerList : MutableMap<String?, Long?> = mutableMapOf<String?, Long?>())
+data class quitInfo(
+    var lobby: String? = "",
+    var playerID: String? = "",
+    var didPlayerQuit: Long? = 0,
+    var playerList: MutableMap<String?, Long?> = mutableMapOf<String?, Long?>()
+)
 
 
 @Composable
-fun addQuitButton(navController : NavController)
-{
+fun addQuitButton(navController: NavController) {
     var quitData by remember {
         mutableStateOf(quitInfo())
     }
@@ -309,16 +360,16 @@ fun addQuitButton(navController : NavController)
     quitDataHandler.getTheLobbyName(quitData)
 
 
-    if(quitData.didPlayerQuit?.toInt() == 1) {
+    if (quitData.didPlayerQuit?.toInt() == 1) {
         trigerQuitDialog = true
     }
 
 
-    if(trigerQuitDialog)
-    {
+    if (trigerQuitDialog) {
         LaunchedEffect(key1 = trigerQuitDialog) {
             delay(5000)
-            Firebase.database.getReference(quitData.lobby.toString()).child("DidPlayerQuit").setValue(0)
+            Firebase.database.getReference(quitData.lobby.toString()).child("DidPlayerQuit")
+                .setValue(0)
             navController.navigate(Screen.MainMenu.route)
         }
     }
@@ -326,17 +377,16 @@ fun addQuitButton(navController : NavController)
 
     Button(//lower bet button
         onClick = {
-            if(quitData.lobby.isNullOrEmpty())
-            {
+            if (quitData.lobby.isNullOrEmpty()) {
                 triggerFailedQuitDialog = true
-            }
-            else
-            {
+            } else {
                 //Before we start deleting all of the data, lets edit the balance for every player
                 quitData.playerList.map {
                     //First update the floating uid balance
-                    Firebase.database.getReference(it.key.toString()).child("balance").setValue(it.value)
-                    Firebase.database.getReference("Users").child(it.key.toString()).child("balance").setValue(it.value)
+                    Firebase.database.getReference(it.key.toString()).child("balance")
+                        .setValue(it.value)
+                    Firebase.database.getReference("Users").child(it.key.toString())
+                        .child("balance").setValue(it.value)
                 }
 
                 //We have the lobby name to make a refernece, so lets reference it and update all the stuff we need
@@ -367,7 +417,7 @@ fun addQuitButton(navController : NavController)
                 lobbyRef.child("Host").setValue("")
 
                 //Change the lobby status
-                lobbyRef.child("IsGameInProgress").setValue(0)
+                lobbyRef.child("IsGameInProgress").setValue(false)
 
                 //Reset all the river values
                 lobbyRef.child("River").child("Card1").setValue(-1)
@@ -382,7 +432,6 @@ fun addQuitButton(navController : NavController)
 
                 //Finally, lets remove the lobby reference from the player, this might goof
                 val playerRef = Firebase.database.getReference(quitData.playerID.toString())
-
 
 
             }
@@ -432,11 +481,9 @@ fun addQuitButton(navController : NavController)
 }
 
 
-
 @Composable
 @Preview(showBackground = true)
-fun GamePreview()
-{
+fun GamePreview() {
     GameBoardOnline(navController = rememberNavController())
 }
 

@@ -20,6 +20,7 @@ class Card(cardID: Int) {
     var suit: SuitType
     var value: Int
     var cardPicture: Int
+    var cardID = cardID
 
     init {
         this.suit = SuitType.values()[(cardID % 52) / 13]

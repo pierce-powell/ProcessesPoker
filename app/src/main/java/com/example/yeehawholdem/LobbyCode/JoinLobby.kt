@@ -57,7 +57,7 @@ fun Joinlobby(navController : NavController) {
     var numberOfPlayers by remember { mutableStateOf(0) }
     var currentHost by remember { mutableStateOf("") }
     // we use 0 for a game thats not active and 1 for one that is
-    var isGameInProgress by remember { mutableStateOf(0) }
+    var isGameInProgress by remember { mutableStateOf(false) }
 
     //state to show the user they're being added to the wait room
     var showWaitWarning by remember { mutableStateOf(false) }
@@ -211,7 +211,7 @@ fun Joinlobby(navController : NavController) {
                 playerBalance = lobbyDetails.playerBalance.toInt()
                 currentHost = lobbyDetails.isHost
                 selectedLobbyPlayers = lobbyDetails.numPlayers.toInt()
-                isGameInProgress = lobbyDetails.isInProgress.toInt()
+                isGameInProgress = lobbyDetails.isInProgress
 
             }
 
@@ -255,12 +255,11 @@ fun Joinlobby(navController : NavController) {
 
                         //We also need to update the Lobbys section for the realtime player counts
                         val lobbysSectionRef = database.getReference("Lobbys").child(selectedLobby)
-                        lobbysSectionRef.setValue(numberOfPlayers + 1)
-
+                        lobbysSectionRef.setValue(numberOfPlayers++)
 
                         //Now we need to check if the game is in progress,
                         //if it isn't, just join the game
-                        if (isGameInProgress == 0) {
+                        if (!isGameInProgress) {
                             //Now lets add the player so we can keep track of them
                             lobbyRef.child("ActiveUsers").child(userUid.toString())
                                 .child("username").setValue(playerUsername)
@@ -276,6 +275,8 @@ fun Joinlobby(navController : NavController) {
                             //Give them a nice flag to tell if they've folded
                             lobbyRef.child("ActiveUsers").child(userUid.toString()).child("IsStillIn").setValue(true)
                             lobbyRef.child("ActiveUsers").child(userUid.toString()).child("IsStillIn").setValue(true)
+
+                            lobbyRef.child("ActiveUsers").child(userUid.toString()).child("TurnNumber").setValue(numberOfPlayers)
 
                             database.getReference(userUid.toString()).child("InLobby")
                                 .setValue(selectedLobby)
@@ -374,7 +375,7 @@ data class lobbyForList(var lobbyName: String? = "", var numPlayers: Long? = 0)
 //numPlayers to update the lobby players
 //playerBalance to use in game for bets etc.
 //isHost to determine if theres already a host machine
-data class lobbyInfo(var playerName: String = "", var numPlayers: Long = 0, var playerBalance: Long = 0, var isHost: String = "", var isInProgress: Long = 0)
+data class lobbyInfo(var playerName: String = "", var numPlayers: Long = 0, var playerBalance: Long = 0, var isHost: String = "", var isInProgress: Boolean = false)
 
 //A helper function to get the username snapshot
 suspend fun getUsernameHelper(): DataSnapshot? {
@@ -478,12 +479,12 @@ suspend fun getSelectedLobbyProgressHelper(selectedLobby: String) : DataSnapshot
 
 
 //This is the other function
-suspend fun getSelectedLobbyProgress(selectedLobby: String) : Long {
+suspend fun getSelectedLobbyProgress(selectedLobby: String) : Boolean {
     //Pull the value out
     val lobbyNumRef = getSelectedLobbyProgressHelper(selectedLobby)?.value
 
     //Return it as a Long
-    return lobbyNumRef as Long
+    return lobbyNumRef as Boolean
 }
 
 

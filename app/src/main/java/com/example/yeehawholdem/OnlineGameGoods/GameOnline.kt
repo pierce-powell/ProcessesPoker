@@ -8,6 +8,7 @@ import com.example.yeehawholdem.GameBoardGoods.STARTING_BALANCE
 import com.example.yeehawholdem.OnlineGameGoods.Communications
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.delay
 
 // If host deal out the cards to the players at the start of the game.
 // Deal out the cards to the River at the start of each round.
@@ -18,16 +19,16 @@ import com.google.firebase.database.FirebaseDatabase
 // Send the number into the database as handValue, and host retrieves that value and puts it into a list.
 enum class GameState {
     //Start, firstRound, SecondRound, ThirdRound, Showdown, End
-    STOPPED, RUNNING, BETORCHECK, SHOWDOWN, NEXTGAME, NEXTROUND
+    STOPPED, RUNNING, BETORCHECK, SHOWDOWN, NEXTGAME, NEXTROUND, STARTGAME
 }
 
 class Game {
     var dealer = Dealer()
     var table = Table()
-    var gameState = GameState.RUNNING
+    var gameState = GameState.STARTGAME
     var dealerButton = 0
     var turn = 0
-    var gameVals: GameValues? = null
+    var gameVals: GameValues
     var communicator: Communications? = null
     var lobbyStr: String = ""
     private var mDatabase: DatabaseReference? = null
@@ -43,6 +44,7 @@ class Game {
     }
 
     init {
+        // Probably want a startGame button to call the function from the GameBoard screen.
         // startGame()
     }
 
@@ -52,18 +54,29 @@ class Game {
         table.setupDeck()
         createPlayersList() // set up table.playerArray
         table.dealAllCards()
+        communicator?.usersEventListener(gameVals, lobbyStr)
         //TODO: first player = host
         //TODO: Send all players in waitlist to active users
         //TODO: Populate database.activeUsers hands with cards if host
 
         // get all the states, and then set up the listeners
+
+        // Update the values on the database (player hands, CurrentActivePlayer
+        communicator?.setPlayerHands(lobbyStr, table.playerArray)
+        communicator?.setIsGameInProgress(lobbyStr, true) // Set Game to in Progress
+
+
         gameState = GameState.RUNNING
     }
 
     fun createPlayersList() {
         table.playerArray = gameVals?.playerList ?: table.playerArray
+        table.resetPlayers()
     }
 
+    // Change the suitable flags in the Database to allow the current player to bet/raise/fold
+    // The pot and balance are handled on the player's side
+    // Increase the CurrentActivePlayer
     fun round() {
 
         checkCalled()

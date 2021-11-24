@@ -9,6 +9,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.*
+import kotlinx.coroutines.tasks.await
 
 class Communications {
     lateinit var auth: FirebaseAuth
@@ -46,14 +47,19 @@ class Communications {
                 game.setCard3(snapshot?.child("River").child("Card3").value as Long)
                 game.setCard4(snapshot?.child("River").child("Card4").value as Long)
                 game.setCard5(snapshot?.child("River").child("Card5").value as Long)
+                game.setCurrentActivePlayer(snapshot?.child("CurrentActivePlayer").value as Long)
+                game.setIsHost(if (snapshot?.child("Host").value.toString() == UID) 1L else 0L)
+                //game.setIsGameInProgress(if (snapshot?.child("IsGameInProgress").value.toString() == UID) 1L else 0L)
+                game.setIsGameInProgress(snapshot?.child("IsGameInProgress").value as Boolean)
+
                 (snapshot.child("ActiveUsers").child(UID).child("Cards")
                     .child("Card1").value as Long?)?.let { game.setHandCard1(it) }
                 (snapshot.child("ActiveUsers").child(UID).child("Cards")
                     .child("Card2").value as Long?)?.let { game.setHandCard2(it) }
-                game.setCurrentActivePlayer(snapshot?.child("CurrentActivePlayer").value as Long)
-
-                game.setIsHost(if (snapshot?.child("Host").value.toString() == UID) 1L else 0L)
-                game.setIsGameInProgress(if (snapshot?.child("IsGameInProgress").value.toString() == UID) 1L else 0L)
+                (snapshot.child("ActiveUsers").child(UID)
+                    .child("balance").value as Long?)?.let { game.setBalance(it) }
+                (snapshot.child("ActiveUsers").child(UID)
+                    .child("IsStillIn").value as Boolean?)?.let { game.setIsStillIn(it) }
             }
 
             override fun onCancelled(error: DatabaseError) {}
@@ -65,7 +71,7 @@ class Communications {
 
     fun usersEventListener(game: GameValues, lobbyStr: String) {
         Firebase.database.getReference(lobbyStr).child("ActiveUsers")
-            .addValueEventListener(object : ValueEventListener {
+            .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val lobbyBet = dataSnapshot.children
                     var curPlayer = LeaderBoardPlayer()
@@ -75,7 +81,15 @@ class Communications {
                         var key = it.key.toString()
                         var playerBalance = it.child("balance").getValue() as Long?
                         var playerName = it.child("username").getValue() as String?
-                        var player = playerName?.let { it1 -> playerBalance?.let { it2 -> Player(name = it1, balance = it2.toInt(), playerFirebaseId = key) } }
+                        var player = playerName?.let { it1 ->
+                            playerBalance?.let { it2 ->
+                                Player(
+                                    name = it1,
+                                    balance = it2.toInt(),
+                                    playerFirebaseId = key
+                                )
+                            }
+                        }
                         if (key != "") {
                             if (player != null) {
                                 game.playerList.add(player)
@@ -115,7 +129,7 @@ class Communications {
         database.child("Host").setValue(changeHost)
     }
 
-    fun setIsGameInProgress(lobbyStr: String, changeIsGameInProgress: Long) {
+    fun setIsGameInProgress(lobbyStr: String, changeIsGameInProgress: Boolean) {
         val database = Firebase.database.getReference(lobbyStr)
         database.child("IsGameInProgress").setValue(changeIsGameInProgress)
     }
@@ -154,4 +168,21 @@ class Communications {
         val database = Firebase.database.getReference(lobbyStr)
         database.child("River").child("Card5").setValue(changeCard5)
     }
+
+    fun setPlayerHands(lobbyStr: String, playerList: MutableList<Player>) {
+        val database = Firebase.database.getReference(lobbyStr)
+        for (player in playerList) {
+            database.child("ActiveUsers").child(player.playerFirebaseId).child("Cards")
+                .child("Card1").setValue(player.hand.getOrNull(0)?.cardID)
+            database.child("ActiveUsers").child(player.playerFirebaseId).child("Cards")
+                .child("Card2").setValue(player.hand.getOrNull(1)?.cardID)
+        }
+    }
+
+    fun setBalance(lobbyStr: String, balance : Long) {
+        val database = Firebase.database.getReference(lobbyStr)
+        val UID = Firebase.auth.currentUser?.uid.toString()
+        database.child("ActiveUsers").child(UID).child("balance").setValue(balance)
+    }
+
 }
