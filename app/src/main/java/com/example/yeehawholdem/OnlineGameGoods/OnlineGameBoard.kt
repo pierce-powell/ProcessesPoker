@@ -1,5 +1,6 @@
 package com.example.yeehawholdem
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -10,6 +11,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.yeehawholdem.GameBoardGoods.AddText
+import com.example.yeehawholdem.GameBoardGoods.CARD_HEIGHT
 import com.example.yeehawholdem.LogicGoods.Game
 import com.example.yeehawholdem.LogicGoods.GameValues
 import com.example.yeehawholdem.OnlineGameGoods.Communications
@@ -62,11 +65,9 @@ fun GameBoardOnline(navController : NavController) {
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
     {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth()
-        )
+        /*Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth())
         {
             AddText(text = "Bet: ${game.betToString()}")
             AddText(text = "Pot: ${game.potToString()}")
@@ -77,61 +78,178 @@ fun GameBoardOnline(navController : NavController) {
             AddText(text = "Card5: ${game.card5ToString()}")
 
             Button(
-                onClick = { gameClass.setCardsRound1() },
+                onClick = {gameClass.setCardsRound1() },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
-            ) { Text("Round1") }
+                    .height(100.dp)) { Text("Round1") }
             Spacer(modifier = Modifier.height(10.dp))
             Button(
-                onClick = { gameClass.setCardsRound2() },
+                onClick = {gameClass.setCardsRound2() },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
-            ) { Text("Round2") }
+                    .height(100.dp)) { Text("Round2") }
             Spacer(modifier = Modifier.height(10.dp))
             Button(
-                onClick = { gameClass.setCardsRound3() },
+                onClick = {gameClass.setCardsRound3() },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
-            ) { Text("Round3") }
+                    .height(100.dp)) { Text("Round3")}
         }
+        addQuitButton(navController)
+        Spacer(modifier = Modifier.height(10.dp))*/
+        Row(//exit game button
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background),
+            horizontalArrangement = Arrangement.End
+        )
+        {
+            /*Button(
+                onClick = {
+                    //game.gameState = GameState.STOPPED
+                    navController.navigate(route = Screen.MainMenu.route)
+                }, modifier = Modifier
+                    .fillMaxWidth(.15f)
+                    .height(BUTTON_HEIGHT))
+            {
+                Text(text = "X", fontSize = MaterialTheme.typography.h5.fontSize)
+            }*/
+            //addQuitButton()
+            AddText(text = "Dealer bet")
+        }
+        //Outer Column to store our two rows
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+            .fillMaxHeight(.93f)
+            .fillMaxWidth()
+        )
+        {
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .height(70.dp),
+                horizontalArrangement = Arrangement.Center)
+            {
+                /*if (!cardsFlags[7]) AddCardBacks()
+                else AddCard(card = game.dealer_player.hand.getOrNull(0))
+                if (!cardsFlags[8]) AddCardBacks()
+                else AddCard(card = game.dealer_player.hand.getOrNull(1))*/
+            }
+            AddText(text = "The River")
+            //The River :tm:
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .height(CARD_HEIGHT), // However tall we need for a card
+                horizontalArrangement = Arrangement.Center)
+            {
+                // The River, Display cards facedown until they are revealed
+                /*if (!cardsFlags[0]) AddCardBacks()
+                else AddCard(card = game.table.sharedDeck.getOrNull(0))
+                if (!cardsFlags[1]) AddCardBacks()
+                else AddCard(card = game.table.sharedDeck.getOrNull(1))
+                if (!cardsFlags[2]) AddCardBacks()
+                else AddCard(card = game.table.sharedDeck.getOrNull(2))
+                if (!cardsFlags[3]) AddCardBacks()
+                else AddCard(card = game.table.sharedDeck.getOrNull(3))
+                if (!cardsFlags[4]) AddCardBacks()
+                else AddCard(card = game.table.sharedDeck.getOrNull(4))*/
+            }
+            Spacer(modifier = Modifier.padding(10.dp))
+            AddText(text = "Pot: ")
+            Spacer(modifier = Modifier.padding(10.dp))
 
-
-        Spacer(modifier = Modifier.height(10.dp))
-
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .height(90.dp),
+                horizontalArrangement = Arrangement.Center)
+            {
+                Button(//fold button
+                    onClick = {
+                        //the dealer wins and the next round starts
+                        //fold = true
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(.3f)
+                        .height(BUTTON_HEIGHT)
+                )
+                {
+                    Text(text = "Fold", fontSize = MaterialTheme.typography.h5.fontSize)
+                }
+                Spacer(modifier = Modifier.padding(10.dp))
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(.5f)
+                )
+                {
+                    AddText(text = "Bet: ")
+                    Button(
+                        onClick = {
+                            /*game.gameState = GameState.BETORCHECK
+                            game.betting(userBet)
+                            revealFirstThree()
+                            game.nextRound()
+                            round++
+                            userBet = 0*/
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(1f)
+                            .height(45.dp)
+                    )
+                    {
+                        Text(text = "Lock in", fontSize = MaterialTheme.typography.h5.fontSize)
+                    }
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(.4f)
+                )
+                {
+                    Button(//raise bet button
+                        onClick = {
+                            //userBet += 5
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(.9f)
+                            .height(40.dp)
+                    )
+                    {
+                        Text(text = "+", fontSize = MaterialTheme.typography.h5.fontSize)
+                    }
+                    Spacer(modifier = Modifier.padding(2.dp))
+                    Button(//lower bet button
+                        onClick = {
+                            /*if(userBet - 5 >= 0 && (round != 0))
+                                userBet -= 5
+                            else if (userBet - 5 > 0)
+                                userBet -= 5*/
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(.9f)
+                            .height(40.dp)
+                    )
+                    {
+                        Text(text = "-", fontSize = MaterialTheme.typography.h5.fontSize)
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.padding(10.dp))
+            AddText(text = "User Hand")
+            //The users hand
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .height(CARD_HEIGHT), // However tall we need for a card
+                horizontalArrangement = Arrangement.Center)
+            {
+                // Display Player Hand
+                //AddCard(card = game.player.hand.getOrNull(0))
+                //AddCard(card = game.player.hand.getOrNull(1))
+                AddText(text = "player cards goes here")
+            }
+            Spacer(modifier = Modifier.padding(10.dp))
+            AddText(text = "User balance: ")//${game.table.playerArray[0].balance}")
+        }
         
         addQuitButton(navController = navController)
     }
 }
-
-    
-
-@Composable
-private fun AddText(text : String) {
-    // Wrap in a surface so it can pick up on light-mode vs dark
-    Surface {
-        //Row for the river text
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp), // However tall we need for a card
-            horizontalArrangement = Arrangement.Center
-        ) {
-            //Box to put the text in
-            Box(contentAlignment = Alignment.Center) {
-                Text(
-                    textAlign = TextAlign.Center,
-                    fontSize = MaterialTheme.typography.h5.fontSize,
-                    text = text
-                )
-            }
-        }
-
-    }
-}
-
 
 data class quitInfo(var lobby : String? = "", var playerID: String? = "", var didPlayerQuit: Long? = 0)
 

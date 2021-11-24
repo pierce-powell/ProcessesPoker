@@ -303,7 +303,7 @@ fun GameBoardOfflineScreen(navController : NavController)
 }
 
 @Composable
-private fun AddCard(card: Card?)
+public fun AddCard(card: Card?)
 {
     val scale = remember { mutableStateOf(1f)}
 
@@ -336,7 +336,7 @@ private fun AddCard(card: Card?)
 }
 
 @Composable
-private fun AddCardBacks()
+public fun AddCardBacks()
 {
     val scale = remember { mutableStateOf(1f)}
 
@@ -366,7 +366,7 @@ private fun AddCardBacks()
 }
 
 @Composable
-private fun AddText(text : String) {
+public fun AddText(text : String) {
     // Wrap in a surface so it can pick up on light-mode vs dark
     Surface {
         //Row for the river text
