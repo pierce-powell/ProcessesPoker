@@ -44,6 +44,7 @@ When it is, remove them from the lobby (Active or Waitroom), reduce the number o
 If they were the host, delete the HostOfLobby variable under their Uid
  */
 
+// TODO: Start button for Host?
 @Composable
 fun GameBoardOnline(navController : NavController) {
     var dummy by remember { mutableStateOf(false) }
@@ -68,6 +69,7 @@ fun GameBoardOnline(navController : NavController) {
     var card7 by remember { mutableStateOf(false) }
     var isHost by remember { mutableStateOf(false) }
     var IsGameInProgress by remember { mutableStateOf(false) }
+    var startGame by remember { mutableStateOf(false) }
 
     var gameClass by remember { mutableStateOf(Game(gameVals, communications, ls)) }
 
@@ -86,7 +88,7 @@ fun GameBoardOnline(navController : NavController) {
 
     isHost = gameVals.getIsHost() != -1L
 
-    if (isHost && (IsGameInProgress)) {
+    if (isHost && (gameVals.playerList.size != 0)) {
         gameClass.startGame()
     }
 
@@ -243,6 +245,7 @@ fun GameBoardOnline(navController : NavController) {
                     Spacer(modifier = Modifier.padding(2.dp))
                     Button(//lower bet button
                         onClick = {
+                            startGame = true
                             /*if(userBet - 5 >= 0 && (round != 0))
                                 userBet -= 5
                             else if (userBet - 5 > 0)

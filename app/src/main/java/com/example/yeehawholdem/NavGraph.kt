@@ -42,10 +42,6 @@ fun setUpNavHost(navController: NavHostController)
         {
             PlayScreen(navController = navController)
         }
-        composable(route = Screen.CreateLobby.route)
-        {
-            CreateLobbyScreen(navController = navController)
-        }
         composable(route = Screen.JoinLobby.route)
         {
             Joinlobby(navController = navController)

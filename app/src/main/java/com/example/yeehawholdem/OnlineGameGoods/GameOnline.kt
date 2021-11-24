@@ -16,7 +16,6 @@ import com.google.firebase.database.FirebaseDatabase
 // Have a players have checked variable in the database. Set it to 0 if someone has raised.
 // After all 3 cards have been added to the river and betting is done, have all players run determineWinner().
 // Send the number into the database as handValue, and host retrieves that value and puts it into a list.
-//
 enum class GameState {
     //Start, firstRound, SecondRound, ThirdRound, Showdown, End
     STOPPED, RUNNING, BETORCHECK, SHOWDOWN, NEXTGAME, NEXTROUND
@@ -51,8 +50,8 @@ class Game {
     //running
     fun startGame() {
         table.setupDeck()
+        createPlayersList() // set up table.playerArray
         table.dealAllCards()
-        createPlayersList()
         //TODO: first player = host
         //TODO: Send all players in waitlist to active users
         //TODO: Populate database.activeUsers hands with cards if host

@@ -69,13 +69,17 @@ class Communications {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val lobbyBet = dataSnapshot.children
                     var curPlayer = LeaderBoardPlayer()
+                    game.playerList.clear()
 
                     lobbyBet.forEach {
+                        var key = it.key.toString()
                         var playerBalance = it.child("balance").getValue() as Long?
                         var playerName = it.child("username").getValue() as String?
-                        var player = playerName?.let { it1 -> playerBalance?.let { it2 -> Player(name = it1, balance = it2.toInt()) } }
-                        if (player != null) {
-                            game.playerList.add(player)
+                        var player = playerName?.let { it1 -> playerBalance?.let { it2 -> Player(name = it1, balance = it2.toInt(), playerFirebaseId = key) } }
+                        if (key != "") {
+                            if (player != null) {
+                                game.playerList.add(player)
+                            }
                         }
                     }
 
