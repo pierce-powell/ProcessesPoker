@@ -6,7 +6,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -57,7 +56,7 @@ fun GameBoardOnline(navController : NavController) {
     val ls = "Lobby1"
 
     var communications = Communications()
-    var game by remember { mutableStateOf(GameValues()) }
+    var gameVals by remember { mutableStateOf(GameValues()) }
     var list by remember { mutableStateOf(mutableListOf<Long>(-1)) }
     var showDialog by remember { mutableStateOf(false) }
     var card1 by remember { mutableStateOf(false) }
@@ -67,28 +66,29 @@ fun GameBoardOnline(navController : NavController) {
     var card5 by remember { mutableStateOf(false) }
     var card6 by remember { mutableStateOf(false) }
     var card7 by remember { mutableStateOf(false) }
-    val cardsFlags by remember{ mutableStateOf( BooleanArray(7)) }
+    var isHost by remember { mutableStateOf(false) }
+    var IsGameInProgress by remember { mutableStateOf(false) }
 
-    var gameClass by remember { mutableStateOf(Game(game, communications, ls)) }
+    var gameClass by remember { mutableStateOf(Game(gameVals, communications, ls)) }
 
     //communcations.addEventListener("Lobby1", list)
-    communications.setupLobbyEventListener(game, ls)
+    communications.setupLobbyEventListener(gameVals, ls)
+    communications.usersEventListener(gameVals, ls)
 
-    card1 = game.getCard1() != -1L
-    card2 = game.getCard2() != -1L
-    card3 = game.getCard3() != -1L
-    card4 = game.getCard4() != -1L
-    card5 = game.getCard5() != -1L
-    card6 = game.getHandCard1() != -1L
-    card7 = game.getHandCard2() != -1L
-    /*
-    if (game.getCard6() != -1L) card1 = true
-    else card6 = false
-    if (game.getCard7() != -1L) card1 = true
-    else card7 = false
+    card1 = gameVals.getCard1() != -1L
+    card2 = gameVals.getCard2() != -1L
+    card3 = gameVals.getCard3() != -1L
+    card4 = gameVals.getCard4() != -1L
+    card5 = gameVals.getCard5() != -1L
+    card6 = gameVals.getHandCard1() != -1L
+    card7 = gameVals.getHandCard2() != -1L
+    IsGameInProgress = gameVals.getIsGameInProgress() != -1L
 
-     */
+    isHost = gameVals.getIsHost() != -1L
 
+    if (isHost && (IsGameInProgress)) {
+        gameClass.startGame()
+    }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
     {
@@ -168,15 +168,15 @@ fun GameBoardOnline(navController : NavController) {
                 horizontalArrangement = Arrangement.Center)
             {
                 // The River, Display cards facedown until they are revealed
-                if (card1) AddCard(card = Card(game.getCard1().toInt()))
+                if (card1) AddCard(card = Card(gameVals.getCard1().toInt()))
                 else AddCardBacks()
-                if (card2) AddCard(card = Card(game.getCard2().toInt()))
+                if (card2) AddCard(card = Card(gameVals.getCard2().toInt()))
                 else AddCardBacks()
-                if (card3) AddCard(card = Card(game.getCard3().toInt()))
+                if (card3) AddCard(card = Card(gameVals.getCard3().toInt()))
                 else AddCardBacks()
-                if (card4) AddCard(card = Card(game.getCard4().toInt()))
+                if (card4) AddCard(card = Card(gameVals.getCard4().toInt()))
                 else AddCardBacks()
-                if (card5) AddCard(card = Card(game.getCard5().toInt()))
+                if (card5) AddCard(card = Card(gameVals.getCard5().toInt()))
                 else AddCardBacks()
             }
             Spacer(modifier = Modifier.padding(10.dp))
@@ -266,9 +266,9 @@ fun GameBoardOnline(navController : NavController) {
                 horizontalArrangement = Arrangement.Center)
             {
                 // Display Player Hand
-                if (card6) AddCard(card = Card(game.getHandCard1().toInt()))
+                if (card6) AddCard(card = Card(gameVals.getHandCard1().toInt()))
                 else AddCardBacks()
-                if (card7) AddCard(card = Card(game.getHandCard2().toInt()))
+                if (card7) AddCard(card = Card(gameVals.getHandCard2().toInt()))
                 else AddCardBacks()
                 AddText(text = "player cards goes here")
             }

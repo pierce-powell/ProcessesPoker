@@ -1,5 +1,7 @@
 package com.example.yeehawholdem.LogicGoods
 
+import com.example.yeehawholdem.Screen
+
 class GameValues {
     private var bet: Long = 0
     private var pot: Long = 0
@@ -10,7 +12,10 @@ class GameValues {
     private var card5: Long = -1
     private var handCard1: Long = -1
     private var handCard2: Long = -1
+    private var isHost = 0L
     private var currentActivePlayer: Long = 0
+    private var isGameInProgress = 0L
+    var playerList = mutableListOf<Player>()
 
     @JvmName("getBet1")
     fun getBet(): Long { return bet}
@@ -85,4 +90,16 @@ class GameValues {
 
     @JvmName("setHandCard2")
     fun setHandCard2(newBet: Long){ this.handCard2 = newBet}
+
+    @JvmName("getIsHost")
+    fun getIsHost(): Long { return isHost}
+
+    @JvmName("setIsHost")
+    fun setIsHost(newBet: Long){ this.isHost = newBet}
+
+    @JvmName("getIsGameInProgress")
+    fun getIsGameInProgress(): Long { return isGameInProgress}
+
+    @JvmName("setIsGameInProgress")
+    fun setIsGameInProgress(newBet: Long){ this.isGameInProgress = newBet}
 }

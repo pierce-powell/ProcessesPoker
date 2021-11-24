@@ -36,15 +36,15 @@ class Game {
     private var betCloudEndpoint: DatabaseReference? = null
 
     //When creating a Game object, initialize with list of players for the game
-    constructor(gameVals: GameValues, communicator: Communications, lobbyStr: String) {
-        this.gameVals = gameVals
+    constructor(gameVa: GameValues, communicator: Communications, lobbyStr: String) {
+        this.gameVals = gameVa
         this.communicator = communicator
         //this.lobbyStr = lobbyStr
         this.lobbyStr = "Lobby1"
     }
 
     init {
-        startGame()
+        // startGame()
     }
 
     //Shuffles the deck of cards, deals a set of two cards to each player, and sets the game state
@@ -52,12 +52,17 @@ class Game {
     fun startGame() {
         table.setupDeck()
         table.dealAllCards()
+        createPlayersList()
         //TODO: first player = host
         //TODO: Send all players in waitlist to active users
         //TODO: Populate database.activeUsers hands with cards if host
 
         // get all the states, and then set up the listeners
         gameState = GameState.RUNNING
+    }
+
+    fun createPlayersList() {
+        table.playerArray = gameVals?.playerList ?: table.playerArray
     }
 
     fun round() {
