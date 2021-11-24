@@ -100,7 +100,7 @@ fun GameBoardOnline(navController : NavController) {
 
 
         Spacer(modifier = Modifier.height(10.dp))
-        
+
         
         addQuitButton(navController = navController)
     }
@@ -152,6 +152,8 @@ fun addQuitButton(navController : NavController)
         mutableStateOf(false)
     }
 
+
+
     var quitDataHandler = QuitGameDataHandler()
 
     quitDataHandler.getTheLobbyName(quitData)
@@ -164,8 +166,8 @@ fun addQuitButton(navController : NavController)
     if(trigerQuitDialog)
     {
         LaunchedEffect(key1 = trigerQuitDialog) {
-            delay(5000)
             Firebase.database.getReference(quitData.lobby.toString()).child("DidPlayerQuit").setValue(0)
+            delay(5000)
             navController.navigate(Screen.MainMenu.route)
         }
     }
@@ -176,6 +178,7 @@ fun addQuitButton(navController : NavController)
             if(quitData.lobby.isNullOrEmpty())
             {
                 //We don't have the data yet, so issue a dialog telling them to retry
+
             }
             else
             {
@@ -223,7 +226,6 @@ fun addQuitButton(navController : NavController)
                 //Finally, lets remove the lobby reference from the player, this might goof
                 val playerRef = Firebase.database.getReference(quitData.playerID.toString())
 
-                playerRef.child("InLobby").removeValue()
 
 
             }
