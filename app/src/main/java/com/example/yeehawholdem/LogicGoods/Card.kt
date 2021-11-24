@@ -48,7 +48,7 @@ class Card(cardID: Int) {
                     11 -> R.drawable.queenofclubs
                     12 -> R.drawable.kingofclubs
                     13 -> R.drawable.aceofclubs
-                    else -> R.drawable.blackjoker
+                    else -> R.drawable.samplecard
                 }
             }
             SuitType.DIAMONDS -> {
@@ -66,7 +66,7 @@ class Card(cardID: Int) {
                     11 -> R.drawable.queenofdiamonds
                     12 -> R.drawable.kingofdiamonds
                     13 -> R.drawable.aceofdiamonds
-                    else -> R.drawable.red_joker
+                    else -> R.drawable.samplecard
                 }
             }
             SuitType.HEARTS ->{
@@ -84,7 +84,7 @@ class Card(cardID: Int) {
                     11 -> R.drawable.queenofhearts
                     12 -> R.drawable.kingofhearts
                     13 -> R.drawable.aceofhearts
-                    else -> R.drawable.red_joker
+                    else -> R.drawable.samplecard
                 }
             }
             SuitType.SPADES -> {
@@ -102,7 +102,7 @@ class Card(cardID: Int) {
                     11 -> R.drawable.queenofspades
                     12 -> R.drawable.kingofspades
                     13 -> R.drawable.aceofspades
-                    else -> R.drawable.blackjoker
+                    else -> R.drawable.samplecard
                 }
             }
         }

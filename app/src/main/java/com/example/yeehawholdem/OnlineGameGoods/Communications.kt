@@ -3,6 +3,7 @@ package com.example.yeehawholdem.OnlineGameGoods
 import android.widget.TextView
 import com.example.yeehawholdem.LogicGoods.GameValues
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.*
@@ -34,6 +35,7 @@ class Communications
 
     fun setupLobbyEventListener(game: GameValues, lobbyStr: String){
         val database = Firebase.database.getReference(lobbyStr)
+        val UID = Firebase.auth.currentUser?.uid.toString()
         val lobbyListener = object : ValueEventListener {
 
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -44,6 +46,8 @@ class Communications
                 game.setCard3(snapshot?.child("River").child("Card3").value as Long)
                 game.setCard4(snapshot?.child("River").child("Card4").value as Long)
                 game.setCard5(snapshot?.child("River").child("Card5").value as Long)
+                (snapshot.child("ActiveUsers").child(UID).child("Cards").child("Card1").value as Long?)?.let {game.setHandCard1(it)}
+                (snapshot.child("ActiveUsers").child(UID).child("Cards").child("Card2").value as Long?)?.let {game.setHandCard2(it)}
                 game.setCurrentActivePlayer(snapshot?.child("CurrentActivePlayer").value as Long)
             }
 

@@ -8,6 +8,8 @@ class GameValues {
     private var card3: Long = -1
     private var card4: Long = -1
     private var card5: Long = -1
+    private var handCard1: Long = -1
+    private var handCard2: Long = -1
     private var currentActivePlayer: Long = 0
 
     @JvmName("getBet1")
@@ -71,4 +73,16 @@ class GameValues {
     fun card4ToString(): String { return this.card4.toString()}
 
     fun card5ToString(): String { return this.card5.toString()}
+
+    @JvmName("getHandCard1")
+    fun getHandCard1(): Long { return handCard1}
+
+    @JvmName("setHandCard1")
+    fun setHandCard1(newBet: Long){ this.handCard1 = newBet}
+
+    @JvmName("getHandCard2")
+    fun getHandCard2(): Long { return handCard2}
+
+    @JvmName("setHandCard2")
+    fun setHandCard2(newBet: Long){ this.handCard2 = newBet}
 }

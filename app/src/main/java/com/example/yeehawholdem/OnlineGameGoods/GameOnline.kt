@@ -9,7 +9,14 @@ import com.example.yeehawholdem.OnlineGameGoods.Communications
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
-
+// If host deal out the cards to the players at the start of the game.
+// Deal out the cards to the River at the start of each round.
+// Go into a round of betting (round()).
+// Keep betting until they fold/call/check.
+// Have a players have checked variable in the database. Set it to 0 if someone has raised.
+// After all 3 cards have been added to the river and betting is done, have all players run determineWinner().
+// Send the number into the database as handValue, and host retrieves that value and puts it into a list.
+//
 enum class GameState {
     //Start, firstRound, SecondRound, ThirdRound, Showdown, End
     STOPPED, RUNNING, BETORCHECK, SHOWDOWN, NEXTGAME, NEXTROUND
@@ -27,7 +34,6 @@ class Game {
     private var mDatabase: DatabaseReference? = null
     private var lobbyCloudEndpoint: DatabaseReference? = null
     private var betCloudEndpoint: DatabaseReference? = null
-
 
     //When creating a Game object, initialize with list of players for the game
     constructor(gameVals: GameValues, communicator: Communications, lobbyStr: String) {
@@ -59,43 +65,27 @@ class Game {
         checkCalled()
     }
 
-    fun setCardsRound1(){
+    fun setCardsRound1() {
         communicator?.setCard1(lobbyStr, table.dealer.dealCard())
         communicator?.setCard2(lobbyStr, table.dealer.dealCard())
         communicator?.setCard3(lobbyStr, table.dealer.dealCard())
     }
 
-    fun setCardsRound2(){
+    fun setCardsRound2() {
         communicator?.setCard4(lobbyStr, table.dealer.dealCard())
     }
 
-    fun setCardsRound3(){
+    fun setCardsRound3() {
         communicator?.setCard5(lobbyStr, table.dealer.dealCard())
     }
 
-    // fun playRound(){
-
-    //}
-
-    /*
-    fun roundOfBetting() {
-        while (table.checkCalled()) {
-            // Keep betting until everyone has called or folded
-            table.nextBet(turn, 5)
-            turn++
-        }
-        turn = dealerButton + 1
-        gameState = GameState.CHECKING
-    }
-    */
-
     // Card 4
-    fun theFlop(){
+    fun theFlop() {
         // TODO()
     }
 
     // Card 5
-    fun theRiver(){
+    fun theRiver() {
         // TODO()
     }
 
@@ -108,7 +98,7 @@ class Game {
         }
     }
 
-    fun checkPlayersStillIn() : Boolean {
+    fun checkPlayersStillIn(): Boolean {
         return table.checkPlayersStillIn()
     }
 
@@ -151,7 +141,7 @@ class Game {
             gameState = GameState.SHOWDOWN
     }
 
-    fun showdown() : String {
+    fun showdown(): String {
         var player = determineWinner()
         player.balance += table.currentPot
         gameState = GameState.NEXTGAME
@@ -160,7 +150,7 @@ class Game {
 
     // TODO: Determine the winner among the remaining players, and distribute the pot accordingingly
     // In the case of a tie, just split the pot.
-    fun determineWinner() : Player {
+    fun determineWinner(): Player {
         var list = mutableListOf<Int>()
         for (player in table.playersStillIn) {
             list.add(dealer.checkHand.bestHand(player.hand, table.sharedDeck))
@@ -169,8 +159,6 @@ class Game {
         // Get player with the highest hand value
         val test = list.maxOrNull()
         val index = list.indexOf(list.maxOrNull())
-
-
 
         return table.playersStillIn[index]
     }

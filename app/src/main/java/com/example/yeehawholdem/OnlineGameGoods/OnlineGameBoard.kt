@@ -11,6 +11,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.yeehawholdem.GameBoardGoods.AddCard
+import com.example.yeehawholdem.GameBoardGoods.AddCardBacks
 import com.example.yeehawholdem.GameBoardGoods.AddText
 import com.example.yeehawholdem.GameBoardGoods.CARD_HEIGHT
 import com.example.yeehawholdem.LogicGoods.Game
@@ -20,6 +22,7 @@ import com.example.yeehawholdem.OnlineGameGoods.QuitGameDataHandler
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
+import com.example.yeehawholdem.LogicGoods.Card
 
 /*
 Heyo peeps, heres some important notes to consider with how the lobby works, I tried to make it
@@ -57,11 +60,35 @@ fun GameBoardOnline(navController : NavController) {
     var game by remember { mutableStateOf(GameValues()) }
     var list by remember { mutableStateOf(mutableListOf<Long>(-1)) }
     var showDialog by remember { mutableStateOf(false) }
+    var card1 by remember { mutableStateOf(false) }
+    var card2 by remember { mutableStateOf(false) }
+    var card3 by remember { mutableStateOf(false) }
+    var card4 by remember { mutableStateOf(false) }
+    var card5 by remember { mutableStateOf(false) }
+    var card6 by remember { mutableStateOf(false) }
+    var card7 by remember { mutableStateOf(false) }
+    val cardsFlags by remember{ mutableStateOf( BooleanArray(7)) }
 
     var gameClass by remember { mutableStateOf(Game(game, communications, ls)) }
 
     //communcations.addEventListener("Lobby1", list)
     communications.setupLobbyEventListener(game, ls)
+
+    card1 = game.getCard1() != -1L
+    card2 = game.getCard2() != -1L
+    card3 = game.getCard3() != -1L
+    card4 = game.getCard4() != -1L
+    card5 = game.getCard5() != -1L
+    card6 = game.getHandCard1() != -1L
+    card7 = game.getHandCard2() != -1L
+    /*
+    if (game.getCard6() != -1L) card1 = true
+    else card6 = false
+    if (game.getCard7() != -1L) card1 = true
+    else card7 = false
+
+     */
+
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
     {
@@ -141,16 +168,16 @@ fun GameBoardOnline(navController : NavController) {
                 horizontalArrangement = Arrangement.Center)
             {
                 // The River, Display cards facedown until they are revealed
-                /*if (!cardsFlags[0]) AddCardBacks()
-                else AddCard(card = game.table.sharedDeck.getOrNull(0))
-                if (!cardsFlags[1]) AddCardBacks()
-                else AddCard(card = game.table.sharedDeck.getOrNull(1))
-                if (!cardsFlags[2]) AddCardBacks()
-                else AddCard(card = game.table.sharedDeck.getOrNull(2))
-                if (!cardsFlags[3]) AddCardBacks()
-                else AddCard(card = game.table.sharedDeck.getOrNull(3))
-                if (!cardsFlags[4]) AddCardBacks()
-                else AddCard(card = game.table.sharedDeck.getOrNull(4))*/
+                if (card1) AddCard(card = Card(game.getCard1().toInt()))
+                else AddCardBacks()
+                if (card2) AddCard(card = Card(game.getCard2().toInt()))
+                else AddCardBacks()
+                if (card3) AddCard(card = Card(game.getCard3().toInt()))
+                else AddCardBacks()
+                if (card4) AddCard(card = Card(game.getCard4().toInt()))
+                else AddCardBacks()
+                if (card5) AddCard(card = Card(game.getCard5().toInt()))
+                else AddCardBacks()
             }
             Spacer(modifier = Modifier.padding(10.dp))
             AddText(text = "Pot: ")
@@ -239,8 +266,10 @@ fun GameBoardOnline(navController : NavController) {
                 horizontalArrangement = Arrangement.Center)
             {
                 // Display Player Hand
-                //AddCard(card = game.player.hand.getOrNull(0))
-                //AddCard(card = game.player.hand.getOrNull(1))
+                if (card6) AddCard(card = Card(game.getHandCard1().toInt()))
+                else AddCardBacks()
+                if (card7) AddCard(card = Card(game.getHandCard2().toInt()))
+                else AddCardBacks()
                 AddText(text = "player cards goes here")
             }
             Spacer(modifier = Modifier.padding(10.dp))
