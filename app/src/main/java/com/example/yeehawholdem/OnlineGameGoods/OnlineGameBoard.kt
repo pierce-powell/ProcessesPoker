@@ -75,7 +75,7 @@ fun GameBoardOnline(navController: NavController) {
     var curBet by remember { mutableStateOf(0) }
     var pot by remember { mutableStateOf(0) }
     var balance by remember { mutableStateOf(gameVals.getBalance().toInt()) }
-    var isStillIn by remember { mutableStateOf(gameVals.getBalance().toInt()) }
+    var isStillIn by remember { mutableStateOf(gameVals.getIsStillIn()) }
     var isHost by remember { mutableStateOf(false) }
     var IsGameInProgress by remember { mutableStateOf(false) }
     var startGame by remember { mutableStateOf(false) }
@@ -98,16 +98,36 @@ fun GameBoardOnline(navController: NavController) {
     // IsGameInProgress = gameVals.getIsGameInProgress() != -1L
 
     // This is the isHost check for the composable, use with if statement
-    isHost = gameVals.getIsHost()
+    if(gameClass.gameState == GameState.STARTGAME)
+        isHost = gameVals.getIsHost()
 
+    if((gameClass.isFolded() && gameClass.isTurn()) && gameClass.gameState != GameState.STARTGAME){
+        gameClass.increaseCurrentActivePlayer()
+    }
+
+    if(gameClass.isShowdown()){
+        gameClass.showdownOnline()
+    }
 
     // Gameplay Loop for Host
     if (isHost) {
         if ((startGame) && (gameClass.gameState == GameState.STARTGAME)) {
             gameClass.startGame()
         }
-        if (gameClass.gameState == GameState.RUNNING)
-            gameClass.round()
+        when {
+            gameClass.haveAllPlayersChecked() -> {
+                gameClass.changeState()
+            }
+            gameClass.gameState == GameState.ROUND1 -> {
+                gameClass.setupRound1()
+            }
+            gameClass.gameState == GameState.ROUND2 -> {
+                gameClass.setupRound2()
+            }
+            gameClass.gameState == GameState.ROUND3 -> {
+                gameClass.setupRound3()
+            }
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
@@ -233,8 +253,7 @@ fun GameBoardOnline(navController: NavController) {
                 Button(//fold button
                     onClick = {
                         startGame = true
-                        //the dealer wins and the next round starts
-                        //fold = true
+                        gameVals.setIsStillIn(false)
                     },
                     modifier = Modifier
                         .fillMaxWidth(.3f)
@@ -253,13 +272,34 @@ fun GameBoardOnline(navController: NavController) {
                     AddText(text = "Bet: $bet")
                     Button(
                         onClick = {
-                            if (bet >= curBet) {
-                                communications.setBet(ls, bet.toLong())
-                                balance -= bet - curBet
-                                communications.setBalance(ls, balance.toLong())
-                                communications.setPot(ls, bet - curBet + gameVals.getPot())
-                            } else {
-                                // TODO: Not valid bet
+                            if(gameClass.isTurn() && !gameClass.isFolded()) {
+                                //raise logic
+                                if (bet > curBet && bet < balance) {
+                                    communications.setBet(ls, bet.toLong())
+                                    balance -= bet - curBet
+                                    communications.setBalance(ls, balance.toLong())
+                                    communications.setPot(ls, bet - curBet + gameVals.getPot())
+                                    communications.setNumPlayersChecked(ls, 0)
+                                    gameClass.increaseCurrentActivePlayer()
+                                }
+                                //check logic
+                                else if (bet == curBet && bet < balance) {
+                                    communications.setBet(ls, bet.toLong())
+                                    balance -= bet - curBet
+                                    communications.setBalance(ls, balance.toLong())
+                                    communications.setPot(ls, bet - curBet + gameVals.getPot())
+                                    communications.setNumPlayersChecked(
+                                        ls,
+                                        gameVals.getNumPlayersChecked() + 1L
+                                    )
+                                    gameClass.increaseCurrentActivePlayer()
+                                }
+                                //all in logic
+                                else if (bet == balance) {
+                                    //TODO: all in logic
+                                } else {
+                                    //TODO: Invalid bet toast
+                                }
                             }
                         },
                         modifier = Modifier
@@ -290,10 +330,9 @@ fun GameBoardOnline(navController: NavController) {
                     }
                     Spacer(modifier = Modifier.padding(2.dp))
                     Button(//lower bet button
+                        //TODO: Expand logic for allowing lower bet (do not allow bet bellow current Bet variable)
                         onClick = {
-                            if (bet - 5 >= 0 && (card1))
-                                bet -= 5
-                            else if (bet - 5 > 0)
+                            if (bet - 5 >= curBet)
                                 bet -= 5
                         },
                         modifier = Modifier
@@ -340,6 +379,7 @@ data class quitInfo(
 
 @Composable
 fun addQuitButton(navController: NavController) {
+
     var quitData by remember {
         mutableStateOf(quitInfo())
     }
@@ -375,7 +415,7 @@ fun addQuitButton(navController: NavController) {
     }
 
 
-    Button(//lower bet button
+    Button(//quit button
         onClick = {
             if (quitData.lobby.isNullOrEmpty()) {
                 triggerFailedQuitDialog = true
@@ -426,6 +466,11 @@ fun addQuitButton(navController: NavController) {
                 lobbyRef.child("River").child("Card4").setValue(-1)
                 lobbyRef.child("River").child("Card5").setValue(-1)
 
+                //reset current bet cycle
+                lobbyRef.child("CurrBetCycle").setValue(0)
+
+                //reset number of players checked
+                lobbyRef.child("NumPlayersChecked").setValue(0)
 
                 //Now the active users
                 lobbyRef.child("ActiveUsers").removeValue()

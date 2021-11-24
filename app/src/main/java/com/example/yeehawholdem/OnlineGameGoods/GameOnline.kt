@@ -19,7 +19,7 @@ import kotlinx.coroutines.delay
 // Send the number into the database as handValue, and host retrieves that value and puts it into a list.
 enum class GameState {
     //Start, firstRound, SecondRound, ThirdRound, Showdown, End
-    STOPPED, RUNNING, BETORCHECK, SHOWDOWN, NEXTGAME, NEXTROUND, STARTGAME
+    STARTGAME, RUNNING, ROUND1, ROUND2, ROUND3, SHOWDOWN, STOPPED, NEXTGAME, BETORCHECK, NEXTROUND
 }
 
 class Game {
@@ -31,9 +31,10 @@ class Game {
     var gameVals: GameValues
     var communicator: Communications? = null
     var lobbyStr: String = ""
-    private var mDatabase: DatabaseReference? = null
-    private var lobbyCloudEndpoint: DatabaseReference? = null
-    private var betCloudEndpoint: DatabaseReference? = null
+    var isRound1Setup = false
+    var isRound2Setup = false
+    var isRound3Setup = false
+
 
     //When creating a Game object, initialize with list of players for the game
     constructor(gameVa: GameValues, communicator: Communications, lobbyStr: String) {
@@ -64,7 +65,7 @@ class Game {
         // Update the values on the database (player hands, CurrentActivePlayer
         communicator?.setPlayerHands(lobbyStr, table.playerArray)
         communicator?.setIsGameInProgress(lobbyStr, true) // Set Game to in Progress
-
+        communicator?.setCurrentActivePlayer(lobbyStr, 1)
 
         gameState = GameState.RUNNING
     }
@@ -77,9 +78,44 @@ class Game {
     // Change the suitable flags in the Database to allow the current player to bet/raise/fold
     // The pot and balance are handled on the player's side
     // Increase the CurrentActivePlayer
-    fun round() {
+    fun changeState() {
+        if(!isRound1Setup){
+            gameState = GameState.ROUND1
+        }
+        else if(!isRound2Setup){
+            gameState = GameState.ROUND2
+        }
+        else if(!isRound3Setup){
+            gameState = GameState.ROUND3
+        }
+        else{
+            gameState = GameState.SHOWDOWN
+        }
+    }
 
-        checkCalled()
+    fun setupRound1(){
+        communicator?.setBet(lobbyStr, 0L)
+        communicator?.setNumPlayersChecked(lobbyStr, 0)
+        communicator?.setCurrentActivePlayer(lobbyStr, 0)
+        setCardsRound1()
+        gameState = GameState.RUNNING
+        isRound1Setup = true
+    }
+    fun setupRound2(){
+        communicator?.setBet(lobbyStr, 0L)
+        communicator?.setNumPlayersChecked(lobbyStr, 0)
+        communicator?.setCurrentActivePlayer(lobbyStr, 0)
+        setCardsRound2()
+        gameState = GameState.RUNNING
+        isRound2Setup = true
+    }
+    fun setupRound3(){
+        communicator?.setBet(lobbyStr, 0L)
+        communicator?.setNumPlayersChecked(lobbyStr, 0)
+        communicator?.setCurrentActivePlayer(lobbyStr, 0)
+        setCardsRound3()
+        gameState = GameState.RUNNING
+        isRound3Setup = true
     }
 
     fun setCardsRound1() {
@@ -96,6 +132,32 @@ class Game {
         communicator?.setCard5(lobbyStr, table.dealer.dealCard())
     }
 
+    fun isTurn(): Boolean{
+        return gameVals.getTurnNumber() == gameVals.getCurrentActivePlayer().toInt()
+    }
+
+    fun isFolded(): Boolean{
+        return !gameVals.getIsStillIn()
+    }
+
+    fun isShowdown(): Boolean {
+        return gameState == GameState.SHOWDOWN
+    }
+
+    fun haveAllPlayersChecked(): Boolean{
+        return gameVals.getNumPlayersChecked() == gameVals.playerList.size
+    }
+
+    fun increaseCurrentActivePlayer(){
+        var temp = gameVals.getCurrentActivePlayer()
+        temp = (temp + 1) % gameVals.playerList.size
+        if(temp == 0L) {
+            temp += 1
+            communicator?.setCurrBetCycle( lobbyStr, gameVals.getCurrBetCycle() + 1L)
+        }
+        communicator?.setCurrentActivePlayer(lobbyStr, temp + 1)
+    }
+
     // Card 4
     fun theFlop() {
         // TODO()
@@ -109,9 +171,9 @@ class Game {
     // Checks if at least 2 players are still in and if everyone has checked/called
     fun checkCalled() {
         if (table.checkCalled()) {
-            gameState = GameState.NEXTROUND
+            //gameState = GameState.NEXTROUND
         } else {
-            gameState = GameState.BETORCHECK
+            //gameState = GameState.BETORCHECK
         }
     }
 
@@ -119,12 +181,8 @@ class Game {
         return table.checkPlayersStillIn()
     }
 
-    fun raising() {
-        for (i in 0..table.playersStillIn.size) {
-            table.playersStillIn[i].checkFlag = false
-        }
-        table.playersStillIn[turn].checkFlag = true
-        incrementTurn()
+    fun raise() {
+
     }
 
     // TODO: Logic to prevent player from overbetting
@@ -140,7 +198,7 @@ class Game {
             incrementTurn()
         }
         incrementTurn()
-        gameState = GameState.NEXTROUND
+        //gameState = GameState.NEXTROUND
     }
 
     fun fold() {
@@ -150,7 +208,7 @@ class Game {
 
     fun nextRound() {
         turn = dealerButton; incrementTurn(); incrementTurn()
-        gameState = GameState.BETORCHECK
+        //gameState = GameState.BETORCHECK
         dealer.cardCount++
         table.resetCheck()
 
@@ -158,10 +216,14 @@ class Game {
             gameState = GameState.SHOWDOWN
     }
 
+    fun showdownOnline(){
+
+    }
+
     fun showdown(): String {
         var player = determineWinner()
         player.balance += table.currentPot
-        gameState = GameState.NEXTGAME
+        //gameState = GameState.NEXTGAME
         return player.name
     }
 

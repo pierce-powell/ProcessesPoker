@@ -51,6 +51,8 @@ class Communications {
                 game.setIsHost(if (snapshot?.child("Host").value.toString() == UID) 1L else 0L)
                 //game.setIsGameInProgress(if (snapshot?.child("IsGameInProgress").value.toString() == UID) 1L else 0L)
                 game.setIsGameInProgress(snapshot?.child("IsGameInProgress").value as Boolean)
+                game.setNumPlayersChecked(snapshot?.child("NumPlayersChecked").value as Long)
+                game.setCurrBetCycle(snapshot?.child("CurrBetCycle").value as Long)
 
                 (snapshot.child("ActiveUsers").child(UID).child("Cards")
                     .child("Card1").value as Long?)?.let { game.setHandCard1(it) }
@@ -60,6 +62,8 @@ class Communications {
                     .child("balance").value as Long?)?.let { game.setBalance(it) }
                 (snapshot.child("ActiveUsers").child(UID)
                     .child("IsStillIn").value as Boolean?)?.let { game.setIsStillIn(it) }
+                (snapshot.child("ActiveUsers").child(UID)
+                    .child("TurnNumber").value as Long?)?.let { game.setTurnNumber(it.toInt()) }
             }
 
             override fun onCancelled(error: DatabaseError) {}
@@ -183,6 +187,16 @@ class Communications {
         val database = Firebase.database.getReference(lobbyStr)
         val UID = Firebase.auth.currentUser?.uid.toString()
         database.child("ActiveUsers").child(UID).child("balance").setValue(balance)
+    }
+
+    fun setNumPlayersChecked(lobbyStr: String, numPlayersChecked: Long) {
+        val database = Firebase.database.getReference(lobbyStr)
+        database.child("NumPlayersChecked").setValue(numPlayersChecked)
+    }
+
+    fun setCurrBetCycle(lobbyStr: String, currBetCycle: Long) {
+        val database = Firebase.database.getReference(lobbyStr)
+        database.child("CurrBetCycle").setValue(currBetCycle)
     }
 
 }

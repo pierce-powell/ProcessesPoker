@@ -17,6 +17,9 @@ class GameValues {
     private var isHost = false
     private var currentActivePlayer: Long = 0
     private var isGameInProgress = false
+    private var turnNumber = 0
+    private var numPlayersChecked = 0
+    private var currBetCycle = 0
     var playerList = mutableListOf<Player>()
 
     @JvmName("getBet1")
@@ -185,5 +188,35 @@ class GameValues {
     @JvmName("setIsStillIn")
     fun setIsStillIn(newBet: Boolean) {
         this.isStillIn = newBet
+    }
+
+    @JvmName("getTurnNumber")
+    fun getTurnNumber(): Int {
+        return turnNumber
+    }
+
+    @JvmName("setTurnNumber")
+    fun setTurnNumber(newBet: Int) {
+        this.turnNumber = newBet
+    }
+
+    @JvmName("getNumPlayersChecked")
+    fun getNumPlayersChecked(): Int {
+        return numPlayersChecked
+    }
+
+    @JvmName("setNumPlayersChecked")
+    fun setNumPlayersChecked(newBet: Long) {
+        this.numPlayersChecked = newBet.toInt()
+    }
+
+    @JvmName("getCurrBetCycle")
+    fun getCurrBetCycle(): Int {
+        return currBetCycle
+    }
+
+    @JvmName("setCurrBetCycle")
+    fun setCurrBetCycle(newBet: Long) {
+        this.currBetCycle = newBet.toInt()
     }
 }
