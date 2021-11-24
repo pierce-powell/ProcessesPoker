@@ -195,7 +195,8 @@ fun GameBoardOnline(navController: NavController) {
             if (isHost) {
                 Button(//Start button
                     onClick = {
-                        startGame = true
+                        if(gameVals.getNumPlayers() > 1)
+                            startGame = true
                     },
                     modifier = Modifier
                         .fillMaxWidth(.27f)

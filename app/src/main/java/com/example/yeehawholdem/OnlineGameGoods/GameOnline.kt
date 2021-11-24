@@ -150,7 +150,7 @@ class Game {
 
     fun increaseCurrentActivePlayer(){
         var temp = gameVals.getCurrentActivePlayer()
-        temp = (temp + 1) % gameVals.playerList.size
+        temp = (temp + 1) % gameVals.getNumPlayers()
         if(temp == 0L) {
             temp += 1
             communicator?.setCurrBetCycle( lobbyStr, gameVals.getCurrBetCycle() + 1L)
@@ -216,8 +216,8 @@ class Game {
             gameState = GameState.SHOWDOWN
     }
 
-    fun showdownOnline(){
-
+    fun showdownOnline(): Int{
+        return -1
     }
 
     fun showdown(): String {

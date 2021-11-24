@@ -20,6 +20,7 @@ class GameValues {
     private var turnNumber = 0
     private var numPlayersChecked = 0
     private var currBetCycle = 0
+    private var numPlayers = 0
     var playerList = mutableListOf<Player>()
 
     @JvmName("getBet1")
@@ -218,5 +219,16 @@ class GameValues {
     @JvmName("setCurrBetCycle")
     fun setCurrBetCycle(newBet: Long) {
         this.currBetCycle = newBet.toInt()
+    }
+
+
+    @JvmName("getNumPlayers")
+    fun getNumPlayers(): Int {
+        return numPlayers
+    }
+
+    @JvmName("setNumPlayers")
+    fun setNumPlayers(newBet: Long) {
+        this.numPlayers = newBet.toInt()
     }
 }

@@ -53,6 +53,7 @@ class Communications {
                 game.setIsGameInProgress(snapshot?.child("IsGameInProgress").value as Boolean)
                 game.setNumPlayersChecked(snapshot?.child("NumPlayersChecked").value as Long)
                 game.setCurrBetCycle(snapshot?.child("CurrBetCycle").value as Long)
+                game.setNumPlayers(snapshot?.child("NumPlayers").value as Long)
 
                 (snapshot.child("ActiveUsers").child(UID).child("Cards")
                     .child("Card1").value as Long?)?.let { game.setHandCard1(it) }
