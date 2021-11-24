@@ -55,9 +55,6 @@ class Game {
     }
 
     fun round() {
-        for (_player in table.playerArray) {
-            table.playersStillIn.add(_player)
-        }
 
         checkCalled()
     }
