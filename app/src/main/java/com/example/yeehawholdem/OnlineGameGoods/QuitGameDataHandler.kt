@@ -1,7 +1,7 @@
 package com.example.yeehawholdem.OnlineGameGoods
 
 import com.example.yeehawholdem.LeaderBoardGoods.LeaderBoardPlayer
-import com.example.yeehawholdem.usersLobby
+import com.example.yeehawholdem.quitInfo
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -11,7 +11,7 @@ import com.google.firebase.ktx.Firebase
 
 class QuitGameDataHandler {
 
-    fun getTheLobbyName(lobbyName: usersLobby) {
+    fun getTheLobbyName(quitData: quitInfo) {
 
         val auth = Firebase.auth
 
@@ -23,12 +23,15 @@ class QuitGameDataHandler {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
                 // Check for null
-                if (lobbyName == null) {
+                if (quitData == null) {
                     return
                 }
 
-                lobbyName.lobby = dataSnapshot.value.toString()
-                lobbyName.playerID = playerUid.toString()
+                quitData.lobby = dataSnapshot.value.toString()
+
+                quitData.playerID = playerUid.toString()
+
+
 
             }
 
@@ -36,6 +39,21 @@ class QuitGameDataHandler {
                 // Failed to read value
             }
         })
+
+        val lobbyReference = Firebase.database.getReference(quitData.lobby.toString()).child("DidPlayerQuit").addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (quitData == null)
+                    return
+
+                quitData.didPlayerQuit = snapshot.value as Long?
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                //failed
+            }
+
+        })
+
     }
 }
 
