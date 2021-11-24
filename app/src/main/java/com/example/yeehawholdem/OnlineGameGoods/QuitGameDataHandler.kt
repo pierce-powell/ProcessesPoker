@@ -1,6 +1,7 @@
 package com.example.yeehawholdem.OnlineGameGoods
 
 import com.example.yeehawholdem.LeaderBoardGoods.LeaderBoardPlayer
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -9,8 +10,15 @@ import com.google.firebase.ktx.Firebase
 
 class QuitGameDataHandler {
 
-    fun usersEventListener(mutableMap: MutableMap<String, LeaderBoardPlayer>) {
-        val dbReference = Firebase.database.getReference("Users").addValueEventListener(object :
+    fun getTheHostAndPlayer(mutableMap: MutableMap<String, LeaderBoardPlayer>) {
+
+        var auth = Firebase.auth
+
+        var playerId = auth.currentUser?.uid
+
+
+
+        val HostReference = Firebase.database.getReference("Users").addValueEventListener(object :
             ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val lobbyBet = dataSnapshot.children
@@ -42,3 +50,12 @@ class QuitGameDataHandler {
         })
     }
 }
+
+//Data that we need
+// Current Host
+// Current User ID
+// Current Lobby
+// If the current user is the host, remove HostOfLobby under host ID
+// Delete WaitRoom
+// Delete Active Players
+// Reset all the values back to their defaults

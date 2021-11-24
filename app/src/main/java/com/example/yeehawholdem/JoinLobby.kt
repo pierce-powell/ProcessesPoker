@@ -248,8 +248,6 @@ fun Joinlobby(navController : NavController) {
                             //then we need to make this user the host
                             lobbyRef.child("Host").setValue(userUid.toString())
                             //Add the selected lobby to the host's Uid
-                            database.getReference(userUid.toString()).child("HostOfLobby")
-                                .setValue(selectedLobby)
                         }
 
                         //Now lets update the player count
@@ -279,6 +277,9 @@ fun Joinlobby(navController : NavController) {
                             lobbyRef.child("ActiveUsers").child(userUid.toString()).child("IsStillIn").setValue(true)
                             lobbyRef.child("ActiveUsers").child(userUid.toString()).child("IsStillIn").setValue(true)
 
+                            database.getReference(userUid.toString()).child("InLobby")
+                                .setValue(selectedLobby)
+
                             //Now we need to navigate to the next screen
                             navController.navigate(route = Screen.GameBoardOnline.route)
                         } else {
@@ -299,7 +300,8 @@ fun Joinlobby(navController : NavController) {
                             lobbyRef.child("WaitingRoom").child(userUid.toString()).child("IsStillIn").setValue(1)
                             lobbyRef.child("WaitingRoom").child(userUid.toString()).child("IsStillIn").setValue(1)
 
-
+                            database.getReference(userUid.toString()).child("InLobby")
+                                .setValue(selectedLobby)
 
                             //Now we need to navigate to the next screen
                             showWaitWarning = true
