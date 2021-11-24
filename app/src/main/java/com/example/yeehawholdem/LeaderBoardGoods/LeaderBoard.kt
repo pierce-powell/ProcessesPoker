@@ -58,7 +58,7 @@ fun LeaderBoardScreen(navController : NavController)
 
     //commenty
     //Get the list values intially
-    myLazyList.swapList(mapOfPlayers.values.map { it })
+    myLazyList.swapList(mapOfPlayers.toList().sortedBy { (k, v) -> v }.toMap().values.map { it })
 
     //Box to store everything in
     Box(modifier = Modifier.fillMaxSize(),
