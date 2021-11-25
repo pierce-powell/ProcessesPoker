@@ -3,8 +3,12 @@ package com.example.yeehawholdem
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -84,7 +88,8 @@ fun CreateAccount(navController : NavController)
             .fillMaxHeight(.90f)
             .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
             .background(color = MaterialTheme.colors.background)
-            .padding(10.dp),
+            .padding(7.dp)
+            .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center)
         {
@@ -95,7 +100,7 @@ fun CreateAccount(navController : NavController)
                 color = MaterialTheme.colors.primary)
 
             //Username text field
-            Spacer(modifier = Modifier.padding(20.dp))
+            Spacer(modifier = Modifier.padding(10.dp))
             Column(horizontalAlignment = Alignment.CenterHorizontally)
             {
                 Surface() {
