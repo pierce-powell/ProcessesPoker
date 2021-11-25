@@ -518,11 +518,18 @@ fun addQuitButton(navController: NavController) {
 
                     //Now with that squared away, lets see if we need to perform a host migration
                     //TODO Feed in the host ID
-                    if(quitData.waitRoom.contains(quitData.host) == false  &&  quitData.waitRoom.count() > 0)
+                    if(quitData.waitRoom.contains(quitData.host) == false)
                     {
                         //awe shucks, the host isn't in the wait room by some miraculous miracle
-                        //So lets do the host migration, and set it to the first player in the wait room
-                        lobbyRef.child("Host").setValue(quitData.waitRoom.keys.toList()[0])
+                            //SO lets check if theres someone in the waitroom
+                        if(quitData.waitRoom.count() > 0) {
+                            //Someone is, so lets do the host migration, and set it to the first player in the wait room
+                            lobbyRef.child("Host").setValue(quitData.waitRoom.keys.toList()[0])
+                        }
+                        else{
+                            //The wait room is empty so set the host to be nothing
+                            lobbyRef.child("Host").setValue("")
+                        }
                     }
                     //Otherwise, the host is already in the wait room, so no need to do anything special
 
