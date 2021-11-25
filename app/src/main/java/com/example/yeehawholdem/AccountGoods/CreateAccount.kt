@@ -77,15 +77,26 @@ fun CreateAccount(navController : NavController)
         //Inner box for our pretty picture
         Box(modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.background), contentAlignment = Alignment.TopCenter)
+            .background(MaterialTheme.colors.background), contentAlignment = Alignment.TopStart)
         {
-            //Image(painter = painterResource(id = R.drawable.pain), contentDescription = null)
+            Button(
+                onClick = {
+                    navController.navigate(route = Screen.MainMenu.route)
+                },
+                modifier = Modifier
+                    .fillMaxWidth(.2f)
+                    .height(BUTTON_HEIGHT)
+            )
+            {
+                // game.startGame()
+                Text(text = "X", fontSize = MaterialTheme.typography.h5.fontSize)
+            }
         }
 
         //Outer column that will contain all our text fields
         Column(modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(.90f)
+            .fillMaxHeight(.85f)
             .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
             .background(color = MaterialTheme.colors.background)
             .padding(7.dp)

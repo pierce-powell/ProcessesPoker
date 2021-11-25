@@ -95,12 +95,15 @@ fun LoginScreen(navController : NavController){
 
         //Make a new column for our text fields as well as our create account button
         Column(horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxHeight(.6f))
+        modifier = Modifier.fillMaxHeight(.85f))
         {
 
             Row {
-
+                Text(text = "Sign In", fontSize = MaterialTheme.typography.h5.fontSize,
+                    color = MaterialTheme.colors.primary)
             }
+
+            Spacer(modifier = Modifier.padding(10.dp))
 
 
             // We wrap this text here in a surface call so that the user inpit text it white
@@ -180,7 +183,7 @@ fun LoginScreen(navController : NavController){
                 Text(text = "Sign In", fontSize = MaterialTheme.typography.h5.fontSize)
             }
 
-            Spacer(modifier = Modifier.padding(20.dp))
+            Spacer(modifier = Modifier.padding(12.dp))
 
             Text(text = "Forgot Password", modifier = Modifier
                 .clickable(onClick = {
