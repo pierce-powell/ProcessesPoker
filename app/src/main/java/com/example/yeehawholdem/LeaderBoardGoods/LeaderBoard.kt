@@ -27,6 +27,7 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -70,12 +71,11 @@ fun LeaderBoardScreen(navController : NavController)
 
     //Box to store everything in
     Box(modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState()),
+        .fillMaxSize(),
         contentAlignment = Alignment.BottomCenter)
     {
         Box(modifier = Modifier
-            .fillMaxHeight(.8f)
+            .fillMaxHeight(.75f)
             .fillMaxWidth(),
             contentAlignment = Alignment.BottomCenter)
         {
@@ -91,7 +91,8 @@ fun LeaderBoardScreen(navController : NavController)
         }
         Column(modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(),
+            .fillMaxHeight()
+            .background(Color.Transparent),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         )
@@ -105,7 +106,7 @@ fun LeaderBoardScreen(navController : NavController)
                     .height(44.dp)
             )
             {
-                Text(text = "Back", fontSize = MaterialTheme.typography.h5.fontSize)
+                Text(text = "X", fontSize = MaterialTheme.typography.h5.fontSize)
             }
             
             Spacer(modifier = Modifier.padding(10.dp))
@@ -114,10 +115,15 @@ fun LeaderBoardScreen(navController : NavController)
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(),
+                    .fillMaxHeight()
+                    .background(Color.Transparent),
                 verticalAlignment = Alignment.Top) {
                 androidx.compose.material.Surface() {
-                    Text("Money:   Player:", fontSize = 30.sp, fontWeight = FontWeight.ExtraBold)
+                    Text("Money:   Player:",
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        modifier = Modifier
+                            .background(Color.Transparent))
                 }
 
             }
