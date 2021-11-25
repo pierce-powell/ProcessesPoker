@@ -18,7 +18,7 @@ class QuitGameDataHandler {
         val playerUid = auth.currentUser?.uid
 
 
-        val HostReference = Firebase.database.getReference(playerUid.toString()).child("InLobby").addValueEventListener(object :
+        val InLobbyReference = Firebase.database.getReference(playerUid.toString()).child("InLobby").addValueEventListener(object :
             ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
@@ -38,6 +38,20 @@ class QuitGameDataHandler {
                 // Failed to read value
             }
         })
+
+        val hostReference = Firebase.database.getReference(quitData.lobby.toString()).child("Host").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (quitData == null)
+                    return
+
+                quitData.host = snapshot.value as String?
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                //failed
+            }
+        })
+
 
         val lobbyReference = Firebase.database.getReference(quitData.lobby.toString()).child("DidPlayerQuit").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -86,6 +100,43 @@ class QuitGameDataHandler {
             })
 
         })
+
+        val waitListPlayerReference = Firebase.database.getReference(quitData.lobby.toString()).child("WaitingRoom").addChildEventListener(object : ChildEventListener{
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+
+                //Just store the key in a map to get easy look up
+                quitData.waitRoom[snapshot.key.toString()] = 0
+
+
+            }
+
+
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                //Same here, the actual value doesn't matter
+                quitData.waitRoom[snapshot.key.toString()] = 0
+
+
+
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+
+                quitData.waitRoom.remove(snapshot.key.toString())
+
+
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
+
 
     }
 

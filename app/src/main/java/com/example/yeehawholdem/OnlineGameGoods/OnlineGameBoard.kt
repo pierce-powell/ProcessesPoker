@@ -374,7 +374,9 @@ data class quitInfo(
     var lobby: String? = "",
     var playerID: String? = "",
     var didPlayerQuit: Long? = 0,
-    var playerList: MutableMap<String?, Long?> = mutableMapOf<String?, Long?>()
+    var playerList: MutableMap<String?, Long?> = mutableMapOf<String?, Long?>(),
+    var waitRoom: MutableMap<String?, Long?> = mutableMapOf<String?, Long?>(),
+    var host: String? = ""
 )
 
 
@@ -395,13 +397,19 @@ fun addQuitButton(navController: NavController) {
         mutableStateOf(false)
     }
 
+    var numPlayers by remember {
+        mutableStateOf(0)
+    }
+
+
 
     var quitDataHandler = QuitGameDataHandler()
 
     quitDataHandler.getTheLobbyName(quitData)
 
 
-    if (quitData.didPlayerQuit?.toInt() == 1) {
+    //If a player quit and they are not in the waitroom
+    if ((quitData.didPlayerQuit?.toInt() == 1) && (quitData.waitRoom.containsKey(quitData.playerID) == false) ) { //And check to make sure they're not in the wait room
         trigerQuitDialog = true
     }
 
@@ -436,53 +444,106 @@ fun addQuitButton(navController: NavController) {
                 //Now lets start making changes.
                 //Firstly, we want to issue the flag to all users that someone has quit the game
                 //and interfered with the lobby progress
-                lobbyRef.child("DidPlayerQuit").setValue(1)
+                //If a player in the waitroom quit, no one cares, just remove them
+                if(quitData.waitRoom.containsKey(quitData.playerID))
+                {
+                    //Now we also need to remove them from the player count
+                    //So before we remove them from the WaitingRoom, lets calculate the current player count
+                    numPlayers = quitData.playerList.count() + quitData.waitRoom.count()
+                    //Now we set it to this -1
+                    lobbyRef.child("NumPlayers").setValue(numPlayers - 1)
+                    //Making sure that we get both locations
+                    Firebase.database.getReference("Lobbys").child(quitData.lobby.toString()).setValue(numPlayers - 1)
 
-                //Now with that set, all the players should first receive the dialog that the game has ended
-                //So lets just start making everything the defaults
-                lobbyRef.child("Bet").setValue(0)
+                    //Now we need to check and make sure some jank didn't unfold, if they're the host we're going to need to migrate it to someone else
+                    if(quitData.playerID == quitData.host)
+                    {
+                        //they're the host, so lets see if theres someone else we can change it to
+                            //Lets check if theres another person in the wait room
+                        if(quitData.waitRoom.count() > 1)
+                        {
+                            //This means that the host migration actually matters because somone else will be playing
+                            if(quitData.waitRoom.toList()[0].toString() == quitData.playerID.toString())
+                            {
+                                // they're the first key, so set it to the second
+                                lobbyRef.child("Host").setValue(quitData.waitRoom.toList()[1])
+                            }
+                            else
+                            {
+                                //they we'ren't the first, so set it to the first
+                                lobbyRef.child("Host").setValue(quitData.waitRoom.toList()[0])
+                            }
+                        }
+                        else
+                        {
+                            //They're the last person in the wait room anyway, so everyone has quit the game already
+                            lobbyRef.child("Host").setValue("")
+                        }
 
-                //Now the pot
-                lobbyRef.child("Pot").setValue(0)
+                    }
 
-                //Change the number of players in the lobby back to 0
-                lobbyRef.child("NumPlayers").setValue(0)
-
-                //Also set the number of players in the Lobbys sections to 0
-                Firebase.database.getReference("Lobbys").child(quitData.lobby.toString()).setValue(0)
-
-                //Remove the waiting room
-                lobbyRef.child("WaitingRoom").removeValue()
-
-                //Now lets change the Active Players
-                lobbyRef.child("CurrentActivePlayer").setValue(0)
-
-                //Now the Host
-                lobbyRef.child("Host").setValue("")
-
-                //Change the lobby status
-                lobbyRef.child("IsGameInProgress").setValue(false)
-
-                //Reset all the river values
-                lobbyRef.child("River").child("Card1").setValue(-1)
-                lobbyRef.child("River").child("Card2").setValue(-1)
-                lobbyRef.child("River").child("Card3").setValue(-1)
-                lobbyRef.child("River").child("Card4").setValue(-1)
-                lobbyRef.child("River").child("Card5").setValue(-1)
-
-                //reset current bet cycle
-                lobbyRef.child("CurrBetCycle").setValue(0)
-
-                //reset number of players checked
-                lobbyRef.child("NumPlayersChecked").setValue(0)
-
-                //Now the active users
-                lobbyRef.child("ActiveUsers").removeValue()
-
-                //Finally, lets remove the lobby reference from the player, this might goof
-                val playerRef = Firebase.database.getReference(quitData.playerID.toString())
+                    //Remove them from the waitlist
+                    lobbyRef.child("WaitingRoom").child(quitData.playerID.toString()).removeValue()
 
 
+                    //And that it, no balance update because they never played, so lets reroute them
+                    navController.navigate(Screen.MainMenu.route)
+
+                }
+                //Otherwise, its one of our active players thats quit
+                else {
+
+                    //Trigger the warning, note this won't trigger for people in the wait room
+                    lobbyRef.child("DidPlayerQuit").setValue(1)
+
+                    //TODO Graceful quit, removes the players from active but not waitroom, player count should reflect the wait room players
+
+                    //Update the player count with num waitlist players
+                    lobbyRef.child("NumPlayers").setValue(quitData.waitRoom.count())
+                    //Making sure that we get both locations
+                    Firebase.database.getReference("Lobbys").child(quitData.lobby.toString()).setValue(quitData.waitRoom.count())
+
+                    //Now with that squared away, lets see if we need to perform a host migration
+                    //TODO Feed in the host ID
+                    if(quitData.waitRoom.contains(quitData.host) == false  &&  quitData.waitRoom.count() > 0)
+                    {
+                        //awe shucks, the host isn't in the wait room by some miraculous miracle
+                        //So lets do the host migration, and set it to the first player in the wait room
+                        lobbyRef.child("Host").setValue(quitData.waitRoom.keys.toList()[0])
+                    }
+                    //Otherwise, the host is already in the wait room, so no need to do anything special
+
+
+                    //Now with that set, all the players should first receive the dialog that the game has ended
+                    //So lets just start making everything the defaults
+                    lobbyRef.child("Bet").setValue(0)
+
+                    //Now the pot
+                    lobbyRef.child("Pot").setValue(0)
+
+
+                    //Now lets change the Active Players
+                    lobbyRef.child("CurrentActivePlayer").setValue(0)
+
+                    //Change the lobby status
+                    lobbyRef.child("IsGameInProgress").setValue(false)
+
+                    //Reset all the river values
+                    lobbyRef.child("River").child("Card1").setValue(-1)
+                    lobbyRef.child("River").child("Card2").setValue(-1)
+                    lobbyRef.child("River").child("Card3").setValue(-1)
+                    lobbyRef.child("River").child("Card4").setValue(-1)
+                    lobbyRef.child("River").child("Card5").setValue(-1)
+
+                    //reset current bet cycle
+                    lobbyRef.child("CurrBetCycle").setValue(0)
+
+                    //reset number of players checked
+                    lobbyRef.child("NumPlayersChecked").setValue(0)
+
+                    //Now the active users
+                    lobbyRef.child("ActiveUsers").removeValue()
+                }
             }
 
         },
