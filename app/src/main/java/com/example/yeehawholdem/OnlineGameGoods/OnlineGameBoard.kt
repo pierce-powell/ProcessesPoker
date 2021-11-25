@@ -205,7 +205,7 @@ fun GameBoardOnline(navController: NavController) {
 
         {
             if (isHost) {
-                var startButton = Button(//Start button
+                Button(//Start button
                     onClick = {
                         startGame = true
                         if(gameVals.getNumPlayers() > 1)
@@ -213,7 +213,7 @@ fun GameBoardOnline(navController: NavController) {
                     },
                     modifier = Modifier
                         .fillMaxWidth(.27f)
-                        .height(BUTTON_HEIGHT)
+                        .height(BUTTON_HEIGHT), enabled = !startGame
                 )
                 {
                     Text(text = "Start Game", fontSize = MaterialTheme.typography.h5.fontSize, textAlign = TextAlign.Center)
