@@ -23,9 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.yeehawholdem.*
 import com.example.yeehawholdem.R
-import com.example.yeehawholdem.Screen
-import com.example.yeehawholdem.checkInputFields
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -75,35 +74,34 @@ fun LoginScreen(navController : NavController){
         Box(modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.background),
-            contentAlignment = Alignment.TopCenter)
+            contentAlignment = Alignment.TopStart)
         {
-            //Image(painter = painterResource(id = R.drawable.pain), contentDescription = "Login Image")
-        }
-
-        //A column in the box corresponds to the sign in at the top of the screen
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top,
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(.6f)
-                .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
-                .background(MaterialTheme.colors.background)
-                .padding(10.dp))
-        {
-            Text(
-                text = "Sign In", style = TextStyle(
-                    fontWeight = FontWeight.Bold
-                ),
-                fontSize = MaterialTheme.typography.h5.fontSize
+            Button(
+                onClick = {
+                    navController.navigate(route = Screen.MainMenu.route)
+                },
+                modifier = Modifier
+                    .fillMaxWidth(.2f)
+                    .height(BUTTON_HEIGHT)
             )
+            {
+                // game.startGame()
+                Text(text = "X", fontSize = MaterialTheme.typography.h5.fontSize)
+            }
         }
 
 
-        //Add some space between the name of the screen and the content
-        Spacer(modifier = Modifier.padding(20.dp))
+
 
         //Make a new column for our text fields as well as our create account button
-        Column(horizontalAlignment = Alignment.CenterHorizontally)
+        Column(horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxHeight(.6f))
         {
+
+            Row {
+
+            }
+
 
             // We wrap this text here in a surface call so that the user inpit text it white
             Surface() {

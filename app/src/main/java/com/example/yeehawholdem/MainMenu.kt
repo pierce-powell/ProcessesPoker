@@ -47,27 +47,14 @@ fun MainMenuScreen(
 
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter
+        contentAlignment = Alignment.Center
     )
     {
 
-        //A box to put our pretty picture in
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.background),
-            contentAlignment = Alignment.TopCenter
-        )
-        {
-          /*  Image(
-                painter = painterResource(id = R.drawable.pain),
-                contentDescription = "Login Image"
-            )*/
-        }
-
         //Column to hold all the goods
         Column(horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxHeight(.6f))
+            verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxHeight())
         {
 
             //Login button
@@ -124,7 +111,10 @@ fun MainMenuScreen(
                     Text(text = "PLAY", fontSize = MaterialTheme.typography.h5.fontSize)
                 }
             }
+
         }
+    
+
     }
 
 

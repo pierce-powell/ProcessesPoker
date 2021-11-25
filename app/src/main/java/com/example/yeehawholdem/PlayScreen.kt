@@ -30,7 +30,7 @@ fun PlayScreen(navController : NavController)
 
 Box(
 modifier = Modifier.fillMaxSize(),
-contentAlignment = Alignment.BottomCenter
+contentAlignment = Alignment.Center
 )
 {
 
@@ -39,7 +39,7 @@ contentAlignment = Alignment.BottomCenter
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.background),
-        contentAlignment = Alignment.TopCenter
+        contentAlignment = Alignment.Center
     )
     {
         /*  Image(
@@ -50,7 +50,8 @@ contentAlignment = Alignment.BottomCenter
 
     //Column to hold all the goods
     Column(horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxHeight(.6f))
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxHeight())
     {
 
         //Play Offline
@@ -68,7 +69,6 @@ contentAlignment = Alignment.BottomCenter
         }
 
 
-        Spacer(modifier = Modifier.padding(SPACER_HEIGHT))
 
 
 
@@ -102,9 +102,25 @@ contentAlignment = Alignment.BottomCenter
                     .height(BUTTON_HEIGHT)
             )
             {
-                Text(text = "LOGIN TO PLAY ONLINE", fontSize = MaterialTheme.typography.h5.fontSize)
+                Text(text = "LOGIN TO JOIN", fontSize = MaterialTheme.typography.h5.fontSize)
             }
         }
+
+        Spacer(modifier = Modifier.padding(SPACER_HEIGHT))
+
+        Button(
+            onClick = {
+                navController.navigate(route = Screen.MainMenu.route)
+            },
+            modifier = Modifier
+                .fillMaxWidth(BUTTON_WIDTH)
+                .height(BUTTON_HEIGHT)
+        )
+        {
+            // game.startGame()
+            Text(text = "BACK", fontSize = MaterialTheme.typography.h5.fontSize)
+        }
+
 
     }
 
