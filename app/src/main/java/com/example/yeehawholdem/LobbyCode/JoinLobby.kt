@@ -279,7 +279,7 @@ fun Joinlobby(navController : NavController) {
                             lobbyRef.child("ActiveUsers").child(userUid.toString()).child("IsStillIn").setValue(true)
                             lobbyRef.child("ActiveUsers").child(userUid.toString()).child("IsStillIn").setValue(true)
 
-                            lobbyRef.child("ActiveUsers").child(userUid.toString()).child("TurnNumber").setValue(numberOfPlayers)
+                            // lobbyRef.child("ActiveUsers").child(userUid.toString()).child("TurnNumber").setValue(numberOfPlayers)
 
                             database.getReference(userUid.toString()).child("InLobby")
                                 .setValue(selectedLobby)

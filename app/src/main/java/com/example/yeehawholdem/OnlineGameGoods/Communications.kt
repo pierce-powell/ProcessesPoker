@@ -49,7 +49,6 @@ class Communications {
                 game.setCard5(snapshot?.child("River").child("Card5").value as Long)
                 game.setCurrentActivePlayer(snapshot?.child("CurrentActivePlayer").value as Long)
                 game.setIsHost(if (snapshot?.child("Host").value.toString() == UID) 1L else 0L)
-                //game.setIsGameInProgress(if (snapshot?.child("IsGameInProgress").value.toString() == UID) 1L else 0L)
                 game.setIsGameInProgress(snapshot?.child("IsGameInProgress").value as Boolean)
                 game.setNumPlayersChecked(snapshot?.child("NumPlayersChecked").value as Long)
                 game.setCurrBetCycle(snapshot?.child("CurrBetCycle").value as Long)
@@ -74,18 +73,29 @@ class Communications {
         database.addValueEventListener(lobbyListener)
     }
 
+    suspend fun getLobbyString(): String {
+        val UID = Firebase.auth.currentUser?.uid.toString()
+        val database = Firebase.database.getReference(UID)
+
+        val snapshot = database.get().await()
+
+        return snapshot.child("InLobby").value.toString()
+    }
+
     fun usersEventListener(game: GameValues, lobbyStr: String) {
         Firebase.database.getReference(lobbyStr).child("ActiveUsers")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val lobbyBet = dataSnapshot.children
                     var curPlayer = LeaderBoardPlayer()
                     game.playerList.clear()
+                    // game.playersStillIn.clear()
 
                     lobbyBet.forEach {
                         var key = it.key.toString()
                         var playerBalance = it.child("balance").getValue() as Long?
                         var playerName = it.child("username").getValue() as String?
+                        var isStillIn = it.child("IsStillIn").getValue() as Boolean?
                         var player = playerName?.let { it1 ->
                             playerBalance?.let { it2 ->
                                 Player(
@@ -98,16 +108,13 @@ class Communications {
                         if (key != "") {
                             if (player != null) {
                                 game.playerList.add(player)
+                                if (isStillIn == true) {
+                                    // game.playersStillIn.add(player)
+                                }
                             }
                         }
                     }
-
-                    // Check for null
-                    if (lobbyBet == null) {
-                        return
-                    }
                 }
-
                 override fun onCancelled(error: DatabaseError) {
                     // Failed to read value
                 }
@@ -142,6 +149,8 @@ class Communications {
     fun setNumPlayers(lobbyStr: String, changeNumPlayers: Long) {
         val database = Firebase.database.getReference(lobbyStr)
         database.child("NumPlayers").setValue(changeNumPlayers)
+        val dbref = Firebase.database.getReference("Lobbys")
+        dbref.child(lobbyStr).setValue(changeNumPlayers)
     }
 
     fun setPot(lobbyStr: String, changePot: Long) {
@@ -190,6 +199,12 @@ class Communications {
         database.child("ActiveUsers").child(UID).child("balance").setValue(balance)
     }
 
+    fun setIsStillIn(lobbyStr: String, isStillIn : Boolean) {
+        val database = Firebase.database.getReference(lobbyStr)
+        val UID = Firebase.auth.currentUser?.uid.toString()
+        database.child("ActiveUsers").child(UID).child("IsStillIn").setValue(isStillIn)
+    }
+
     fun setNumPlayersChecked(lobbyStr: String, numPlayersChecked: Long) {
         val database = Firebase.database.getReference(lobbyStr)
         database.child("NumPlayersChecked").setValue(numPlayersChecked)
@@ -200,4 +215,11 @@ class Communications {
         database.child("CurrBetCycle").setValue(currBetCycle)
     }
 
+    fun setPlayerTurnNumber(lobbyStr: String, playerList: MutableList<Player>) {
+        val database = Firebase.database.getReference(lobbyStr)
+        for (player in playerList) {
+            database.child("ActiveUsers").child(player.playerFirebaseId).child("TurnNumber")
+                .setValue(playerList.indexOf(player))
+        }
+    }
 }

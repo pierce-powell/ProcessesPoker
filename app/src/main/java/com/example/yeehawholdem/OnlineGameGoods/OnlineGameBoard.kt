@@ -6,6 +6,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,6 +25,7 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 import com.example.yeehawholdem.LogicGoods.Card
 import com.example.yeehawholdem.LogicGoods.GameState
+import kotlinx.coroutines.*
 
 /*
 Heyo peeps, heres some important notes to consider with how the lobby works, I tried to make it
@@ -46,7 +48,8 @@ When it is, remove them from the lobby (Active or Waitroom), reduce the number o
 If they were the host, delete the HostOfLobby variable under their Uid
  */
 
-// TODO: Start button for Host?
+var ls = ""
+
 // TODO: Add timer to timeout players who take too long
 @Composable
 fun GameBoardOnline(navController: NavController) {
@@ -56,8 +59,6 @@ fun GameBoardOnline(navController: NavController) {
         delay(1000)
         dummy = !dummy
     }
-
-    val ls = "Lobby1"
 
     var communications = Communications()
     var gameVals by remember { mutableStateOf(GameValues()) }
@@ -80,9 +81,15 @@ fun GameBoardOnline(navController: NavController) {
     var IsGameInProgress by remember { mutableStateOf(false) }
     var startGame by remember { mutableStateOf(false) }
     var gameClass by remember { mutableStateOf(Game(gameVals, communications, ls)) }
+    var curBetCycle by remember { mutableStateOf(0) }
 
-    communications.setupLobbyEventListener(gameVals, ls)
-    communications.usersEventListener(gameVals, ls)
+    // Get the lobby number and store it in the String "ls"
+    LaunchedEffect(Unit) {
+        ls = communications.getLobbyString()
+        gameClass = Game(gameVals, communications, ls)
+        communications.setupLobbyEventListener(gameVals, ls)
+        communications.usersEventListener(gameVals, ls)
+    }
 
     // flags for the UI to display the cards
     card1 = gameVals.getCard1() != -1L
@@ -95,7 +102,8 @@ fun GameBoardOnline(navController: NavController) {
     balance = gameVals.getBalance().toInt()
     curBet = gameVals.getBet().toInt()
     pot = gameVals.getPot().toInt()
-    // IsGameInProgress = gameVals.getIsGameInProgress() != -1L
+    IsGameInProgress = gameVals.getIsGameInProgress()
+    curBetCycle = gameVals.getCurrBetCycle().toInt()
 
     // This is the isHost check for the composable, use with if statement
     if(gameClass.gameState == GameState.STARTGAME)
@@ -105,8 +113,12 @@ fun GameBoardOnline(navController: NavController) {
         gameClass.increaseCurrentActivePlayer()
     }
 
+    val coroutineScope = rememberCoroutineScope()
     if(gameClass.isShowdown()){
-        gameClass.showdownOnline()
+        LaunchedEffect(Unit) {
+            val test = gameClass.showdownOnline()
+            print("test = " + test)
+        }
     }
 
     // Gameplay Loop for Host
@@ -193,8 +205,9 @@ fun GameBoardOnline(navController: NavController) {
 
         {
             if (isHost) {
-                Button(//Start button
+                var startButton = Button(//Start button
                     onClick = {
+                        startGame = true
                         if(gameVals.getNumPlayers() > 1)
                             startGame = true
                     },
@@ -253,12 +266,12 @@ fun GameBoardOnline(navController: NavController) {
             {
                 Button(//fold button
                     onClick = {
-                        startGame = true
+                        gameClass.gameState = GameState.SHOWDOWN
                         gameVals.setIsStillIn(false)
                     },
                     modifier = Modifier
                         .fillMaxWidth(.3f)
-                        .height(BUTTON_HEIGHT)
+                        .height(BUTTON_HEIGHT), enabled = gameClass.isTurn() && IsGameInProgress
                 )
                 {
                     Text(text = "Fold", fontSize = MaterialTheme.typography.h5.fontSize)
@@ -305,7 +318,7 @@ fun GameBoardOnline(navController: NavController) {
                         },
                         modifier = Modifier
                             .fillMaxWidth(1f)
-                            .height(45.dp)
+                            .height(45.dp), enabled = gameClass.isTurn() && IsGameInProgress
                     )
                     {
                         Text(text = "Lock in", fontSize = MaterialTheme.typography.h5.fontSize)
@@ -324,7 +337,7 @@ fun GameBoardOnline(navController: NavController) {
                         },
                         modifier = Modifier
                             .fillMaxWidth(.9f)
-                            .height(40.dp)
+                            .height(40.dp), enabled = gameClass.isTurn() && IsGameInProgress
                     )
                     {
                         Text(text = "+", fontSize = MaterialTheme.typography.h5.fontSize)
@@ -338,7 +351,7 @@ fun GameBoardOnline(navController: NavController) {
                         },
                         modifier = Modifier
                             .fillMaxWidth(.9f)
-                            .height(40.dp)
+                            .height(40.dp), enabled = gameClass.isTurn() && IsGameInProgress
                     )
                     {
                         Text(text = "-", fontSize = MaterialTheme.typography.h5.fontSize)

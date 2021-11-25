@@ -92,6 +92,7 @@ class CheckHand {
     // Go through all the combinations of hands and return the value of the hand with
     // the highest value determine by getCurHandValue(). Does not check for differences
     // between hands with equal values (e.g. different straights, flushes, etc.)
+    @Suppress("UnstableApiUsage")
     fun bestHand(_hand: MutableList<Card>, communityCards: MutableList<Card>) : Int {
         val all7 = mutableSetOf<Card>()
         mutableListOf<MutableList<Card>>()
@@ -108,9 +109,6 @@ class CheckHand {
             currentHand = comb.toMutableList()
             values.add(getCurHandValue())
         }
-
-        // val indexOfBestHand = values.lastIndexOf(values.maxOrNull())
-        // return set.elementAt(indexOfBestHand).toMutableList()
 
         // Return the highest value of the set
         return values.maxOrNull()!!

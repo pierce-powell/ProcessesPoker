@@ -85,14 +85,6 @@ class Table {
         }
     }
 
-    fun addPlayer(_player : Player) {
-        playerArray.add(_player)
-    }
-
-    fun removePlayer(_player : Player) {
-        playerArray.remove(_player)
-    }
-
     // Setup the full deck and user deck
     fun setupDeck () {
         sharedDeck.clear()

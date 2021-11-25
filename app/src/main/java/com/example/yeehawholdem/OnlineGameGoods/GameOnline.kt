@@ -6,9 +6,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.yeehawholdem.GameBoardGoods.STARTING_BALANCE
 import com.example.yeehawholdem.OnlineGameGoods.Communications
+import com.example.yeehawholdem.Screen
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.coroutines.delay
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.*
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.*
+import java.util.concurrent.ExecutionException
 
 // If host deal out the cards to the players at the start of the game.
 // Deal out the cards to the River at the start of each round.
@@ -22,32 +31,19 @@ enum class GameState {
     STARTGAME, RUNNING, ROUND1, ROUND2, ROUND3, SHOWDOWN, STOPPED, NEXTGAME, BETORCHECK, NEXTROUND
 }
 
-class Game {
+class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize with list of players for the game
+    (gameVa: GameValues, communicator: Communications, var lobbyStr: String) {
     var dealer = Dealer()
     var table = Table()
     var gameState = GameState.STARTGAME
     var dealerButton = 0
     var turn = 0
-    var gameVals: GameValues
-    var communicator: Communications? = null
-    var lobbyStr: String = ""
+    var gameVals: GameValues = gameVa
+    var communicator: Communications = communicator
     var isRound1Setup = false
     var isRound2Setup = false
     var isRound3Setup = false
 
-
-    //When creating a Game object, initialize with list of players for the game
-    constructor(gameVa: GameValues, communicator: Communications, lobbyStr: String) {
-        this.gameVals = gameVa
-        this.communicator = communicator
-        //this.lobbyStr = lobbyStr
-        this.lobbyStr = "Lobby1"
-    }
-
-    init {
-        // Probably want a startGame button to call the function from the GameBoard screen.
-        // startGame()
-    }
 
     //Shuffles the deck of cards, deals a set of two cards to each player, and sets the game state
     //running
@@ -62,16 +58,20 @@ class Game {
 
         // get all the states, and then set up the listeners
 
+        // HotFix for numplayers
+        communicator.setNumPlayers(lobbyStr, table.playerArray.size.toLong())
+
         // Update the values on the database (player hands, CurrentActivePlayer
         communicator?.setPlayerHands(lobbyStr, table.playerArray)
-        communicator?.setIsGameInProgress(lobbyStr, true) // Set Game to in Progress
-        communicator?.setCurrentActivePlayer(lobbyStr, 1)
+        communicator?.setIsGameInProgress(lobbyStr, true) // Set Game to in Progress setPlayerTurnNumber
+        communicator?.setPlayerTurnNumber(lobbyStr, table.playerArray)
+        communicator?.setCurrentActivePlayer(lobbyStr, 0)
 
         gameState = GameState.RUNNING
     }
 
     fun createPlayersList() {
-        table.playerArray = gameVals?.playerList ?: table.playerArray
+        table.playerArray.addAll(gameVals.playerList)
         table.resetPlayers()
     }
 
@@ -91,6 +91,7 @@ class Game {
         else{
             gameState = GameState.SHOWDOWN
         }
+        communicator?.setNumPlayersChecked(lobbyStr, 0)
     }
 
     fun setupRound1(){
@@ -119,17 +120,17 @@ class Game {
     }
 
     fun setCardsRound1() {
-        communicator?.setCard1(lobbyStr, table.dealer.dealCard())
-        communicator?.setCard2(lobbyStr, table.dealer.dealCard())
-        communicator?.setCard3(lobbyStr, table.dealer.dealCard())
+        communicator?.setCard1(lobbyStr, table.sharedDeck[0].cardID.toLong())
+        communicator?.setCard2(lobbyStr, table.sharedDeck[1].cardID.toLong())
+        communicator?.setCard3(lobbyStr, table.sharedDeck[2].cardID.toLong())
     }
 
     fun setCardsRound2() {
-        communicator?.setCard4(lobbyStr, table.dealer.dealCard())
+        communicator?.setCard4(lobbyStr, table.sharedDeck[3].cardID.toLong())
     }
 
     fun setCardsRound3() {
-        communicator?.setCard5(lobbyStr, table.dealer.dealCard())
+        communicator?.setCard5(lobbyStr, table.sharedDeck[4].cardID.toLong())
     }
 
     fun isTurn(): Boolean{
@@ -147,7 +148,7 @@ class Game {
     fun haveAllPlayersChecked(): Boolean{
         return gameVals.getNumPlayersChecked() == gameVals.playerList.size
     }
-
+    /*
     fun increaseCurrentActivePlayer(){
         var temp = gameVals.getCurrentActivePlayer()
         temp = (temp + 1) % gameVals.getNumPlayers()
@@ -157,74 +158,47 @@ class Game {
         }
         communicator?.setCurrentActivePlayer(lobbyStr, temp + 1)
     }
-
-    // Card 4
-    fun theFlop() {
-        // TODO()
+    */
+    fun increaseCurrentActivePlayer(){
+        var temp = gameVals.getCurrentActivePlayer()
+        communicator?.setCurrentActivePlayer(lobbyStr, (temp + 1) % gameVals.getNumPlayers())
     }
 
-    // Card 5
-    fun theRiver() {
-        // TODO()
-    }
+    suspend fun showdownOnline(): Int = coroutineScope {
+        var playersStillIn = mutableListOf<Player>()
+        var handValues = mutableListOf<Int>()
 
-    // Checks if at least 2 players are still in and if everyone has checked/called
-    fun checkCalled() {
-        if (table.checkCalled()) {
-            //gameState = GameState.NEXTROUND
-        } else {
-            //gameState = GameState.BETORCHECK
+        val taskResult = getPlayersStillIn(playersStillIn)
+
+        for (player in playersStillIn) {
+            handValues.add(dealer.checkHand.bestHand(player.hand, table.sharedDeck))
         }
+
+        return@coroutineScope handValues.maxOrNull()!!
     }
 
-    fun checkPlayersStillIn(): Boolean {
-        return table.checkPlayersStillIn()
-    }
+    // TODO: Underconstruction
+    suspend fun getPlayersStillIn(list: MutableList<Player>)  = coroutineScope {
+        // var list = mutableListOf<Player>()
+        var usernames = mutableListOf<String>()
 
-    fun raise() {
+        val dbref = Firebase.database.getReference(lobbyStr).get().await()
+        val test = dbref.child("ActiveUsers").children
 
-    }
-
-    // TODO: Logic to prevent player from overbetting
-    fun betting(userBet: Int = 0) {
-        var bet = userBet
-
-        while (!table.checkCalled()) {
-            // Keep betting until everyone has called or folded
-            val player = table.playersStillIn[turn]
-            player.balance -= userBet
-            player.checkFlag = true
-            table.addToPot(bet)
-            incrementTurn()
+        var count = 0
+        test.forEach {
+            var isStillIn = it.child("IsStillIn").value as Boolean
+            if (isStillIn)
+                count++
+            usernames.add(it.child("username").value.toString())
+            print(1)
         }
-        incrementTurn()
-        //gameState = GameState.NEXTROUND
-    }
-
-    fun fold() {
-        table.playerArray[turn].isStillIn = false
-        incrementTurn()
-    }
-
-    fun nextRound() {
-        turn = dealerButton; incrementTurn(); incrementTurn()
-        //gameState = GameState.BETORCHECK
-        dealer.cardCount++
-        table.resetCheck()
-
-        if (dealer.cardCount >= 5)
-            gameState = GameState.SHOWDOWN
-    }
-
-    fun showdownOnline(): Int{
-        return -1
-    }
-
-    fun showdown(): String {
-        var player = determineWinner()
-        player.balance += table.currentPot
-        //gameState = GameState.NEXTGAME
-        return player.name
+        for (name in usernames) {
+            for (player in table.playerArray) {
+                if (name == player.name)
+                    list.add(player)
+            }
+        }
     }
 
     // TODO: Determine the winner among the remaining players, and distribute the pot accordingingly
@@ -241,21 +215,4 @@ class Game {
 
         return table.playersStillIn[index]
     }
-
-    fun nextGame() {
-        table.resetPlayers()
-        table.resetHands()
-        table.resetCheck()
-        table.currentPot = 0
-        table.setupDeck()
-        dealer.cardCount = 3
-        dealerButton = (dealerButton + 1) % table.playerArray.size
-        turn = dealerButton
-        gameState = GameState.RUNNING
-    }
-
-    fun incrementTurn() {
-        turn = (turn + 1) % table.playerArray.size
-    }
-
 }
