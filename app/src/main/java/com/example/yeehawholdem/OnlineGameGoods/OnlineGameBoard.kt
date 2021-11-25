@@ -448,6 +448,9 @@ fun addQuitButton(navController: NavController) {
                 //Change the number of players in the lobby back to 0
                 lobbyRef.child("NumPlayers").setValue(0)
 
+                //Also set the number of players in the Lobbys sections to 0
+                Firebase.database.getReference("Lobbys").child(quitData.lobby.toString()).setValue(0)
+
                 //Remove the waiting room
                 lobbyRef.child("WaitingRoom").removeValue()
 

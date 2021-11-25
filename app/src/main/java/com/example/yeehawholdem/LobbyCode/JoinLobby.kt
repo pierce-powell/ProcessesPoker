@@ -258,7 +258,7 @@ fun Joinlobby(navController : NavController) {
 
                         //We also need to update the Lobbys section for the realtime player counts
                         val lobbysSectionRef = database.getReference("Lobbys").child(selectedLobby)
-                        lobbysSectionRef.setValue(numberOfPlayers++)
+                        lobbysSectionRef.setValue(selectedLobbyPlayers + 1)
 
                         //Now we need to check if the game is in progress,
                         //if it isn't, just join the game
