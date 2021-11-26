@@ -2,6 +2,7 @@ package com.example.yeehawholdem.LogicGoods
 
 class GameValues {
     private var bet: Long = 0
+    private var userBet: Int = 0
     private var pot: Long = 0
     private var balance: Long = 0
     private var card1: Long = -1
@@ -30,6 +31,16 @@ class GameValues {
     @JvmName("setBet1")
     fun setBet(newBet: Long) {
         this.bet = newBet
+    }
+
+    @JvmName("getUserBet")
+    fun getUserBet(): Int {
+        return userBet
+    }
+
+    @JvmName("userBet")
+    fun setUserBet(newBet: Int) {
+        this.userBet = newBet
     }
 
     @JvmName("getPot1")

@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.example.yeehawholdem.GameBoardGoods.GameBoardOfflineScreen
 //import com.example.yeehawholdem.GameBoardGoods.GameBoardScreen
 import com.example.yeehawholdem.LeaderBoardGoods.LeaderBoardScreen
+import com.example.yeehawholdem.LobbyCode.Joinlobby
 import com.example.yeehawholdem.Login.LoginScreen
 
 

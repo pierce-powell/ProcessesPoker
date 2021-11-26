@@ -1,4 +1,4 @@
-package com.example.yeehawholdem
+package com.example.yeehawholdem.LobbyCode
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.yeehawholdem.Screen
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
@@ -66,10 +67,8 @@ fun Joinlobby(navController : NavController) {
     var showThatRoomIsFull by remember { mutableStateOf(false) }
 
 
-    lateinit var auth: FirebaseAuth;
-
     // Our authentication database
-    auth = Firebase.auth
+    val auth: FirebaseAuth = Firebase.auth
 
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
@@ -114,9 +113,9 @@ fun Joinlobby(navController : NavController) {
             //val lobby1Players
 
             //This won't actually get any values because its assigned outside of the scope, but lets instantiate it here
-            var hasMapOfLobbys = ArrayList<lobbyForList>()
+            var hasMapOfLobbys: ArrayList<lobbyForList>
 
-                //Launch our co-routine scope so that we can change all the mutable states
+            //Launch our co-routine scope so that we can change all the mutable states
                 coroutineScope.launch {
                     // Call the function that we defined earlier
                     hasMapOfLobbys = getLobbys()
@@ -136,12 +135,12 @@ fun Joinlobby(navController : NavController) {
                 expanded = !expanded
             }) {
                 //Surface the text for darkmode users
-                Surface() {
+                Surface {
                     //Print the users current lobby selections, defaults to lobby 1
                     Text(text = "Current Lobby Selected: $selectedLobby")
                 }
                 //Surface the Icon for darkmode users
-                Surface() {
+                Surface {
                     Icon(
                         imageVector = Icons.Filled.ArrowDropDown,
                         contentDescription = "Drop Down Error for Lobby Selection"
@@ -157,7 +156,7 @@ fun Joinlobby(navController : NavController) {
                         })
                             {
                                 //Surface the rows text for darkmode users
-                                Surface() {
+                                Surface {
                                     Text(text = "Lobby1: Number of players: $lobby1Players")
                                 }
                             }
@@ -166,7 +165,7 @@ fun Joinlobby(navController : NavController) {
                             expanded = false
                         })
                         {
-                            Surface() {
+                            Surface {
                                 Text(text = "Lobby2: Number of players: $lobby2Players")
                             }
                         }
@@ -175,7 +174,7 @@ fun Joinlobby(navController : NavController) {
                             expanded = false
                         })
                         {
-                            Surface() {
+                            Surface {
                                 Text(text = "Lobby 3: Number of players: $lobby3Players")
                             }
                         }
@@ -184,7 +183,7 @@ fun Joinlobby(navController : NavController) {
                             expanded = false
                         })
                         {
-                            Surface() {
+                            Surface {
                                 Text(text = "Lobby 4: Number of players: $lobby4Players")
                             }
                         }
@@ -193,7 +192,7 @@ fun Joinlobby(navController : NavController) {
                             expanded = false
                         })
                         {
-                            Surface() {
+                            Surface {
                                 Text(text = "Lobby 5: Number of players: $lobby5Players")
                             }
                         }
@@ -204,7 +203,7 @@ fun Joinlobby(navController : NavController) {
             Spacer(modifier = Modifier.padding(150.dp))
 
             //define our data structure
-            var lobbyDetails = lobbyInfo()
+            var lobbyDetails: lobbyInfo
             val usernameCoScope = rememberCoroutineScope()
             usernameCoScope.launch {
                 //Call the function that we defined earlier
@@ -268,6 +267,8 @@ fun Joinlobby(navController : NavController) {
                                 .child("username").setValue(playerUsername)
                             lobbyRef.child("ActiveUsers").child(userUid.toString()).child("balance")
                                 .setValue(playerBalance)
+                            lobbyRef.child("ActiveUsers").child(userUid.toString()).child("UserBet")
+                                .setValue(0)
 
                             //Give the players some cards when they join in as well
                             lobbyRef.child("ActiveUsers").child(userUid.toString()).child("Cards").child("Card1")
@@ -385,8 +386,7 @@ suspend fun getUsernameHelper(): DataSnapshot? {
     //Realtime database
     val database = Firebase.database
     //Authentication database
-    var auth: FirebaseAuth;
-    auth = Firebase.auth
+    val auth: FirebaseAuth = Firebase.auth
 
     //Store the user Uid
     val userUid = auth.currentUser?.uid
@@ -417,8 +417,8 @@ suspend fun getUsername() : String {
 //These to functions behave the same as the former 2
 suspend fun getUserBalanceHelper(): DataSnapshot? {
     val database = Firebase.database
-    var auth: FirebaseAuth;
-    auth = Firebase.auth
+
+    val auth: FirebaseAuth = Firebase.auth
 
     val userUid = auth.currentUser?.uid
 
@@ -520,7 +520,7 @@ suspend fun getSelectedLobbyHost(selectedLobby: String) : String {
 //This is the momma function that calls all the former functions
 suspend fun getLobbyInfo(selectedLobby: String): lobbyInfo {
     //Get the template for our data (the dataclass defined above)
-    var lobbyInfoValues = lobbyInfo()
+    val lobbyInfoValues = lobbyInfo()
 
     //Handy with call to populate it
     with(lobbyInfoValues)
@@ -555,16 +555,16 @@ suspend fun getLobby(): DataSnapshot? {
 //Another coroutine that stores all the lobby info to array Lists
 suspend fun getLobbys() : ArrayList<lobbyForList> {
     //Since we have 5 lobbys, lets make an arraylist to store them all
-    var allLobbys = ArrayList<lobbyForList>()
+    val allLobbys = ArrayList<lobbyForList>()
     //Call the previous helper that we made and then make a reference for each of its children (Lobby1 - 5)
     val lobbys = getLobby()?.children
 
     //Go through each of the parents kiddos
     lobbys?.forEach {
         //Assign the player count to the current value
-        var curLobbyPlayers = it.value
+        val curLobbyPlayers = it.value
         //Instantiate the data object we're using
-        var curLobby = lobbyForList()
+        val curLobby = lobbyForList()
 
         //Go through each memember of the data object
         with(curLobby) {

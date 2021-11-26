@@ -167,6 +167,7 @@ class Communications {
                 (snapshot.child("balance").value as Long?)?.let { game.setBalance(it) }
                 (snapshot.child("IsStillIn").value as Boolean?)?.let { game.setIsStillIn(it) }
                 (snapshot.child("TurnNumber").value as Long?)?.let { game.setTurnNumber(it.toInt()) }
+                (snapshot.child("UserBet").value as Long?)?.let { game.setUserBet(it.toInt()) }
             }
             override fun onCancelled(error: DatabaseError) {}
         }
@@ -199,9 +200,9 @@ class Communications {
 
                     lobbyBet.forEach {
                         val key = it.key.toString()
-                        val playerBalance = it.child("balance").getValue() as Long?
-                        val playerName = it.child("username").getValue() as String?
-                        val isStillIn = it.child("IsStillIn").getValue() as Boolean?
+                        val playerBalance = it.child("balance").value as Long?
+                        val playerName = it.child("username").value as String?
+                        val isStillIn = it.child("IsStillIn").value as Boolean?
                         val player = playerName?.let { it1 ->
                             playerBalance?.let { it2 ->
                                 Player(
@@ -228,6 +229,12 @@ class Communications {
         val database = Firebase.database.getReference(UID)
         val snapshot = database.get().await()
         return snapshot.child("InLobby").value.toString()
+    }
+
+    fun setUserBet(lobbyStr: String, changeBet: Long) {
+        val UID = Firebase.auth.currentUser?.uid.toString()
+        val database = Firebase.database.getReference(lobbyStr)
+        database.child("ActiveUsers").child(UID).child("UserBet").setValue(changeBet)
     }
 
     fun setBet(lobbyStr: String, changeBet: Long) {
