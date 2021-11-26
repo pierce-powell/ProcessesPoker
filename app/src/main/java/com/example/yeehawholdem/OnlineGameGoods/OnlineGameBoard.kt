@@ -2,11 +2,13 @@ package com.example.yeehawholdem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -16,16 +18,15 @@ import com.example.yeehawholdem.GameBoardGoods.AddCard
 import com.example.yeehawholdem.GameBoardGoods.AddCardBacks
 import com.example.yeehawholdem.GameBoardGoods.AddText
 import com.example.yeehawholdem.GameBoardGoods.CARD_HEIGHT
-import com.example.yeehawholdem.LogicGoods.Game
+import com.example.yeehawholdem.LogicGoods.Card
+import com.example.yeehawholdem.OnlineGameGoods.Game
+import com.example.yeehawholdem.OnlineGameGoods.GameState
 import com.example.yeehawholdem.LogicGoods.GameValues
 import com.example.yeehawholdem.OnlineGameGoods.Communications
 import com.example.yeehawholdem.OnlineGameGoods.QuitGameDataHandler
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
-import com.example.yeehawholdem.LogicGoods.Card
-import com.example.yeehawholdem.LogicGoods.GameState
-import kotlinx.coroutines.*
 
 /*
 Heyo peeps, heres some important notes to consider with how the lobby works, I tried to make it
@@ -113,7 +114,7 @@ fun GameBoardOnline(navController: NavController) {
     curBet = gameVals.getBet().toInt()
     pot = gameVals.getPot().toInt()
     IsGameInProgress = gameVals.getIsGameInProgress()
-    curBetCycle = gameVals.getCurrBetCycle().toInt()
+    curBetCycle = gameVals.getCurrBetCycle()
 
     // This is the isHost check for the composable, use with if statement
     if(gameClass.gameState == GameState.STARTGAME)
@@ -340,7 +341,7 @@ fun GameBoardOnline(navController: NavController) {
                 // AddText(text = "player cards goes here")
             }
             Spacer(modifier = Modifier.padding(10.dp))
-            AddText(text = "User balance: ${balance}")
+            AddText(text = "User balance: $balance")
         }
 
         addQuitButton(navController = navController)
@@ -351,8 +352,8 @@ data class quitInfo(
     var lobby: String? = "",
     var playerID: String? = "",
     var didPlayerQuit: Long? = 0,
-    var playerList: MutableMap<String?, Long?> = mutableMapOf<String?, Long?>(),
-    var waitRoom: MutableMap<String?, Long?> = mutableMapOf<String?, Long?>(),
+    var playerList: MutableMap<String?, Long?> = mutableMapOf(),
+    var waitRoom: MutableMap<String?, Long?> = mutableMapOf(),
     var host: String? = ""
 )
 

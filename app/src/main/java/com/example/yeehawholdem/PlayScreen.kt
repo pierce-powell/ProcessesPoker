@@ -9,7 +9,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.example.yeehawholdem.LogicGoods.Game
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -20,7 +19,7 @@ fun PlayScreen(navController : NavController)
 
     //database calls for the dynamic button
     var isLoggedIn by remember { mutableStateOf(false) }
-    lateinit var auth: FirebaseAuth;
+    lateinit var auth: FirebaseAuth
     auth = Firebase.auth
 
     //if it returns null, the user is not signed in and can't join a lobby

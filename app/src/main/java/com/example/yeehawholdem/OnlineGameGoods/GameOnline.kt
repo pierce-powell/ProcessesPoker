@@ -1,24 +1,11 @@
-package com.example.yeehawholdem.LogicGoods
+package com.example.yeehawholdem.OnlineGameGoods
 
-import android.os.CountDownTimer
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import com.example.yeehawholdem.GameBoardGoods.STARTING_BALANCE
-import com.example.yeehawholdem.OnlineGameGoods.Communications
-import com.example.yeehawholdem.Screen
-import com.example.yeehawholdem.ls
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.example.yeehawholdem.LogicGoods.Dealer
+import com.example.yeehawholdem.LogicGoods.GameValues
+import com.example.yeehawholdem.LogicGoods.Player
+import com.example.yeehawholdem.LogicGoods.Table
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.*
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.*
-import java.util.concurrent.ExecutionException
 
 // If host deal out the cards to the players at the start of the game.
 // Deal out the cards to the River at the start of each round.
@@ -88,17 +75,14 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
     // The pot and balance are handled on the player's side
     // Increase the CurrentActivePlayer
     fun changeState() {
-        if(!isRound1Setup){
-            gameState = GameState.ROUND1
-        }
-        else if(!isRound2Setup){
-            gameState = GameState.ROUND2
-        }
-        else if(!isRound3Setup){
-            gameState = GameState.ROUND3
-        }
-        else{
-            gameState = GameState.SHOWDOWN
+        gameState = if(!isRound1Setup){
+            GameState.ROUND1
+        } else if(!isRound2Setup){
+            GameState.ROUND2
+        } else if(!isRound3Setup){
+            GameState.ROUND3
+        } else{
+            GameState.SHOWDOWN
         }
         communicator.setNumPlayersChecked(lobbyStr, 0)
     }

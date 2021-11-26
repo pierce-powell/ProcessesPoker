@@ -16,11 +16,10 @@ enum class SuitType(val value: Int) {
 
 // cardID is calculated where ID 0 is twoofclubs, 1 is threeofclubs,
 // 13 is twoofdiamonds, and so on.
-class Card(cardID: Int) {
+class Card(var cardID: Int) {
     var suit: SuitType
     var value: Int
     var cardPicture: Int
-    var cardID = cardID
 
     init {
         this.suit = SuitType.values()[(cardID % 52) / 13]

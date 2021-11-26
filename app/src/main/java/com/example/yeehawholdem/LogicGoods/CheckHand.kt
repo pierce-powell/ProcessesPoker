@@ -126,37 +126,29 @@ class CheckHand {
 
     @JvmName("getCurHandValue1")
     fun getCurHandValue(): Int {
-        if (isRoyalFlush())
-            curHandValue = 9 *13*13
-        else if (isStraightFlush())
-            curHandValue = 8 *13*13 + straight()
-        else if (isFourOfAKind())
-            curHandValue = 7 *13*13 + fourOfAKind()
-        else if (isFullHouse())
-            curHandValue = 6 *13*13 + fullHouse()
-        else if (isFlush())
-            curHandValue = 5 *13*13 + getHighestCardValueInHand()
-        else if (isStraight())
-            curHandValue = 4 *13*13 + straight()
-        else if (isThreeOfAKind())
-            curHandValue = 3 *13*13 + threeOfAKind()
-        else if (isTwoPairs())
-            curHandValue = 2 *13*13 + pairs()
-        else if (isPair())
-            curHandValue = 1 *13*13 + pairs()
-        else
-            curHandValue = 0 *13*13 + getHighestCardValueInHand()
+        curHandValue = when {
+            isRoyalFlush() -> 9 *13*13
+            isStraightFlush() -> 8 *13*13 + straight()
+            isFourOfAKind() -> 7 *13*13 + fourOfAKind()
+            isFullHouse() -> 6 *13*13 + fullHouse()
+            isFlush() -> 5 *13*13 + getHighestCardValueInHand()
+            isStraight() -> 4 *13*13 + straight()
+            isThreeOfAKind() -> 3 *13*13 + threeOfAKind()
+            isTwoPairs() -> 2 *13*13 + pairs()
+            isPair() -> 1 *13*13 + pairs()
+            else -> 0 *13*13 + getHighestCardValueInHand()
+        }
         return curHandValue
     }
 
     // These functions are to help map out the hand values for tie-breaking
-    fun getHighestCardValueInHand(): Int {
+    private fun getHighestCardValueInHand(): Int {
         val list = currentHand.groupBy { it.value }
 
         return list.maxOf { it.key }
     }
 
-    fun straight(): Int {
+    private fun straight(): Int {
         val list = currentHand.distinctBy { it.value }.sortedBy { it.value }
         if (getHighestCardValueInHand() == 12) {
             return list.getOrNull(3)!!.value
@@ -164,7 +156,7 @@ class CheckHand {
         return getHighestCardValueInHand()
     }
 
-    fun fourOfAKind(): Int {
+    private fun fourOfAKind(): Int {
         val list = currentHand.groupBy { it.value }
         for (xs in list) {
             if (xs.value.size == 1) {
@@ -174,11 +166,10 @@ class CheckHand {
         return -1
     }
 
-    fun fullHouse(): Int {
+    private fun fullHouse(): Int {
         var pair = 0
         var three = 0
         val list = currentHand.groupBy { it.value }
-        val max = list.maxOfOrNull { it.value.size }
 
         for (xs in list) {
             if (xs.value.size == 2) {
@@ -190,7 +181,7 @@ class CheckHand {
         return three * 13 + pair
     }
 
-    fun threeOfAKind(): Int {
+    private fun threeOfAKind(): Int {
         val list = currentHand.groupBy { it.value }
         var max = 0
         for (xs in list) {
@@ -202,7 +193,7 @@ class CheckHand {
         return max
     }
 
-    fun pairs(): Int {
+    private fun pairs(): Int {
         val list = currentHand.groupBy { it.value }
         var max = 0
         for (xs in list) {

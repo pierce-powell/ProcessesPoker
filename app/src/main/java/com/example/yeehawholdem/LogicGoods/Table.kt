@@ -1,7 +1,5 @@
 package com.example.yeehawholdem.LogicGoods
 
-import kotlinx.coroutines.CoroutineScope
-
 class Table {
     var playerArray: MutableList<Player> = mutableListOf()
     var playersStillIn: MutableList<Player> = mutableListOf()
@@ -9,30 +7,12 @@ class Table {
     var currentPot: Int = 0
     val dealer = Dealer()
 
-    /*
-    init {
-    }
-     */
-
-    fun getPlayerID(player: Int): Int {
-        return playerArray.getOrNull(player)!!.playerID
-    }
-
-
-    fun addCardToSharedDeck(card: Card){
-        try {
-            sharedDeck.add(card)
-        } catch (e: Exception) {
-            // TODO: handle exception
-        }
-    }
-
     fun addToPot(amount: Int) {
         try {
             if (amount >= 0) currentPot += amount
             else throw IllegalArgumentException("Amount must be greater than 0")
         } catch (e: IllegalArgumentException) {
-            // TODO: handle exception
+            //
         }
     }
 
@@ -96,9 +76,8 @@ class Table {
     }
 
     // Returns the player with the highest hand value
-    // TODO: Detect if there is a tie. Return multiple players?
     fun playerWithHighestHand(): Player {
-        var list = mutableListOf<Int>()
+        val list = mutableListOf<Int>()
         for (player in playersStillIn) {
             list.add(dealer.checkHand.bestHand(player.hand, sharedDeck))
         }

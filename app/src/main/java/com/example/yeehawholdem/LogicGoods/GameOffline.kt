@@ -1,6 +1,7 @@
 package com.example.yeehawholdem.LogicGoods
 
 import com.example.yeehawholdem.GameBoardGoods.STARTING_BALANCE
+import com.example.yeehawholdem.OnlineGameGoods.GameState
 
 class GameOffline {
     // var dealer = Dealer()

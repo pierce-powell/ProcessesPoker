@@ -1,7 +1,5 @@
 package com.example.yeehawholdem.LogicGoods
 
-import com.example.yeehawholdem.Screen
-
 class GameValues {
     private var bet: Long = 0
     private var pot: Long = 0

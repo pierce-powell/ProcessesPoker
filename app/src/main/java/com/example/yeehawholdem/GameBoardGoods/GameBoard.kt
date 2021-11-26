@@ -1,10 +1,7 @@
 package com.example.yeehawholdem.GameBoardGoods
 
-import android.view.Surface
-import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTransformGestures
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -21,8 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.yeehawholdem.BUTTON_HEIGHT
-import com.example.yeehawholdem.BUTTON_WIDTH
-import com.example.yeehawholdem.LogicGoods.*
+import com.example.yeehawholdem.LogicGoods.Card
+import com.example.yeehawholdem.LogicGoods.GameOffline
+import com.example.yeehawholdem.OnlineGameGoods.GameState
 import com.example.yeehawholdem.R
 import com.example.yeehawholdem.Screen
 
@@ -316,7 +314,7 @@ fun GameBoardOfflineScreen(navController : NavController)
 }
 
 @Composable
-public fun AddCard(card: Card?)
+fun AddCard(card: Card?)
 {
     val scale = remember { mutableStateOf(1f)}
 
@@ -349,7 +347,7 @@ public fun AddCard(card: Card?)
 }
 
 @Composable
-public fun AddCardBacks()
+fun AddCardBacks()
 {
     val scale = remember { mutableStateOf(1f)}
 
@@ -379,7 +377,7 @@ public fun AddCardBacks()
 }
 
 @Composable
-public fun AddText(text : String) {
+fun AddText(text : String) {
     // Wrap in a surface so it can pick up on light-mode vs dark
     Surface {
         //Row for the river text

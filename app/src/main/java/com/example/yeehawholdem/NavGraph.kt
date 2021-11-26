@@ -1,6 +1,5 @@
 package com.example.yeehawholdem
 
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -8,12 +7,11 @@ import androidx.navigation.compose.composable
 import com.example.yeehawholdem.GameBoardGoods.GameBoardOfflineScreen
 //import com.example.yeehawholdem.GameBoardGoods.GameBoardScreen
 import com.example.yeehawholdem.LeaderBoardGoods.LeaderBoardScreen
-import com.example.yeehawholdem.LogicGoods.Game
 import com.example.yeehawholdem.Login.LoginScreen
 
 
 @Composable
-fun setUpNavHost(navController: NavHostController)
+fun SetUpNavHost(navController: NavHostController)
 {
     NavHost(navController = navController, startDestination = Screen.MainMenu.route)
     {

@@ -1,8 +1,5 @@
 package com.example.yeehawholdem
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
@@ -10,15 +7,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.yeehawholdem.LogicGoods.Game
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -29,9 +22,9 @@ import com.google.firebase.ktx.Firebase
 
 
 //Global variables
-public val BUTTON_HEIGHT = 50.dp
-public const val BUTTON_WIDTH = .8f
-public val SPACER_HEIGHT = 20.dp
+val BUTTON_HEIGHT = 50.dp
+const val BUTTON_WIDTH = .8f
+val SPACER_HEIGHT = 20.dp
 
 @Composable
 fun MainMenuScreen(
@@ -39,8 +32,7 @@ fun MainMenuScreen(
 ) {
 
     var isLoggedIn by remember { mutableStateOf(false) }
-    lateinit var auth: FirebaseAuth;
-    auth = Firebase.auth
+    val auth: FirebaseAuth = Firebase.auth
 
     if (auth.currentUser != null)
         isLoggedIn = true

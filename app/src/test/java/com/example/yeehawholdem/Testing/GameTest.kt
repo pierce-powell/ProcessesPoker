@@ -1,8 +1,6 @@
 package com.example.yeehawholdem.Testing
 
-import com.example.yeehawholdem.LogicGoods.Game
 import junit.framework.TestCase
-import org.junit.Test
 
 class GameTest : TestCase() {
     /*val game = Game()
