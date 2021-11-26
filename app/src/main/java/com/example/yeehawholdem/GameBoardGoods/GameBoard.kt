@@ -243,7 +243,8 @@ fun GameBoardOfflineScreen(navController : NavController)
                 {
                     Button(//raise bet button
                         onClick = {
-                            userBet += 5
+                            if (userBet + 5 <= game.player.balance)
+                                userBet += 5
                         },
                         modifier = Modifier
                             .fillMaxWidth(.9f)

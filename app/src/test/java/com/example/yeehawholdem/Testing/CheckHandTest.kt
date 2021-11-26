@@ -39,20 +39,21 @@ class CheckHandTest {
         hand2.add(card9)
 
         checkHand.currentHand.add(Card(0))
-        checkHand.currentHand.add(Card(0))
+        checkHand.currentHand.add(Card(4+13))
         checkHand.currentHand.add(Card(1))
-        checkHand.currentHand.add(Card(1))
-        checkHand.currentHand.add(Card(1))
+        checkHand.currentHand.add(Card(2))
+        checkHand.currentHand.add(Card(12))
     }
 
     @Test
     fun testBestHand() {
-        val res = checkHand.bestHand(hand1, communityCards)
+        val res = checkHand.bestHand(checkHand.currentHand, communityCards)
         println("\n${res}")
     }
 
     @Test
-    fun foo() {
+    fun testgetCurHandValue() {
+        println(checkHand.getCurHandValue())
     }
 
     @Test
