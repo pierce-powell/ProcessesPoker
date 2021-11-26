@@ -186,7 +186,7 @@ fun GameBoardOnline(navController: NavController) {
                     Text(text = "Start Game", fontSize = MaterialTheme.typography.h5.fontSize, textAlign = TextAlign.Center)
                 }
             }
-
+            /*
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -198,7 +198,7 @@ fun GameBoardOnline(navController: NavController) {
                 else AddCard(card = game.dealer_player.hand.getOrNull(0))
                 if (!cardsFlags[8]) AddCardBacks()
                 else AddCard(card = game.dealer_player.hand.getOrNull(1))*/
-            }
+            }*/
             AddText(text = "The River")
             //The River :tm:
             Row(

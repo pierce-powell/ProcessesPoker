@@ -11,6 +11,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -167,7 +168,7 @@ fun GameBoardOfflineScreen(navController : NavController)
                 if (!cardsFlags[8]) AddCardBacks()
                 else AddCard(card = game.dealer_player.hand.getOrNull(1))
             }
-            Spacer(modifier = Modifier.padding(20.dp))
+            //Spacer(modifier = Modifier.padding(20.dp))
             AddText(text = "The River")
             //The River :tm:
             Row(modifier = Modifier
@@ -322,6 +323,7 @@ fun AddCard(card: Card?)
         modifier = Modifier
             .fillMaxHeight()
             .background(MaterialTheme.colors.background)
+            .size((LocalConfiguration.current.screenWidthDp.dp) / 5)
             .padding(1.dp)
             .clip(RectangleShape)
             .pointerInput(Unit) {
@@ -354,6 +356,7 @@ fun AddCardBacks()
         modifier = Modifier
             .fillMaxHeight()
             .background(MaterialTheme.colors.background)
+            .size((LocalConfiguration.current.screenWidthDp.dp) / 5)
             .padding(1.dp)
             .clip(RectangleShape)
             .pointerInput(Unit) {
