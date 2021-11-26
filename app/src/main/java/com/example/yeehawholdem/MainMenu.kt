@@ -1,5 +1,8 @@
 package com.example.yeehawholdem
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
@@ -7,6 +10,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -48,6 +56,26 @@ fun MainMenuScreen(
             verticalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxHeight())
         {
+            //YeeHaw Hold 'Em Logo
+            Box(
+                modifier = Modifier
+                    .height(150.dp)
+                    .background(MaterialTheme.colors.background)
+                    .padding(1.dp),
+                contentAlignment = Alignment.Center,
+            )
+            {
+                // The Pretty Picture
+                Image(
+                    modifier = Modifier.graphicsLayer(
+                        scaleX = 4f,
+                        scaleY = 4f,
+                    ),
+                    painter = painterResource(id = R.drawable.yeehawlogo),
+                    contentDescription = "YeeHaw Hold 'Em Logo"
+                )
+            }
+            Spacer(modifier = Modifier.padding(10.dp))
 
             //Login button
             if (!isLoggedIn)
