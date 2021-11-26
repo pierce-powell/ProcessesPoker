@@ -17,7 +17,7 @@ import com.example.yeehawholdem.LogicGoods.Player
 import com.example.yeehawholdem.ui.theme.Typography
 //coment
 @Composable
-fun CustomLeaderBoardRow(curPlayer: LeaderBoardPlayer) {
+fun CustomLeaderBoardRow(curPlayer: LeaderBoardPlayer, index: Int) {
     Row(
         modifier = Modifier
             .background(Color.Yellow)
@@ -26,6 +26,14 @@ fun CustomLeaderBoardRow(curPlayer: LeaderBoardPlayer) {
             .height(30.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        Box(Modifier.fillMaxWidth(.2f))
+        {
+            Text(
+                text = "${index}",
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
         Box(Modifier.fillMaxWidth(.3f))
         {
             Text(
@@ -35,7 +43,7 @@ fun CustomLeaderBoardRow(curPlayer: LeaderBoardPlayer) {
             )
         }
         Spacer(modifier = Modifier.padding(3.dp))
-        Box(Modifier.fillMaxWidth(.7f)) {
+        Box(Modifier.fillMaxWidth(.9f)) {
             curPlayer.playerName?.let {
                 Text(
                     text = it,
@@ -51,5 +59,5 @@ fun CustomLeaderBoardRow(curPlayer: LeaderBoardPlayer) {
 @Preview
 fun CustomRowPreview()
 {
-    CustomLeaderBoardRow(curPlayer = LeaderBoardPlayer("shit", 69))
+    CustomLeaderBoardRow(curPlayer = LeaderBoardPlayer("shit", 69), 0)
 }

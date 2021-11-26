@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -72,22 +73,21 @@ fun LeaderBoardScreen(navController : NavController)
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             )
             {
-                items(items = myLazyList) { player ->
-                    CustomLeaderBoardRow(curPlayer = player)
+                itemsIndexed(items = myLazyList) { index, player ->
+                    CustomLeaderBoardRow(curPlayer = player, index = index)
                 }
             }
         }
         Column(modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight()
-            .background(Color.Transparent),
+            .fillMaxHeight(),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         )
         {
             Button(//lower bet button
                 onClick = {
-                        navController.navigate(Screen.MainMenu.route)
+                    navController.navigate(Screen.MainMenu.route)
                 },
                 modifier = Modifier
                     .fillMaxWidth(.23f)
@@ -96,25 +96,55 @@ fun LeaderBoardScreen(navController : NavController)
             {
                 Text(text = "X", fontSize = MaterialTheme.typography.h5.fontSize)
             }
-            
+
             Spacer(modifier = Modifier.padding(10.dp))
 
 
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight()
+                    .fillMaxHeight(.5f)
                     .background(Color.Transparent),
-                verticalAlignment = Alignment.Top) {
-                androidx.compose.material.Surface() {
-                    Text("Money:   Player:",
+                verticalAlignment = Alignment.Top
+            ) {
+                androidx.compose.material.Surface {
+                    Text(
+                        "           Money:   Player:",
                         fontSize = 30.sp,
                         fontWeight = FontWeight.ExtraBold,
                         modifier = Modifier
-                            .background(Color.Transparent))
+                            .background(Color.Transparent)
+                    )
+
+
+                }
+            }
+            Spacer(modifier = Modifier.padding(12.dp))
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(.9f)
+                    .background(Color.Transparent),
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Button(//lower bet button
+                    onClick = {
+
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(.23f)
+                        .height(44.dp)
+                )
+                {
+                    Text(
+                        text = "My Postion",
+                        fontSize = MaterialTheme.typography.h5.fontSize
+                    )
                 }
 
             }
+
         }
         Spacer(modifier = Modifier.padding(30.dp))
 
