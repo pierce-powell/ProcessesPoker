@@ -55,14 +55,14 @@ var ls = ""
 fun GameBoardOnline(navController: NavController) {
     var dummy by remember { mutableStateOf(false) }
 
+
     LaunchedEffect(key1 = dummy) {
-        delay(1000)
+        delay(200)
         dummy = !dummy
     }
 
-    var communications = Communications()
-    var gameVals by remember { mutableStateOf(GameValues()) }
-    var listener by remember { mutableStateOf(communications.usersEventListener(gameVals, ls)) }
+    val communications = Communications()
+    val gameVals by remember { mutableStateOf(GameValues()) }
     var list by remember { mutableStateOf(mutableListOf<Long>(-1)) }
     var showDialog by remember { mutableStateOf(false) }
     var card1 by remember { mutableStateOf(false) }
@@ -87,8 +87,18 @@ fun GameBoardOnline(navController: NavController) {
     LaunchedEffect(Unit) {
         ls = communications.getLobbyString()
         gameClass = Game(gameVals, communications, ls)
-        communications.setupLobbyEventListener(gameVals, ls)
+        // communications.setupLobbyEventListener(gameVals, ls)
         communications.usersEventListener(gameVals, ls)
+        communications.setupRiverEventListener(gameVals, ls)
+        communications.setupBetEventListener(gameVals, ls)
+        communications.setupPotEventListener(gameVals, ls)
+        communications.setupIsHostListener(gameVals, ls)
+        communications.setupIsGameInProgressListener(gameVals, ls)
+        communications.setupCurrentActivePlayerEventListener(gameVals, ls)
+        communications.setupNumPlayersCheckedEventListener(gameVals, ls)
+        communications.setupCurrBetCycleEventListener(gameVals, ls)
+        communications.setupNumPlayersEventListener(gameVals, ls)
+        communications.setupPlayerEventListener(gameVals, ls)
     }
 
     // flags for the UI to display the cards
@@ -113,12 +123,10 @@ fun GameBoardOnline(navController: NavController) {
         gameClass.increaseCurrentActivePlayer()
     }
 
-    val coroutineScope = rememberCoroutineScope()
     if(gameClass.isShowdown()){
-        LaunchedEffect(Unit) {
-            val test = gameClass.showdownOnline()
-            print("test = " + test)
-        }
+        gameClass.showdownOnline()
+        startGame = false
+        gameClass.gameState = GameState.STARTGAME
     }
 
     // Gameplay Loop for Host
@@ -144,38 +152,6 @@ fun GameBoardOnline(navController: NavController) {
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
     {
-        /*Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth())
-        {
-            AddText(text = "Bet: ${game.betToString()}")
-            AddText(text = "Pot: ${game.potToString()}")
-            AddText(text = "Card1: ${game.card1ToString()}")
-            AddText(text = "Card2: ${game.card2ToString()}")
-            AddText(text = "Card3: ${game.card3ToString()}")
-            AddText(text = "Card4: ${game.card4ToString()}")
-            AddText(text = "Card5: ${game.card5ToString()}")
-
-            Button(
-                onClick = {gameClass.setCardsRound1() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)) { Text("Round1") }
-            Spacer(modifier = Modifier.height(10.dp))
-            Button(
-                onClick = {gameClass.setCardsRound2() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)) { Text("Round2") }
-            Spacer(modifier = Modifier.height(10.dp))
-            Button(
-                onClick = {gameClass.setCardsRound3() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)) { Text("Round3")}
-        }
-        addQuitButton(navController)
-        Spacer(modifier = Modifier.height(10.dp))*/
         Row(//exit game button
             modifier = Modifier
                 .fillMaxSize()
@@ -183,18 +159,6 @@ fun GameBoardOnline(navController: NavController) {
             horizontalArrangement = Arrangement.End
         )
         {
-            /*Button(
-                onClick = {
-                    //game.gameState = GameState.STOPPED
-                    navController.navigate(route = Screen.MainMenu.route)
-                }, modifier = Modifier
-                    .fillMaxWidth(.15f)
-                    .height(BUTTON_HEIGHT))
-            {
-                Text(text = "X", fontSize = MaterialTheme.typography.h5.fontSize)
-            }*/
-            //addQuitButton()
-            //AddText(text = "Dealer bet")
         }
         //Outer Column to store our two rows
         Column(
@@ -208,6 +172,7 @@ fun GameBoardOnline(navController: NavController) {
                 Button(//Start button
                     onClick = {
                         startGame = true
+                        // communications.setIsGameInProgress(ls, true)
                         if(gameVals.getNumPlayers() > 1)
                             startGame = true
                     },
@@ -266,7 +231,6 @@ fun GameBoardOnline(navController: NavController) {
             {
                 Button(//fold button
                     onClick = {
-                        gameClass.gameState = GameState.SHOWDOWN
                         gameVals.setIsStillIn(false)
                     },
                     modifier = Modifier
@@ -293,7 +257,7 @@ fun GameBoardOnline(navController: NavController) {
                                     balance -= bet - curBet
                                     communications.setBalance(ls, balance.toLong())
                                     communications.setPot(ls, bet - curBet + gameVals.getPot())
-                                    communications.setNumPlayersChecked(ls, 0)
+                                    communications.setNumPlayersChecked(ls, 1)
                                     gameClass.increaseCurrentActivePlayer()
                                 }
                                 //check logic

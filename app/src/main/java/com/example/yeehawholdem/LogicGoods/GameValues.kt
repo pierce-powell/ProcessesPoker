@@ -22,6 +22,7 @@ class GameValues {
     private var currBetCycle = 0
     private var numPlayers = 0
     var playerList = mutableListOf<Player>()
+    var playersStillIn = mutableListOf<Player>()
 
     @JvmName("getBet1")
     fun getBet(): Long {

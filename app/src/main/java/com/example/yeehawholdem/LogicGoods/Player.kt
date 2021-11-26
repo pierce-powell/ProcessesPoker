@@ -13,6 +13,7 @@ data class Player(
     var isStillIn = true
     var checkFlag = false
     var isMyTurn = false
+    var handValue = 0
     //var currBet = 0
 
     fun getHighCard() : Int {

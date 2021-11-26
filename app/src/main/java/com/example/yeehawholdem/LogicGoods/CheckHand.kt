@@ -62,8 +62,9 @@ class CheckHand {
 
     fun isThreeOfAKind(): Boolean {
         val list = currentHand.groupBy { it.value }
-        val max = list.maxByOrNull { list.size }
-        if (max?.value?.size == 3)
+        val max = list.maxOfOrNull { it.value.size }
+
+        if (max == 3)
             return true
         return false
     }
@@ -83,8 +84,9 @@ class CheckHand {
 
     fun isPair(): Boolean {
         val list = currentHand.groupBy { it.value }
-        val max = list.maxByOrNull { list.size }
-        if (max?.value?.size == 2)
+        val max = list.maxOfOrNull { it.value.size }
+
+        if (max == 2)
             return true
         return false
     }

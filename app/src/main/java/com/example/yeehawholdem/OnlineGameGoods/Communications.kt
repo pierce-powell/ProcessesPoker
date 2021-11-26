@@ -1,6 +1,5 @@
 package com.example.yeehawholdem.OnlineGameGoods
 
-import android.widget.TextView
 import com.example.yeehawholdem.LeaderBoardGoods.LeaderBoardPlayer
 import com.example.yeehawholdem.LogicGoods.GameValues
 import com.example.yeehawholdem.LogicGoods.Player
@@ -14,6 +13,7 @@ import kotlinx.coroutines.tasks.await
 class Communications {
     lateinit var auth: FirebaseAuth
 
+    /*
     fun addEventListener(lobby: String, mutableList: MutableList<Long>) {
         val dbReference = Firebase.database.getReference(lobby)
         dbReference.child("Bet").addValueEventListener(object : ValueEventListener {
@@ -33,6 +33,7 @@ class Communications {
             }
         })
     }
+     */
 
     fun setupLobbyEventListener(game: GameValues, lobbyStr: String) {
         val database = Firebase.database.getReference(lobbyStr)
@@ -40,19 +41,14 @@ class Communications {
         val lobbyListener = object : ValueEventListener {
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                game.setBet(snapshot?.child("Bet").value as Long)
-                game.setPot(snapshot?.child("Pot").value as Long)
-                game.setCard1(snapshot?.child("River").child("Card1").value as Long)
-                game.setCard2(snapshot?.child("River").child("Card2").value as Long)
-                game.setCard3(snapshot?.child("River").child("Card3").value as Long)
-                game.setCard4(snapshot?.child("River").child("Card4").value as Long)
-                game.setCard5(snapshot?.child("River").child("Card5").value as Long)
-                game.setCurrentActivePlayer(snapshot?.child("CurrentActivePlayer").value as Long)
-                game.setIsHost(if (snapshot?.child("Host").value.toString() == UID) 1L else 0L)
-                game.setIsGameInProgress(snapshot?.child("IsGameInProgress").value as Boolean)
-                game.setNumPlayersChecked(snapshot?.child("NumPlayersChecked").value as Long)
-                game.setCurrBetCycle(snapshot?.child("CurrBetCycle").value as Long)
-                game.setNumPlayers(snapshot?.child("NumPlayers").value as Long)
+                // game.setBet(snapshot?.child("Bet").value as Long)
+                // game.setPot(snapshot?.child("Pot").value as Long)
+                // game.setCurrentActivePlayer(snapshot?.child("CurrentActivePlayer").value as Long)
+                // game.setIsHost(if (snapshot?.child("Host").value.toString() == UID) 1L else 0L)
+                // game.setIsGameInProgress(snapshot?.child("IsGameInProgress").value as Boolean)
+                // game.setNumPlayersChecked(snapshot?.child("NumPlayersChecked").value as Long)
+                // game.setCurrBetCycle(snapshot?.child("CurrBetCycle").value as Long)
+                // game.setNumPlayers(snapshot?.child("NumPlayers").value as Long)
 
                 (snapshot.child("ActiveUsers").child(UID).child("Cards")
                     .child("Card1").value as Long?)?.let { game.setHandCard1(it) }
@@ -65,21 +61,130 @@ class Communications {
                 (snapshot.child("ActiveUsers").child(UID)
                     .child("TurnNumber").value as Long?)?.let { game.setTurnNumber(it.toInt()) }
             }
-
             override fun onCancelled(error: DatabaseError) {}
 
         }
-
         database.addValueEventListener(lobbyListener)
     }
 
-    suspend fun getLobbyString(): String {
+    fun setupBetEventListener(game: GameValues, lobbyStr: String) {
+        val database = Firebase.database.getReference(lobbyStr)
+        val lobbyListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                game.setBet(snapshot.value as Long)
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        database.child("Bet").addValueEventListener(lobbyListener)
+    }
+
+    fun setupPotEventListener(game: GameValues, lobbyStr: String) {
+        val database = Firebase.database.getReference(lobbyStr)
+        val lobbyListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                game.setPot(snapshot.value as Long)
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        database.child("Pot").addValueEventListener(lobbyListener)
+    }
+
+    fun setupIsHostListener(game: GameValues, lobbyStr: String) {
+        val database = Firebase.database.getReference(lobbyStr)
         val UID = Firebase.auth.currentUser?.uid.toString()
-        val database = Firebase.database.getReference(UID)
+        val lobbyListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                game.setIsHost(if (snapshot.value.toString() == UID) 1L else 0L)
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        database.child("Host").addValueEventListener(lobbyListener)
+    }
 
-        val snapshot = database.get().await()
+    fun setupIsGameInProgressListener(game: GameValues, lobbyStr: String) {
+        val database = Firebase.database.getReference(lobbyStr)
+        val lobbyListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                game.setIsGameInProgress(snapshot.value as Boolean)
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        database.child("IsGameInProgress").addValueEventListener(lobbyListener)
+    }
 
-        return snapshot.child("InLobby").value.toString()
+    fun setupCurrentActivePlayerEventListener(game: GameValues, lobbyStr: String) {
+        val database = Firebase.database.getReference(lobbyStr)
+        val lobbyListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                game.setCurrentActivePlayer(snapshot.value as Long)
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        database.child("CurrentActivePlayer").addValueEventListener(lobbyListener)
+    }
+
+    fun setupNumPlayersCheckedEventListener(game: GameValues, lobbyStr: String) {
+        val database = Firebase.database.getReference(lobbyStr)
+        val lobbyListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                game.setNumPlayersChecked(snapshot.value as Long)
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        database.child("NumPlayersChecked").addValueEventListener(lobbyListener)
+    }
+
+    fun setupCurrBetCycleEventListener(game: GameValues, lobbyStr: String) {
+        val database = Firebase.database.getReference(lobbyStr)
+        val lobbyListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                game.setCurrBetCycle(snapshot.value as Long)
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        database.child("CurrBetCycle").addValueEventListener(lobbyListener)
+    }
+
+    fun setupNumPlayersEventListener(game: GameValues, lobbyStr: String) {
+        val database = Firebase.database.getReference(lobbyStr)
+        val lobbyListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                game.setNumPlayers(snapshot.value as Long)
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        database.child("NumPlayers").addValueEventListener(lobbyListener)
+    }
+
+    fun setupPlayerEventListener(game: GameValues, lobbyStr: String) {
+        val database = Firebase.database.getReference(lobbyStr)
+        val UID = Firebase.auth.currentUser?.uid.toString()
+        val lobbyListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                (snapshot.child("Cards").child("Card1").value as Long?)?.let { game.setHandCard1(it) }
+                (snapshot.child("Cards").child("Card2").value as Long?)?.let { game.setHandCard2(it) }
+                (snapshot.child("balance").value as Long?)?.let { game.setBalance(it) }
+                (snapshot.child("IsStillIn").value as Boolean?)?.let { game.setIsStillIn(it) }
+                (snapshot.child("TurnNumber").value as Long?)?.let { game.setTurnNumber(it.toInt()) }
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        database.child("ActiveUsers").child(UID).addValueEventListener(lobbyListener)
+    }
+
+    fun setupRiverEventListener(game: GameValues, lobbyStr: String) {
+        val database = Firebase.database.getReference(lobbyStr)
+        val lobbyListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                game.setCard1(snapshot.child("Card1").value as Long)
+                game.setCard2(snapshot.child("Card2").value as Long)
+                game.setCard3(snapshot.child("Card3").value as Long)
+                game.setCard4(snapshot.child("Card4").value as Long)
+                game.setCard5(snapshot.child("Card5").value as Long)
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        database.child("River").addValueEventListener(lobbyListener)
     }
 
     fun usersEventListener(game: GameValues, lobbyStr: String) {
@@ -87,16 +192,16 @@ class Communications {
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val lobbyBet = dataSnapshot.children
-                    var curPlayer = LeaderBoardPlayer()
+                    // var curPlayer = LeaderBoardPlayer()
                     game.playerList.clear()
-                    // game.playersStillIn.clear()
+                    game.playersStillIn.clear()
 
                     lobbyBet.forEach {
-                        var key = it.key.toString()
-                        var playerBalance = it.child("balance").getValue() as Long?
-                        var playerName = it.child("username").getValue() as String?
-                        var isStillIn = it.child("IsStillIn").getValue() as Boolean?
-                        var player = playerName?.let { it1 ->
+                        val key = it.key.toString()
+                        val playerBalance = it.child("balance").getValue() as Long?
+                        val playerName = it.child("username").getValue() as String?
+                        val isStillIn = it.child("IsStillIn").getValue() as Boolean?
+                        val player = playerName?.let { it1 ->
                             playerBalance?.let { it2 ->
                                 Player(
                                     name = it1,
@@ -105,20 +210,23 @@ class Communications {
                                 )
                             }
                         }
-                        if (key != "") {
-                            if (player != null) {
-                                game.playerList.add(player)
-                                if (isStillIn == true) {
-                                    // game.playersStillIn.add(player)
-                                }
+                        if (player != null) {
+                            game.playerList.add(player)
+                            if (isStillIn == true) {
+                                game.playersStillIn.add(player)
                             }
                         }
                     }
                 }
-                override fun onCancelled(error: DatabaseError) {
-                    // Failed to read value
-                }
+                override fun onCancelled(error: DatabaseError) {}
             })
+    }
+
+    suspend fun getLobbyString(): String {
+        val UID = Firebase.auth.currentUser?.uid.toString()
+        val database = Firebase.database.getReference(UID)
+        val snapshot = database.get().await()
+        return snapshot.child("InLobby").value.toString()
     }
 
     fun setBet(lobbyStr: String, changeBet: Long) {

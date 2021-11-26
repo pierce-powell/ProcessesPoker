@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import com.example.yeehawholdem.GameBoardGoods.STARTING_BALANCE
 import com.example.yeehawholdem.OnlineGameGoods.Communications
 import com.example.yeehawholdem.Screen
+import com.example.yeehawholdem.ls
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.DatabaseReference
@@ -32,14 +33,13 @@ enum class GameState {
 }
 
 class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize with list of players for the game
-    (gameVa: GameValues, communicator: Communications, var lobbyStr: String) {
+    (gameVa: GameValues, var communicator: Communications, var lobbyStr: String) {
     var dealer = Dealer()
     var table = Table()
     var gameState = GameState.STARTGAME
-    var dealerButton = 0
-    var turn = 0
+    // var dealerButton = 0
+    // var turn = 0
     var gameVals: GameValues = gameVa
-    var communicator: Communications = communicator
     var isRound1Setup = false
     var isRound2Setup = false
     var isRound3Setup = false
@@ -51,7 +51,6 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         table.setupDeck()
         createPlayersList() // set up table.playerArray
         table.dealAllCards()
-        communicator?.usersEventListener(gameVals, lobbyStr)
         //TODO: first player = host
         //TODO: Send all players in waitlist to active users
         //TODO: Populate database.activeUsers hands with cards if host
@@ -62,15 +61,25 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         communicator.setNumPlayers(lobbyStr, table.playerArray.size.toLong())
 
         // Update the values on the database (player hands, CurrentActivePlayer
-        communicator?.setPlayerHands(lobbyStr, table.playerArray)
-        communicator?.setIsGameInProgress(lobbyStr, true) // Set Game to in Progress setPlayerTurnNumber
-        communicator?.setPlayerTurnNumber(lobbyStr, table.playerArray)
-        communicator?.setCurrentActivePlayer(lobbyStr, 0)
+        isRound1Setup = false
+        isRound2Setup = false
+        isRound3Setup = false
+        communicator.setPot(lobbyStr, 0)
+        communicator.setPlayerHands(lobbyStr, table.playerArray)
+        communicator.setIsGameInProgress(lobbyStr, true) // Set Game to in Progress setPlayerTurnNumber
+        communicator.setPlayerTurnNumber(lobbyStr, table.playerArray)
+        communicator.setCurrentActivePlayer(lobbyStr, 0)
+        communicator.setCard1(lobbyStr, -1)
+        communicator.setCard2(lobbyStr, -1)
+        communicator.setCard3(lobbyStr, -1)
+        communicator.setCard4(lobbyStr, -1)
+        communicator.setCard5(lobbyStr, -1)
 
         gameState = GameState.RUNNING
     }
 
     fun createPlayersList() {
+        table.playerArray.clear()
         table.playerArray.addAll(gameVals.playerList)
         table.resetPlayers()
     }
@@ -91,46 +100,46 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         else{
             gameState = GameState.SHOWDOWN
         }
-        communicator?.setNumPlayersChecked(lobbyStr, 0)
+        communicator.setNumPlayersChecked(lobbyStr, 0)
     }
 
     fun setupRound1(){
-        communicator?.setBet(lobbyStr, 0L)
-        communicator?.setNumPlayersChecked(lobbyStr, 0)
-        communicator?.setCurrentActivePlayer(lobbyStr, 0)
+        communicator.setBet(lobbyStr, 0L)
+        communicator.setNumPlayersChecked(lobbyStr, 0)
+        communicator.setCurrentActivePlayer(lobbyStr, 0)
         setCardsRound1()
         gameState = GameState.RUNNING
         isRound1Setup = true
     }
     fun setupRound2(){
-        communicator?.setBet(lobbyStr, 0L)
-        communicator?.setNumPlayersChecked(lobbyStr, 0)
-        communicator?.setCurrentActivePlayer(lobbyStr, 0)
+        communicator.setBet(lobbyStr, 0L)
+        communicator.setNumPlayersChecked(lobbyStr, 0)
+        communicator.setCurrentActivePlayer(lobbyStr, 0)
         setCardsRound2()
         gameState = GameState.RUNNING
         isRound2Setup = true
     }
     fun setupRound3(){
-        communicator?.setBet(lobbyStr, 0L)
-        communicator?.setNumPlayersChecked(lobbyStr, 0)
-        communicator?.setCurrentActivePlayer(lobbyStr, 0)
+        communicator.setBet(lobbyStr, 0L)
+        communicator.setNumPlayersChecked(lobbyStr, 0)
+        communicator.setCurrentActivePlayer(lobbyStr, 0)
         setCardsRound3()
         gameState = GameState.RUNNING
         isRound3Setup = true
     }
 
     fun setCardsRound1() {
-        communicator?.setCard1(lobbyStr, table.sharedDeck[0].cardID.toLong())
-        communicator?.setCard2(lobbyStr, table.sharedDeck[1].cardID.toLong())
-        communicator?.setCard3(lobbyStr, table.sharedDeck[2].cardID.toLong())
+        communicator.setCard1(lobbyStr, table.sharedDeck[0].cardID.toLong())
+        communicator.setCard2(lobbyStr, table.sharedDeck[1].cardID.toLong())
+        communicator.setCard3(lobbyStr, table.sharedDeck[2].cardID.toLong())
     }
 
     fun setCardsRound2() {
-        communicator?.setCard4(lobbyStr, table.sharedDeck[3].cardID.toLong())
+        communicator.setCard4(lobbyStr, table.sharedDeck[3].cardID.toLong())
     }
 
     fun setCardsRound3() {
-        communicator?.setCard5(lobbyStr, table.sharedDeck[4].cardID.toLong())
+        communicator.setCard5(lobbyStr, table.sharedDeck[4].cardID.toLong())
     }
 
     fun isTurn(): Boolean{
@@ -160,59 +169,47 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
     }
     */
     fun increaseCurrentActivePlayer(){
-        var temp = gameVals.getCurrentActivePlayer()
-        communicator?.setCurrentActivePlayer(lobbyStr, (temp + 1) % gameVals.getNumPlayers())
+        val temp = gameVals.getCurrentActivePlayer()
+        communicator.setCurrentActivePlayer(lobbyStr, (temp + 1) % gameVals.getNumPlayers())
     }
 
-    suspend fun showdownOnline(): Int = coroutineScope {
-        var playersStillIn = mutableListOf<Player>()
-        var handValues = mutableListOf<Int>()
+    fun showdownOnline(){
+        // val handValues = mutableListOf<Int>()
+        val winners = determineWinnerOnline()
 
-        val taskResult = getPlayersStillIn(playersStillIn)
-
-        for (player in playersStillIn) {
-            handValues.add(dealer.checkHand.bestHand(player.hand, table.sharedDeck))
+        // distribute pot according to the winners
+        for (player in winners) {
+            val winnings = gameVals.getPot() / winners.size
+            Firebase.database.reference.child(player.playerFirebaseId).child("balance").setValue(winnings + player.balance)
         }
 
-        return@coroutineScope handValues.maxOrNull()!!
+        gameState = GameState.STOPPED
+        communicator.setIsGameInProgress(lobbyStr, false)
+
+        // return handValues.maxOrNull()!!
     }
 
-    // TODO: Underconstruction
-    suspend fun getPlayersStillIn(list: MutableList<Player>)  = coroutineScope {
-        // var list = mutableListOf<Player>()
-        var usernames = mutableListOf<String>()
-
-        val dbref = Firebase.database.getReference(lobbyStr).get().await()
-        val test = dbref.child("ActiveUsers").children
-
-        var count = 0
-        test.forEach {
-            var isStillIn = it.child("IsStillIn").value as Boolean
-            if (isStillIn)
-                count++
-            usernames.add(it.child("username").value.toString())
-            print(1)
-        }
-        for (name in usernames) {
-            for (player in table.playerArray) {
-                if (name == player.name)
-                    list.add(player)
+    fun determineWinnerOnline(): List<Player> {
+        val list = mutableListOf<Int>()
+        table.playersStillIn.clear()
+        for (player in gameVals.playersStillIn) {
+            for (p in table.playerArray) {
+                if (player.name == p.name) {
+                    if (player.isStillIn) {
+                        table.playersStillIn.add(p)
+                    }
+                }
             }
         }
-    }
 
-    // TODO: Determine the winner among the remaining players, and distribute the pot accordingingly
-    // In the case of a tie, just split the pot.
-    fun determineWinner(): Player {
-        var list = mutableListOf<Int>()
         for (player in table.playersStillIn) {
-            list.add(dealer.checkHand.bestHand(player.hand, table.sharedDeck))
+            val handValue = dealer.checkHand.bestHand(player.hand, table.sharedDeck)
+            list.add(handValue)
+            player.handValue = handValue
         }
-
-        // Get player with the highest hand value
-        val test = list.maxOrNull()
-        val index = list.indexOf(list.maxOrNull())
-
-        return table.playersStillIn[index]
+        // Get player(s) with the highest hand value
+        val highestVal = list.maxOrNull()
+        // val num = list.count { it == highestVal }
+        return table.playersStillIn.filter { it.handValue == highestVal }
     }
 }
