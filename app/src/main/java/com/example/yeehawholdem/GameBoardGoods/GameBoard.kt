@@ -27,7 +27,7 @@ import com.example.yeehawholdem.Screen
 //Global variables
 val CARD_HEIGHT = 120.dp
 const val STARTING_BET = 10
-const val STARTING_BALANCE = 1000
+const val STARTING_BALANCE = 10000
 
 //TODO: Display Best Hand at the end of the round
 //TODO: Make the height connected to the individual box instead of the row, so we can click to enlarge?
