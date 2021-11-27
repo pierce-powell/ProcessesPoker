@@ -54,6 +54,7 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         communicator.setPot(lobbyStr, 0)
         communicator.setPlayerHands(lobbyStr, table.playerArray)
         communicator.setIsGameInProgress(lobbyStr, true) // Set Game to in Progress setPlayerTurnNumber
+        communicator.setShowWinner(lobbyStr, false)
         communicator.setPlayerTurnNumber(lobbyStr, table.playerArray)
         communicator.setCurrentActivePlayer(lobbyStr, 0)
         communicator.setCard1(lobbyStr, -1)
@@ -62,7 +63,7 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         communicator.setCard4(lobbyStr, -1)
         communicator.setCard5(lobbyStr, -1)
 
-        gameState = GameState.RUNNING
+        gameState = GameState.STARTGAME
     }
 
     fun createPlayersList() {
@@ -178,11 +179,16 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         // distribute pot according to the winners
         for (player in winners) {
             val winnings = gameVals.getPot() / winners.size
+            val name = player.playerFirebaseId
+            Firebase.database.reference.child(lobbyStr).child("ActiveUsers").child(player.playerFirebaseId).child("balance").setValue(winnings + player.balance)
             Firebase.database.reference.child(player.playerFirebaseId).child("balance").setValue(winnings + player.balance)
+            // Firebase.database.reference.child(player.playerFirebaseId).child("balance").setValue(winnings + player.balance)
+            Firebase.database.reference.child(player.playerFirebaseId).child("DidYaWin").setValue(true)
         }
 
         gameState = GameState.STOPPED
         communicator.setIsGameInProgress(lobbyStr, false)
+        communicator.setShowWinner(lobbyStr, true)
 
         // return handValues.maxOrNull()!!
     }

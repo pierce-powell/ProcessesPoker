@@ -14,8 +14,10 @@ class GameValues {
     private var handCard2: Long = -1
     private var isStillIn = false
     private var isHost = false
+    private var didYaWin = false
     private var currentActivePlayer: Long = 0
     private var isGameInProgress = false
+    private var showWinner = false
     private var turnNumber = 0
     private var numPlayersChecked = 0
     private var currBetCycle = 0
@@ -181,6 +183,16 @@ class GameValues {
         this.isGameInProgress = newBet
     }
 
+    @JvmName("getShowWinner")
+    fun getShowWinner(): Boolean {
+        return showWinner
+    }
+
+    @JvmName("setShowWinner")
+    fun setShowWinner(newBet: Boolean) {
+        this.showWinner = newBet
+    }
+
     @JvmName("getBalance")
     fun getBalance(): Long {
         return balance
@@ -198,6 +210,16 @@ class GameValues {
 
     @JvmName("setIsStillIn")
     fun setIsStillIn(newBet: Boolean) {
+        this.isStillIn = newBet
+    }
+
+    @JvmName("getDidYaWin")
+    fun getDidYaWin(): Boolean {
+        return isStillIn
+    }
+
+    @JvmName("setDidYaWin")
+    fun setDidYaWin(newBet: Boolean) {
         this.isStillIn = newBet
     }
 

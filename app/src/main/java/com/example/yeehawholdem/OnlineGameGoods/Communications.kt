@@ -60,6 +60,8 @@ class Communications {
                 (snapshot.child("ActiveUsers").child(UID)
                     .child("IsStillIn").value as Boolean?)?.let { game.setIsStillIn(it) }
                 (snapshot.child("ActiveUsers").child(UID)
+                    .child("DidYaWin").value as Boolean?)?.let { game.setIsStillIn(it) }
+                (snapshot.child("ActiveUsers").child(UID)
                     .child("TurnNumber").value as Long?)?.let { game.setTurnNumber(it.toInt()) }
             }
             override fun onCancelled(error: DatabaseError) {}
@@ -111,6 +113,17 @@ class Communications {
             override fun onCancelled(error: DatabaseError) {}
         }
         database.child("IsGameInProgress").addValueEventListener(lobbyListener)
+    }
+
+    fun setupShowWinnerListener(game: GameValues, lobbyStr: String) {
+        val database = Firebase.database.getReference(lobbyStr)
+        val lobbyListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                game.setShowWinner(snapshot.value as Boolean)
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        database.child("ShowWinner").addValueEventListener(lobbyListener)
     }
 
     fun setupCurrentActivePlayerEventListener(game: GameValues, lobbyStr: String) {
@@ -260,6 +273,11 @@ class Communications {
     fun setIsGameInProgress(lobbyStr: String, changeIsGameInProgress: Boolean) {
         val database = Firebase.database.getReference(lobbyStr)
         database.child("IsGameInProgress").setValue(changeIsGameInProgress)
+    }
+
+    fun setShowWinner(lobbyStr: String, changeShowWinner: Boolean) {
+        val database = Firebase.database.getReference(lobbyStr)
+        database.child("ShowWinner").setValue(changeShowWinner)
     }
 
     fun setNumPlayers(lobbyStr: String, changeNumPlayers: Long) {

@@ -279,6 +279,7 @@ fun Joinlobby(navController : NavController) {
                             //Give them a nice flag to tell if they've folded
                             lobbyRef.child("ActiveUsers").child(userUid.toString()).child("IsStillIn").setValue(true)
                             lobbyRef.child("ActiveUsers").child(userUid.toString()).child("IsStillIn").setValue(true)
+                            lobbyRef.child("ActiveUsers").child(userUid.toString()).child("DidYaWin").setValue(false)
 
                             // lobbyRef.child("ActiveUsers").child(userUid.toString()).child("TurnNumber").setValue(numberOfPlayers)
 
