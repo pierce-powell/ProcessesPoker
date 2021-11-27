@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.yeehawholdem.Screen
+import com.example.yeehawholdem.quitInfo
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
@@ -25,7 +26,7 @@ import kotlinx.coroutines.launch
 
 import kotlinx.coroutines.tasks.await
 
-
+data class lobbyInfo(var playerName: String? = "", var numPlayers: Long? = 0, var playerBalance: Long? = 0, var isHost: String? = "", var isInProgress: Boolean? = false)
 
 @Composable
 fun Joinlobby(navController : NavController) {
@@ -65,6 +66,16 @@ fun Joinlobby(navController : NavController) {
     //state to show the user they're being added to the wait room
     var showWaitWarning by remember { mutableStateOf(false) }
     var showThatRoomIsFull by remember { mutableStateOf(false) }
+
+
+
+    var lobbyInfoState by remember {
+        mutableStateOf(lobbyInfo())
+    }
+
+    var lobbyDataHandler = JoinLobbyDataHandler()
+    lobbyDataHandler.getTheLobbyInfo(lobbyInfoState, selectedLobby) // This selected Lobby might be jank
+
 
 
     // Our authentication database
@@ -202,20 +213,6 @@ fun Joinlobby(navController : NavController) {
 
             Spacer(modifier = Modifier.padding(150.dp))
 
-            //define our data structure
-            var lobbyDetails: lobbyInfo
-            val usernameCoScope = rememberCoroutineScope()
-            usernameCoScope.launch {
-                //Call the function that we defined earlier
-                lobbyDetails = getLobbyInfo(selectedLobby)
-                //set all the variables accordingly
-                playerUsername = lobbyDetails.playerName
-                playerBalance = lobbyDetails.playerBalance.toInt()
-                currentHost = lobbyDetails.isHost
-                selectedLobbyPlayers = lobbyDetails.numPlayers.toInt()
-                isGameInProgress = lobbyDetails.isInProgress
-
-            }
 
 
             //Add some space before the sign in button
@@ -230,6 +227,9 @@ fun Joinlobby(navController : NavController) {
 
                     //Reference the lobby that the user selected
                     val lobbyRef = database.getReference(selectedLobby)
+
+                    selectedLobbyPlayers = lobbyInfoState.numPlayers!!.toInt()
+
 
                     //TODO: Cap the lobby
                     if(selectedLobbyPlayers > 6)
@@ -246,7 +246,7 @@ fun Joinlobby(navController : NavController) {
 
 
                         //Lets check if we need this user to step in as the host
-                        if (currentHost.isEmpty()) {
+                        if (lobbyInfoState.isHost.toString().isEmpty()) {
                             //then we need to make this user the host
                             lobbyRef.child("Host").setValue(userUid.toString())
                             //Add the selected lobby to the host's Uid
@@ -261,12 +261,12 @@ fun Joinlobby(navController : NavController) {
 
                         //Now we need to check if the game is in progress,
                         //if it isn't, just join the game
-                        if (!isGameInProgress) {
+                        if (!(lobbyInfoState.isInProgress!!)) {
                             //Now lets add the player so we can keep track of them
                             lobbyRef.child("ActiveUsers").child(userUid.toString())
-                                .child("username").setValue(playerUsername)
+                                .child("username").setValue(lobbyInfoState.playerName)
                             lobbyRef.child("ActiveUsers").child(userUid.toString()).child("balance")
-                                .setValue(playerBalance)
+                                .setValue(lobbyInfoState.playerBalance)
                             lobbyRef.child("ActiveUsers").child(userUid.toString()).child("UserBet")
                                 .setValue(0)
 
@@ -290,9 +290,9 @@ fun Joinlobby(navController : NavController) {
                         } else {
                             //Add them to the waiting room so we don't need to worry about integrating them mid game
                             lobbyRef.child("WaitingRoom").child(userUid.toString())
-                                .child("username").setValue(playerUsername)
+                                .child("username").setValue(lobbyInfoState.playerName)
                             lobbyRef.child("WaitingRoom").child(userUid.toString()).child("balance")
-                                .setValue(playerBalance)
+                                .setValue(lobbyInfoState.playerBalance)
 
                             //Give the players some cards when they join in as well
                             lobbyRef.child("WaitingRoom").child(userUid.toString()).child("Cards").child("Card1")
@@ -379,164 +379,8 @@ data class lobbyForList(var lobbyName: String? = "", var numPlayers: Long? = 0)
 //numPlayers to update the lobby players
 //playerBalance to use in game for bets etc.
 //isHost to determine if theres already a host machine
-data class lobbyInfo(var playerName: String = "", var numPlayers: Long = 0, var playerBalance: Long = 0, var isHost: String = "", var isInProgress: Boolean = false)
-
-//A helper function to get the username snapshot
-suspend fun getUsernameHelper(): DataSnapshot? {
-    //Realtime database
-    val database = Firebase.database
-    //Authentication database
-    val auth: FirebaseAuth = Firebase.auth
-
-    //Store the user Uid
-    val userUid = auth.currentUser?.uid
-
-    //Reference the username child of the current player in the realtime database
-    val playerRef = database.getReference(userUid.toString()).child("username")
-
-    //wait for the results to return
-    val snapshot = playerRef.get().await()
-
-    //send those results to the other function
-    return snapshot
-}
 
 
-//This is the other function afformentioned
-suspend fun getUsername() : String {
-    //Since we already lined it up with the username of the current user, just pull the value
-    val userRef = getUsernameHelper()?.value
-
-    //make it to a string and return it
-    return userRef.toString()
-}
-
-
-
-
-//These to functions behave the same as the former 2
-suspend fun getUserBalanceHelper(): DataSnapshot? {
-    val database = Firebase.database
-
-    val auth: FirebaseAuth = Firebase.auth
-
-    val userUid = auth.currentUser?.uid
-
-    val playerRef = database.getReference(userUid.toString()).child("balance")
-
-    val snapshot = playerRef.get().await()
-
-    return snapshot
-
-}
-
-suspend fun getUserBalance() : Long {
-    val userRef = getUserBalanceHelper()?.value
-
-    return userRef as Long
-}
-
-
-
-
-suspend fun getSelectedLobbyPlayersHelper(selectedLobby: String) : DataSnapshot? {
-    //Realtime database
-    val database = Firebase.database
-
-    //Get the Lobby's reference and then go to the specific lobby the user is interested in
-    val curLobbyPlayerRef = database.getReference("Lobbys").child(selectedLobby)
-
-    //get that data and wait for it to return
-    val numPlayerSnapshot = curLobbyPlayerRef.get().await()
-
-    //send the data to our other function
-    return numPlayerSnapshot
-}
-
-
-//This is said function
-suspend fun getSelectedLobbyNumPlayers(selectedLobby: String) : Long {
-    //pull the data out
-    val lobbyNumRef = getSelectedLobbyPlayersHelper(selectedLobby)?.value
-
-    //return the data as a Long
-    return lobbyNumRef as Long
-}
-
-
-
-//Now lets get the current players in the lobby
-suspend fun getSelectedLobbyProgressHelper(selectedLobby: String) : DataSnapshot? {
-    //Realtime database
-    val database = Firebase.database
-
-    //Get the current lobby the user is interested in, and then go to the IsGameInProgress child
-    val curLobbyPlayerRef = database.getReference(selectedLobby).child("IsGameInProgress")
-
-    //wait for that value to return
-    val numPlayerSnapshot = curLobbyPlayerRef.get().await()
-
-    //send it to our other function
-    return numPlayerSnapshot
-}
-
-
-//This is the other function
-suspend fun getSelectedLobbyProgress(selectedLobby: String) : Boolean {
-    //Pull the value out
-    val lobbyNumRef = getSelectedLobbyProgressHelper(selectedLobby)?.value
-
-    //Return it as a Long
-    return lobbyNumRef as Boolean
-}
-
-
-
-//Now lets get the current players in the lobby
-suspend fun getSelectedLobbyHostHelper(selectedLobby: String) : DataSnapshot? {
-    //Realtime database
-    val database = Firebase.database
-
-    //Go to the lobby the user is interested in and get the Host
-    val curLobbyHostRef = database.getReference(selectedLobby).child("Host")
-
-    //wait for the value to return
-    val hostSnapshot = curLobbyHostRef.get().await()
-
-    //Send it to the other function
-    return hostSnapshot
-}
-
-
-//This is the other function
-suspend fun getSelectedLobbyHost(selectedLobby: String) : String {
-    //Pull the value out
-    val lobbyNumRef = getSelectedLobbyHostHelper(selectedLobby)?.value
-
-    //Cast it to a string and return it
-    return lobbyNumRef.toString()
-}
-
-//This is the momma function that calls all the former functions
-suspend fun getLobbyInfo(selectedLobby: String): lobbyInfo {
-    //Get the template for our data (the dataclass defined above)
-    val lobbyInfoValues = lobbyInfo()
-
-    //Handy with call to populate it
-    with(lobbyInfoValues)
-    {
-        //Call all the functions we just made
-        playerName = getUsername()
-        playerBalance = getUserBalance()
-        numPlayers = getSelectedLobbyNumPlayers(selectedLobby)
-        isHost = getSelectedLobbyHost(selectedLobby)
-        isInProgress = getSelectedLobbyProgress(selectedLobby)
-    }
-
-    //Return our template
-    return lobbyInfoValues
-
-}
 
 
 // kotlin coroutine for getting the lobby snapshot and passing it to our other worker
