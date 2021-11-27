@@ -14,7 +14,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 @Composable
-fun PlayScreen(navController : NavController)
+fun PlayScreen(navController: NavController, internetConnection: Boolean?)
 {
 
     //database calls for the dynamic button

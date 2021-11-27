@@ -1,8 +1,9 @@
 package com.example.yeehawholdem
 
+import android.app.PendingIntent.getActivity
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -13,18 +14,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.yeehawholdem.GameBoardGoods.AddText
-import com.example.yeehawholdem.OnlineGameGoods.GameState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -41,11 +37,14 @@ const val BUTTON_WIDTH = .8f
 val SPACER_HEIGHT = 20.dp
 
 @Composable
-fun MainMenuScreen(navController : NavController, )
+fun MainMenuScreen(navController: NavController, internetConnection: Boolean)
 {
     var showTutorial by remember { mutableStateOf(false) }
     var showHands by remember { mutableStateOf(false) }
     var isLoggedIn by remember { mutableStateOf(false) }
+    var noInternetWarning by remember { mutableStateOf(false)}
+
+
     val auth: FirebaseAuth = Firebase.auth
 
     if (auth.currentUser != null)
@@ -124,7 +123,10 @@ fun MainMenuScreen(navController : NavController, )
             //Login button
             if (!isLoggedIn)
             Button(onClick = {
-                navController.navigate(route = Screen.Login.route)
+                if(!internetConnection)
+                    noInternetWarning = true
+                else
+                    navController.navigate(route = Screen.Login.route)
             },
                 modifier = Modifier
                     .fillMaxWidth(BUTTON_WIDTH)
@@ -242,7 +244,32 @@ fun MainMenuScreen(navController : NavController, )
             }
         )
     }
+
+    if (noInternetWarning) {
+
+        AlertDialog(onDismissRequest = {},
+            title = {
+                Text(text = "ATTENTION")
+            },
+            text = {
+                Text("This functionality requires a stable internet connection!" +
+                        " Please establish an internet connection and restart the app! ")
+            },
+            confirmButton = {
+                Button(onClick = {
+                    noInternetWarning = false
+                })
+                {
+                    Text(text = "Gotcha")
+                }
+            }
+        )
+    }
 }
+
+
+
+
 
 
 
@@ -250,7 +277,5 @@ fun MainMenuScreen(navController : NavController, )
 @Preview
 fun HomeScreenPreview()
 {
-    MainMenuScreen(
-        navController = rememberNavController(),
-    )
+
 }

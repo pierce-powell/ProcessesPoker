@@ -12,13 +12,13 @@ import com.example.yeehawholdem.Login.LoginScreen
 
 
 @Composable
-fun SetUpNavHost(navController: NavHostController)
+fun SetUpNavHost(navController: NavHostController, internetConnection : Boolean)
 {
     NavHost(navController = navController, startDestination = Screen.MainMenu.route)
     {
         composable(route = Screen.MainMenu.route)
         {
-            MainMenuScreen(navController = navController)
+            MainMenuScreen(navController = navController, internetConnection)
         }
         composable(route = Screen.Login.route)
         {
@@ -39,7 +39,7 @@ fun SetUpNavHost(navController: NavHostController)
         }
         composable(route = Screen.Play.route)
         {
-            PlayScreen(navController = navController)
+            PlayScreen(navController = navController, internetConnection)
         }
         composable(route = Screen.JoinLobby.route)
         {
