@@ -185,7 +185,7 @@ fun MainMenuScreen(navController : NavController, )
                 Text(text = "Tutorial")
             },
             text = {
-                Text("Click LOGIN to play online with friends\n" +
+                Text(text = "Click LOGIN to play online with friends\n" +
                         "Click LEADERBOARD to see the top players\n" +
                         "Click PLAY to get started!\n\n" +
                         "Poker Rules: Texas Hold 'Em\n" +
@@ -198,7 +198,9 @@ fun MainMenuScreen(navController : NavController, )
                         " - 4th card is revealed and another round of betting occurs\n" +
                         " - 5th card is revealed and the last round of betting occurs\n" +
                         " - Last, a winner is picked based on who has the best hand\n" +
-                        " - All points wagered in the pot are awarded to the winner and a new game starts")
+                        " - All points wagered in the pot are awarded to the winner and a new game starts\n\n\n\n\n\n",
+                modifier = Modifier.verticalScroll(rememberScrollState()))
+
             },
             confirmButton = {
                 Button(onClick = {
