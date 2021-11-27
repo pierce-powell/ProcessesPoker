@@ -1,7 +1,10 @@
 package com.example.yeehawholdem
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
@@ -154,22 +157,21 @@ fun GameBoardOnline(navController: NavController) {
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
     {
-        Row(//exit game button
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.background),
-            horizontalArrangement = Arrangement.End
-        )
-        {
-        }
         //Outer Column to store our two rows
         Column(
             horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
                 .fillMaxHeight(0.97f)
                 .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .horizontalScroll(rememberScrollState())
         )
 
         {
+            addQuitButton(navController = navController)
+
+            Spacer(Modifier.padding(0.dp, 5.dp))
+
+
             if (isHost) {
                 Button(//Start button
                     onClick = {
@@ -346,7 +348,6 @@ fun GameBoardOnline(navController: NavController) {
             AddText(text = "User balance: $balance")
         }
 
-        addQuitButton(navController = navController)
     }
 }
 
@@ -536,7 +537,7 @@ fun addQuitButton(navController: NavController) {
         },
         modifier = Modifier
             .fillMaxWidth(.4f)
-            .height(40.dp)
+            .height(50.dp)
     )
     {
         Text(text = "Quit Game", fontSize = MaterialTheme.typography.h5.fontSize)
