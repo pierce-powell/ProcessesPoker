@@ -42,15 +42,6 @@ class Communications {
         val lobbyListener = object : ValueEventListener {
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                // game.setBet(snapshot?.child("Bet").value as Long)
-                // game.setPot(snapshot?.child("Pot").value as Long)
-                // game.setCurrentActivePlayer(snapshot?.child("CurrentActivePlayer").value as Long)
-                // game.setIsHost(if (snapshot?.child("Host").value.toString() == UID) 1L else 0L)
-                // game.setIsGameInProgress(snapshot?.child("IsGameInProgress").value as Boolean)
-                // game.setNumPlayersChecked(snapshot?.child("NumPlayersChecked").value as Long)
-                // game.setCurrBetCycle(snapshot?.child("CurrBetCycle").value as Long)
-                // game.setNumPlayers(snapshot?.child("NumPlayers").value as Long)
-
                 (snapshot.child("ActiveUsers").child(UID).child("Cards")
                     .child("Card1").value as Long?)?.let { game.setHandCard1(it) }
                 (snapshot.child("ActiveUsers").child(UID).child("Cards")
@@ -60,7 +51,7 @@ class Communications {
                 (snapshot.child("ActiveUsers").child(UID)
                     .child("IsStillIn").value as Boolean?)?.let { game.setIsStillIn(it) }
                 (snapshot.child("ActiveUsers").child(UID)
-                    .child("DidYaWin").value as Boolean?)?.let { game.setIsStillIn(it) }
+                    .child("DidYaWin").value as Boolean?)?.let { game.setDidYaWin(it) }
                 (snapshot.child("ActiveUsers").child(UID)
                     .child("TurnNumber").value as Long?)?.let { game.setTurnNumber(it.toInt()) }
             }
@@ -354,6 +345,14 @@ class Communications {
         for (player in playerList) {
             database.child("ActiveUsers").child(player.playerFirebaseId).child("TurnNumber")
                 .setValue(playerList.indexOf(player))
+        }
+    }
+
+    fun setDidYaWin(lobbyStr: String, playerList: MutableList<Player>) {
+        val database = Firebase.database.getReference(lobbyStr)
+        for (player in playerList) {
+            database.child("ActiveUsers").child(player.playerFirebaseId).child("DidYaWin")
+                .setValue(false)
         }
     }
 }

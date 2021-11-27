@@ -87,6 +87,9 @@ fun GameBoardOnline(navController: NavController) {
     var startGame by remember { mutableStateOf(false) }
     var gameClass by remember { mutableStateOf(Game(gameVals, communications, ls)) }
     var curBetCycle by remember { mutableStateOf(0) }
+    var showWinner by remember { mutableStateOf(false) }
+    var localShowWinner by remember { mutableStateOf(true) }
+    var playerWins by remember { mutableStateOf(false) }
 
     // Get the lobby number and store it in the String "ls"
     LaunchedEffect(Unit) {
@@ -104,6 +107,7 @@ fun GameBoardOnline(navController: NavController) {
         communications.setupCurrBetCycleEventListener(gameVals, ls)
         communications.setupNumPlayersEventListener(gameVals, ls)
         communications.setupPlayerEventListener(gameVals, ls)
+        communications.setupShowWinnerListener(gameVals, ls)
     }
 
     // flags for the UI to display the cards
@@ -119,6 +123,8 @@ fun GameBoardOnline(navController: NavController) {
     pot = gameVals.getPot().toInt()
     IsGameInProgress = gameVals.getIsGameInProgress()
     curBetCycle = gameVals.getCurrBetCycle()
+    playerWins = gameVals.getDidYaWin()
+    showWinner = gameVals.getShowWinner()
 
     // This is the isHost check for the composable, use with if statement
     isHost = gameVals.getIsHost()
@@ -131,6 +137,9 @@ fun GameBoardOnline(navController: NavController) {
         )
     }
 
+    if (!showWinner && IsGameInProgress)
+        localShowWinner = true
+
     if(gameClass.isShowdown()){
         gameClass.showdownOnline()
         startGame = false
@@ -139,7 +148,7 @@ fun GameBoardOnline(navController: NavController) {
 
     // Gameplay Loop for Host
     if (isHost) {
-        if(gameClass.haveAllPlayersFolded()){
+        if(gameClass.haveAllPlayersFolded()) {
             gameClass.gameState = GameState.SHOWDOWN
         }
         if ((startGame) && (gameClass.gameState == GameState.STARTGAME)) {
@@ -276,7 +285,7 @@ fun GameBoardOnline(navController: NavController) {
                                 //check logic
                                 else if (bet == curBet && bet < balance) {
                                     communications.setBet(ls, bet.toLong())
-                                    balance -= bet - curBet
+                                    balance -= bet
                                     communications.setBalance(ls, balance.toLong())
                                     communications.setPot(ls, bet - userBet + gameVals.getPot())
                                     communications.setNumPlayersChecked(
@@ -356,6 +365,28 @@ fun GameBoardOnline(navController: NavController) {
             AddText(text = "User balance: $balance")
         }
 
+    }
+    if (showWinner && localShowWinner) {
+        AlertDialog(onDismissRequest = {},
+            title = {
+                if(playerWins){
+                    Text(text = "You won!")
+                }
+                else{
+                    Text(text = "You lost!")
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    localShowWinner = false
+                    playerWins = false
+                    // Wait till user presses the button to continue
+                })
+                {
+                    Text(text = "Cool")
+                }
+            }
+        )
     }
 }
 

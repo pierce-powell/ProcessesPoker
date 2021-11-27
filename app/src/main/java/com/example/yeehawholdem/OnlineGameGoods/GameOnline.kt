@@ -1,5 +1,6 @@
 package com.example.yeehawholdem.OnlineGameGoods
 
+import androidx.compose.ui.platform.TextToolbarStatus
 import com.example.yeehawholdem.LogicGoods.Dealer
 import com.example.yeehawholdem.LogicGoods.GameValues
 import com.example.yeehawholdem.LogicGoods.Player
@@ -56,6 +57,7 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         communicator.setIsGameInProgress(lobbyStr, true) // Set Game to in Progress setPlayerTurnNumber
         communicator.setShowWinner(lobbyStr, false)
         communicator.setPlayerTurnNumber(lobbyStr, table.playerArray)
+        communicator.setDidYaWin(lobbyStr, table.playerArray)
         communicator.setCurrentActivePlayer(lobbyStr, 0)
         communicator.setCard1(lobbyStr, -1)
         communicator.setCard2(lobbyStr, -1)
@@ -63,7 +65,7 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         communicator.setCard4(lobbyStr, -1)
         communicator.setCard5(lobbyStr, -1)
 
-        gameState = GameState.STARTGAME
+        gameState = GameState.RUNNING
     }
 
     fun createPlayersList() {
@@ -183,7 +185,7 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
             Firebase.database.reference.child(lobbyStr).child("ActiveUsers").child(player.playerFirebaseId).child("balance").setValue(winnings + player.balance)
             Firebase.database.reference.child(player.playerFirebaseId).child("balance").setValue(winnings + player.balance)
             // Firebase.database.reference.child(player.playerFirebaseId).child("balance").setValue(winnings + player.balance)
-            Firebase.database.reference.child(player.playerFirebaseId).child("DidYaWin").setValue(true)
+            Firebase.database.reference.child(lobbyStr).child("ActiveUsers").child(player.playerFirebaseId).child("DidYaWin").setValue(true)
         }
 
         gameState = GameState.STOPPED
@@ -195,6 +197,8 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
 
     fun determineWinnerOnline(): List<Player> {
         val list = mutableListOf<Int>()
+        var list2 = mutableListOf<ShowdownResults>()
+        val playerList = table.playersStillIn
         table.playersStillIn.clear()
         for (player in gameVals.playersStillIn) {
             for (p in table.playerArray) {
@@ -206,14 +210,24 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
             }
         }
 
-        for (player in table.playersStillIn) {
+        for (i in playerList.indices) {
+            val player = playerList.get(i)
             val handValue = dealer.checkHand.bestHand(player.hand, table.sharedDeck)
             list.add(handValue)
-            player.handValue = handValue
+            list2.add(ShowdownResults(player.playerFirebaseId, handValue))
+            // table.playersStillIn.replaceAll()
+            playerList[i].handValue = handValue
         }
         // Get player(s) with the highest hand value
         val highestVal = list.maxOrNull()
         // val num = list.count { it == highestVal }
-        return table.playersStillIn.filter { it.handValue == highestVal }
+        val test = playerList.filter { it.handValue == highestVal }
+        //val test2 = list2.a
+        return playerList.filter { it.handValue == highestVal }
+    }
+
+    class ShowdownResults(var playerName: String = "",
+                          var handValue: Int = 0) {
+
     }
 }
