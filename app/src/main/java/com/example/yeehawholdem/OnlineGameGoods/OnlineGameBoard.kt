@@ -136,6 +136,9 @@ fun GameBoardOnline(navController: NavController) {
 
     // Gameplay Loop for Host
     if (isHost) {
+        if(gameClass.haveAllPlayersFolded()){
+            gameClass.gameState = GameState.SHOWDOWN
+        }
         if ((startGame) && (gameClass.gameState == GameState.STARTGAME)) {
             gameClass.startGame()
         }

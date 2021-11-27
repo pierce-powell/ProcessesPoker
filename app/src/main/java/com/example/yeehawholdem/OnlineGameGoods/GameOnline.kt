@@ -157,6 +157,20 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         communicator.setCurrentActivePlayer(lobbyStr, (temp + 1) % gameVals.getNumPlayers())
     }
 
+    fun haveAllPlayersFolded(): Boolean{
+        var temp = 0
+        for(i in gameVals.playerList){
+            if(!i.isStillIn){
+                temp += 1
+            }
+            if(temp > 1){
+                return false
+            }
+        }
+
+        return true
+    }
+
     fun showdownOnline(){
         // val handValues = mutableListOf<Int>()
         val winners = determineWinnerOnline()
