@@ -121,17 +121,20 @@ fun GameBoardOnline(navController: NavController) {
     curBetCycle = gameVals.getCurrBetCycle()
 
     // This is the isHost check for the composable, use with if statement
-    if(gameClass.gameState == GameState.STARTGAME)
-        isHost = gameVals.getIsHost()
+    isHost = gameVals.getIsHost()
 
-    if((gameClass.isFolded() && gameClass.isTurn()) && gameClass.gameState != GameState.STARTGAME){
+    if((gameClass.isFolded() && gameClass.isTurn()) && IsGameInProgress){
         gameClass.increaseCurrentActivePlayer()
+        communications.setNumPlayersChecked(
+            ls,
+            gameVals.getNumPlayersChecked() + 1L
+        )
     }
 
     if(gameClass.isShowdown()){
         gameClass.showdownOnline()
         startGame = false
-        gameClass.gameState = GameState.STARTGAME
+        gameClass.gameState = GameState.STOPPED
     }
 
     // Gameplay Loop for Host
@@ -179,6 +182,7 @@ fun GameBoardOnline(navController: NavController) {
                 Button(//Start button
                     onClick = {
                         startGame = true
+                        gameClass.gameState = GameState.STARTGAME
                         // communications.setIsGameInProgress(ls, true)
                         if(gameVals.getNumPlayers() > 1)
                             startGame = true
@@ -239,6 +243,7 @@ fun GameBoardOnline(navController: NavController) {
                 Button(//fold button
                     onClick = {
                         communications.setIsStillIn(ls, false)
+                        gameClass.increaseCurrentActivePlayer()
                     },
                     modifier = Modifier
                         .fillMaxWidth(.3f)
