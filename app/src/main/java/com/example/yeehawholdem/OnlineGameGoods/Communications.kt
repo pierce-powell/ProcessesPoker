@@ -51,8 +51,6 @@ class Communications {
                 (snapshot.child("ActiveUsers").child(UID)
                     .child("IsStillIn").value as Boolean?)?.let { game.setIsStillIn(it) }
                 (snapshot.child("ActiveUsers").child(UID)
-                    .child("DidYaWin").value as Boolean?)?.let { game.setDidYaWin(it) }
-                (snapshot.child("ActiveUsers").child(UID)
                     .child("TurnNumber").value as Long?)?.let { game.setTurnNumber(it.toInt()) }
             }
             override fun onCancelled(error: DatabaseError) {}
@@ -172,6 +170,7 @@ class Communications {
                 (snapshot.child("IsStillIn").value as Boolean?)?.let { game.setIsStillIn(it) }
                 (snapshot.child("TurnNumber").value as Long?)?.let { game.setTurnNumber(it.toInt()) }
                 (snapshot.child("UserBet").value as Long?)?.let { game.setUserBet(it.toInt()) }
+                (snapshot.child("DidYaWin").value as Boolean?)?.let { game.setDidYaWin(it) }
             }
             override fun onCancelled(error: DatabaseError) {}
         }

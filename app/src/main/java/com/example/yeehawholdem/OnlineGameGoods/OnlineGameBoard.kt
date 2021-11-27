@@ -88,7 +88,7 @@ fun GameBoardOnline(navController: NavController) {
     var gameClass by remember { mutableStateOf(Game(gameVals, communications, ls)) }
     var curBetCycle by remember { mutableStateOf(0) }
     var showWinner by remember { mutableStateOf(false) }
-    var localShowWinner by remember { mutableStateOf(true) }
+    var localShowWinner by remember { mutableStateOf(false) }
     var playerWins by remember { mutableStateOf(false) }
 
     // Get the lobby number and store it in the String "ls"
@@ -140,7 +140,7 @@ fun GameBoardOnline(navController: NavController) {
     if (!showWinner && IsGameInProgress)
         localShowWinner = true
 
-    if(gameClass.isShowdown()){
+    if(gameClass.isShowdown() && IsGameInProgress){
         gameClass.showdownOnline()
         startGame = false
         gameClass.gameState = GameState.STOPPED
@@ -382,7 +382,7 @@ fun GameBoardOnline(navController: NavController) {
             confirmButton = {
                 Button(onClick = {
                     localShowWinner = false
-                    playerWins = false
+                    // playerWins = false
                     // Wait till user presses the button to continue
                 })
                 {

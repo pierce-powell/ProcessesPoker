@@ -215,12 +215,12 @@ class GameValues {
 
     @JvmName("getDidYaWin")
     fun getDidYaWin(): Boolean {
-        return isStillIn
+        return didYaWin
     }
 
     @JvmName("setDidYaWin")
     fun setDidYaWin(newBet: Boolean) {
-        this.isStillIn = newBet
+        this.didYaWin = newBet
     }
 
     @JvmName("getTurnNumber")
