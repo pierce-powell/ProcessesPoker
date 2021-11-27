@@ -182,8 +182,9 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         for (player in winners) {
             val winnings = gameVals.getPot() / winners.size
             val name = player.playerFirebaseId
-            Firebase.database.reference.child(lobbyStr).child("ActiveUsers").child(player.playerFirebaseId).child("balance").setValue(winnings + player.balance)
-            Firebase.database.reference.child(player.playerFirebaseId).child("balance").setValue(winnings + player.balance)
+            val balance = gameVals.playerList.filter { it.playerFirebaseId == name }.get(0).balance
+            Firebase.database.reference.child(lobbyStr).child("ActiveUsers").child(player.playerFirebaseId).child("balance").setValue(winnings + balance)
+            Firebase.database.reference.child(player.playerFirebaseId).child("balance").setValue(winnings + balance)
             // Firebase.database.reference.child(player.playerFirebaseId).child("balance").setValue(winnings + player.balance)
             Firebase.database.reference.child(lobbyStr).child("ActiveUsers").child(player.playerFirebaseId).child("DidYaWin").setValue(true)
         }
