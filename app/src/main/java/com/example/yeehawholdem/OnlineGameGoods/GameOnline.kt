@@ -158,12 +158,12 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
     }
 
     fun haveAllPlayersFolded(): Boolean{
-        var temp = 0
+        var numPlayersStillIn = 0
         for(i in gameVals.playerList){
-            if(!i.isStillIn){
-                temp += 1
+            if(i.isStillIn){
+                numPlayersStillIn += 1
             }
-            if(temp > 1){
+            if(numPlayersStillIn > 1){
                 return false
             }
         }
