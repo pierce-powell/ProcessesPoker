@@ -4,6 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
@@ -56,7 +58,9 @@ fun MainMenuScreen(navController : NavController, )
         //Column to hold all the goods
         Column(horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxHeight())
+        modifier = Modifier
+            .fillMaxHeight()
+            .verticalScroll(rememberScrollState()))
         {
             //Tutorial button
             Row(
@@ -107,8 +111,8 @@ fun MainMenuScreen(navController : NavController, )
                 // The Pretty Picture
                 Image(
                     modifier = Modifier.graphicsLayer(
-                        scaleX = 4f,
-                        scaleY = 4f,
+                        scaleX = 2.5f,
+                        scaleY = 2.5f,
                     ),
                     painter = painterResource(id = R.drawable.yeehawlogo),
                     contentDescription = "YeeHaw Hold 'Em Logo"
