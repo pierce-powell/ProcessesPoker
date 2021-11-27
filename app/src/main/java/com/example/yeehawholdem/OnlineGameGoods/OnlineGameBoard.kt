@@ -181,7 +181,6 @@ fun GameBoardOnline(navController: NavController) {
             if (isHost) {
                 Button(//Start button
                     onClick = {
-                        startGame = true
                         gameClass.gameState = GameState.STARTGAME
                         // communications.setIsGameInProgress(ls, true)
                         if(gameVals.getNumPlayers() > 1)
@@ -244,6 +243,10 @@ fun GameBoardOnline(navController: NavController) {
                     onClick = {
                         communications.setIsStillIn(ls, false)
                         gameClass.increaseCurrentActivePlayer()
+                        communications.setNumPlayersChecked(
+                            ls,
+                            gameVals.getNumPlayersChecked() + 1L
+                        )
                     },
                     modifier = Modifier
                         .fillMaxWidth(.3f)
