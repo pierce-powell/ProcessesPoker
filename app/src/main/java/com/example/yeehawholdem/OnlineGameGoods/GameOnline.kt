@@ -142,7 +142,7 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
     }
 
     fun haveAllPlayersChecked(): Boolean{
-        return gameVals.getNumPlayersChecked() == gameVals.playerList.size
+        return gameVals.getNumPlayersChecked() >= gameVals.playerList.size
     }
     /*
     fun increaseCurrentActivePlayer(){
@@ -189,6 +189,7 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         }
 
         gameState = GameState.STOPPED
+
         communicator.setIsGameInProgress(lobbyStr, false)
         communicator.setShowWinner(lobbyStr, true)
 
