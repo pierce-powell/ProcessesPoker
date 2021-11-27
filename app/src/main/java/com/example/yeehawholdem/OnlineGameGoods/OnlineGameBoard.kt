@@ -233,7 +233,7 @@ fun GameBoardOnline(navController: NavController) {
             {
                 Button(//fold button
                     onClick = {
-                        gameVals.setIsStillIn(false)
+                        communications.setIsStillIn(ls, false)
                     },
                     modifier = Modifier
                         .fillMaxWidth(.3f)
