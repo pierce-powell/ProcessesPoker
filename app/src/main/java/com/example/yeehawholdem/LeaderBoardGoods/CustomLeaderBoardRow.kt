@@ -17,10 +17,18 @@ import com.example.yeehawholdem.LogicGoods.Player
 import com.example.yeehawholdem.ui.theme.Typography
 //coment
 @Composable
-fun CustomLeaderBoardRow(curPlayer: LeaderBoardPlayer, index: Int) {
+fun CustomLeaderBoardRow(curPlayer: LeaderBoardPlayer, index: Int, isCurrentPlayer : Boolean) {
+
+    var rowColor = Color.Unspecified
+
+    if (isCurrentPlayer == false)
+        rowColor = Color(0xFFFFAF2F)
+    else
+        rowColor = Color.Yellow
+
     Row(
         modifier = Modifier
-            .background(Color.Yellow)
+            .background(rowColor)
             .fillMaxWidth()
             .padding(6.dp)
             .height(30.dp),
@@ -59,5 +67,5 @@ fun CustomLeaderBoardRow(curPlayer: LeaderBoardPlayer, index: Int) {
 @Preview
 fun CustomRowPreview()
 {
-    CustomLeaderBoardRow(curPlayer = LeaderBoardPlayer("shit", 69), 0)
+    CustomLeaderBoardRow(curPlayer = LeaderBoardPlayer("shit", 69), 0, true)
 }
