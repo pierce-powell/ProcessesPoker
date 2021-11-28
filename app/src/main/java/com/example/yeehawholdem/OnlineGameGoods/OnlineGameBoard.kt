@@ -239,6 +239,8 @@ fun GameBoardOnline(navController: NavController) {
                 else AddCardBacks()
             }
             Spacer(modifier = Modifier.padding(10.dp))
+            AddText(text = "Who's up: ")                                                                        //TODO: ADD THE DATA CALL LIKE BELOW
+            Spacer(modifier = Modifier.padding(10.dp))
             AddText(text = "Pot: ${gameVals.getPot()}" + "   Highest Bet: ${gameVals.getBet()}")
             Spacer(modifier = Modifier.padding(10.dp))
 
