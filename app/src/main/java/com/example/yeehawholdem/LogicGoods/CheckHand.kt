@@ -113,8 +113,8 @@ class CheckHand {
         val set = com.google.common.collect.Sets.combinations(all7, 5)
 
         // Calculate the value of each combination
-        for (comb in set) {
-            currentHand = comb.toMutableList()
+        for (combo in set) {
+            currentHand = combo.toMutableList()
             values.add(getCurHandValue())
         }
 
@@ -125,16 +125,16 @@ class CheckHand {
     @JvmName("getCurHandValue1")
     fun getCurHandValue(): Int {
         curHandValue = when {
-            isRoyalFlush() -> 9 *13*13*13*13
-            isStraightFlush() -> 8 *13*13*13*13 + straight()
-            isFourOfAKind() -> 7 *13*13*13*13 + fourOfAKind()
-            isFullHouse() -> 6 *13*13*13*13 + fullHouse()
-            isFlush() -> 5 *13*13*13*13 + getHighestCardValueInHand()
-            isStraight() -> 4 *13*13*13*13 + straight()
-            isThreeOfAKind() -> 3 *13*13*13*13 + threeOfAKind()
-            isTwoPairs() -> 2 *13*13*13*13 + pairs()
-            isPair() -> 1 *13*13*13*13 + pairs()
-            else -> 0 *13*13*13*13 + getHighestCardValueInHand()
+            isRoyalFlush() -> 9 *13*13*13*13*13
+            isStraightFlush() -> 8 *13*13*13*13*13 + straight()
+            isFourOfAKind() -> 7 *13*13*13*13*13 + fourOfAKind()
+            isFullHouse() -> 6 *13*13*13*13*13 + fullHouse()
+            isFlush() -> 5 *13*13*13*13*13 + getHighestCardValueInHand()
+            isStraight() -> 4 *13*13*13*13*13 + straight()
+            isThreeOfAKind() -> 3 *13*13*13*13*13 + threeOfAKind()
+            isTwoPairs() -> 2 *13*13*13*13*13 + pairs()
+            isPair() -> 1 *13*13*13*13*13 + pairs()
+            else -> noCombo()
         }
         return curHandValue
     }
@@ -144,6 +144,19 @@ class CheckHand {
         val list = currentHand.groupBy { it.value }
 
         return list.maxOf { it.key }
+    }
+
+    fun noCombo(): Int {
+        val card1 = getHighestCardValueInHand()
+        currentHand.removeAt(currentHand.indexOfFirst { it.value == getHighestCardValueInHand() })
+        val card2 = getHighestCardValueInHand()
+        currentHand.removeAt(currentHand.indexOfFirst { it.value == getHighestCardValueInHand() })
+        val card3 = getHighestCardValueInHand()
+        currentHand.removeAt(currentHand.indexOfFirst { it.value == getHighestCardValueInHand() })
+        val card4 = getHighestCardValueInHand()
+        currentHand.removeAt(currentHand.indexOfFirst { it.value == getHighestCardValueInHand() })
+        val card5 = getHighestCardValueInHand()
+        return card1*13*13*13*13 + card2*13*13*13 + card3*13*13 + card4*13 + card5
     }
 
     private fun straight(): Int {
