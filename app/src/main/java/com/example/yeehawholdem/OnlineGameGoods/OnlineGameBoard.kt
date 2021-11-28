@@ -78,7 +78,6 @@ fun GameBoardOnline(navController: NavController) {
     var card7 by remember { mutableStateOf(false) }
     var bet by remember { mutableStateOf(0) }
     var curBet by remember { mutableStateOf(0) }
-    var userBet by remember { mutableStateOf(0) }
     var pot by remember { mutableStateOf(0) }
     var balance by remember { mutableStateOf(gameVals.getBalance().toInt()) }
     var isStillIn by remember { mutableStateOf(gameVals.getIsStillIn()) }
@@ -90,6 +89,7 @@ fun GameBoardOnline(navController: NavController) {
     var showWinner by remember { mutableStateOf(false) }
     var localShowWinner by remember { mutableStateOf(false) }
     var playerWins by remember { mutableStateOf(false) }
+    var userBet by remember { mutableStateOf(0) }
 
     // Get the lobby number and store it in the String "ls"
     LaunchedEffect(Unit) {
@@ -121,6 +121,7 @@ fun GameBoardOnline(navController: NavController) {
     balance = gameVals.getBalance().toInt()
     curBet = gameVals.getBet().toInt()
     pot = gameVals.getPot().toInt()
+    userBet = gameVals.getUserBet()
     IsGameInProgress = gameVals.getIsGameInProgress()
     curBetCycle = gameVals.getCurrBetCycle()
     playerWins = gameVals.getDidYaWin()
@@ -275,11 +276,12 @@ fun GameBoardOnline(navController: NavController) {
                     Button(
                         onClick = {
                             if(gameClass.isTurn() && !gameClass.isFolded()) {
-                                communications.setUserBet(ls, bet.toLong())
+                                // communications.setUserBet(ls, bet.toLong())
                                 //raise logic
                                 if (bet > curBet && bet < balance) {
                                     communications.setBet(ls, bet.toLong())
-                                    balance -= bet - curBet
+                                    communications.setUserBet(ls, bet.toLong())
+                                    balance -= bet - userBet
                                     communications.setBalance(ls, balance.toLong())
                                     communications.setPot(ls, bet - userBet + gameVals.getPot())
                                     communications.setNumPlayersChecked(ls, 1)
@@ -288,7 +290,8 @@ fun GameBoardOnline(navController: NavController) {
                                 //check logic
                                 else if (bet == curBet && bet < balance) {
                                     communications.setBet(ls, bet.toLong())
-                                    balance -= bet
+                                    communications.setUserBet(ls, bet.toLong())
+                                    balance -= bet - userBet
                                     communications.setBalance(ls, balance.toLong())
                                     communications.setPot(ls, bet - userBet + gameVals.getPot())
                                     communications.setNumPlayersChecked(
