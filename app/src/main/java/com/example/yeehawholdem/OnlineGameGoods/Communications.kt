@@ -358,8 +358,8 @@ class Communications {
     fun resetHighestBet(lobbyStr: String, playerList: MutableList<Player>) {
         val database = Firebase.database.getReference(lobbyStr)
         for (player in playerList) {
-            database.child("ActiveUsers").child(player.playerFirebaseId).child("DidYaWin")
-                .setValue(false)
+            database.child("ActiveUsers").child(player.playerFirebaseId).child("UserBet")
+                .setValue(0)
         }
     }
 

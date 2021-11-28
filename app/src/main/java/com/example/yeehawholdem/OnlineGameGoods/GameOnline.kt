@@ -58,14 +58,14 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         communicator.setShowWinner(lobbyStr, false)
         communicator.setPlayerTurnNumber(lobbyStr, table.playerArray)
         communicator.setDidYaWin(lobbyStr, table.playerArray)
-        communicator.setPlayerIsStillIn(lobbyStr, table.playerArray)
+        communicator.resetHighestBet(lobbyStr, table.playerArray)
         communicator.setBet(lobbyStr, 0)
         communicator.setCurrentActivePlayer(lobbyStr, 0)
         communicator.setCard1(lobbyStr, -1)
         communicator.setCard2(lobbyStr, -1)
         communicator.setCard3(lobbyStr, -1)
         communicator.setCard4(lobbyStr, -1)
-        communicator.setCard5(lobbyStr, -1)
+        communicator.setCard5(lobbyStr, -1) //
 
         gameState = GameState.RUNNING
     }
@@ -89,6 +89,7 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         } else{
             GameState.SHOWDOWN
         }
+        communicator.resetHighestBet(lobbyStr, table.playerArray)
         communicator.setNumPlayersChecked(lobbyStr, 0)
     }
 
@@ -232,10 +233,6 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
 
     class ShowdownResults(var playerName: String = "",
                           var handValue: Int = 0) {
-
-    }
-
-    fun resetPlayers(){
 
     }
 }
