@@ -4,6 +4,7 @@ import android.app.PendingIntent.getActivity
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -14,8 +15,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -100,23 +105,26 @@ fun MainMenuScreen(navController: NavController, internetConnection: Boolean)
             }
 
             //YeeHaw Hold 'Em Logo
+            val scale = remember { mutableStateOf(2f)}
+
+            //determine which drawable to use
             Box(
                 modifier = Modifier
-                    .height(150.dp)
+                    .fillMaxHeight()
                     .background(MaterialTheme.colors.background)
-                    .padding(1.dp),
+                    .width((LocalConfiguration.current.screenWidthDp.dp))
+                    .height((LocalConfiguration.current.screenWidthDp.dp) / 2)
+                    .padding(1.dp)
+                    .clip(RectangleShape),
                 contentAlignment = Alignment.Center,
             )
             {
                 // The Pretty Picture
-                Image(contentScale = ContentScale.Inside,
-                    modifier = Modifier.graphicsLayer(
-                        scaleX = 2.5f,
-                        scaleY = 2.5f,
-                    ),
-                    painter = painterResource(id = R.drawable.yeehawlogo),
-                    contentDescription = "YeeHaw Hold 'Em Logo"
-                )
+                    Image(modifier = Modifier.height(LocalConfiguration.current.screenWidthDp.dp / 2)
+                        .width(LocalConfiguration.current.screenWidthDp.dp),
+                        painter = painterResource(id = R.drawable.yeehawlogo),
+                        contentDescription = "Logo"
+                    )
             }
             Spacer(modifier = Modifier.padding(10.dp))
 
