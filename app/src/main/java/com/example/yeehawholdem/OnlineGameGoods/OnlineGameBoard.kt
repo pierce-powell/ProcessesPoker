@@ -1,6 +1,5 @@
 package com.example.yeehawholdem
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -22,10 +21,10 @@ import com.example.yeehawholdem.GameBoardGoods.AddCardBacks
 import com.example.yeehawholdem.GameBoardGoods.AddText
 import com.example.yeehawholdem.GameBoardGoods.CARD_HEIGHT
 import com.example.yeehawholdem.LogicGoods.Card
-import com.example.yeehawholdem.OnlineGameGoods.Game
-import com.example.yeehawholdem.OnlineGameGoods.GameState
 import com.example.yeehawholdem.LogicGoods.GameValues
 import com.example.yeehawholdem.OnlineGameGoods.Communications
+import com.example.yeehawholdem.OnlineGameGoods.Game
+import com.example.yeehawholdem.OnlineGameGoods.GameState
 import com.example.yeehawholdem.OnlineGameGoods.QuitGameDataHandler
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -67,8 +66,6 @@ fun GameBoardOnline(navController: NavController) {
 
     val communications = Communications()
     val gameVals by remember { mutableStateOf(GameValues()) }
-    var list by remember { mutableStateOf(mutableListOf<Long>(-1)) }
-    var showDialog by remember { mutableStateOf(false) }
     var card1 by remember { mutableStateOf(false) }
     var card2 by remember { mutableStateOf(false) }
     var card3 by remember { mutableStateOf(false) }
@@ -78,20 +75,15 @@ fun GameBoardOnline(navController: NavController) {
     var card7 by remember { mutableStateOf(false) }
     var bet by remember { mutableStateOf(0) }
     var curBet by remember { mutableStateOf(0) }
-    var pot by remember { mutableStateOf(0) }
     var balance by remember { mutableStateOf(gameVals.getBalance().toInt()) }
-    var isStillIn by remember { mutableStateOf(gameVals.getIsStillIn()) }
     var isHost by remember { mutableStateOf(false) }
     var IsGameInProgress by remember { mutableStateOf(false) }
     var startGame by remember { mutableStateOf(false) }
     var gameClass by remember { mutableStateOf(Game(gameVals, communications, ls)) }
-    var curBetCycle by remember { mutableStateOf(0) }
     var showWinner by remember { mutableStateOf(false) }
     var localShowWinner by remember { mutableStateOf(false) }
     var playerWins by remember { mutableStateOf(false) }
     var userBet by remember { mutableStateOf(0) }
-    var numWinners by remember { mutableStateOf(0) }
-    var winners by remember { mutableStateOf(gameVals.winners) }
 
     // Get the lobby number and store it in the String "ls"
     LaunchedEffect(Unit) {
@@ -124,14 +116,10 @@ fun GameBoardOnline(navController: NavController) {
     card7 = gameVals.getHandCard2() != -1L
     balance = gameVals.getBalance().toInt()
     curBet = gameVals.getBet().toInt()
-    pot = gameVals.getPot().toInt()
     userBet = gameVals.getUserBet()
     IsGameInProgress = gameVals.getIsGameInProgress()
-    curBetCycle = gameVals.getCurrBetCycle()
     playerWins = gameVals.getDidYaWin()
     showWinner = gameVals.getShowWinner()
-    winners = gameVals.winners
-    numWinners = gameVals.getNumWinners()
 
     // This is the isHost check for the composable, use with if statement
     isHost = gameVals.getIsHost()
@@ -300,12 +288,6 @@ fun GameBoardOnline(navController: NavController) {
                                     )
                                     gameClass.increaseCurrentActivePlayer()
                                 }
-                                //all in logic
-                                else if (bet == balance) {
-                                    //TODO: all in logic
-                                } else {
-                                    //TODO: Invalid bet toast
-                                }
                             }
                         },
                         modifier = Modifier
@@ -336,7 +318,6 @@ fun GameBoardOnline(navController: NavController) {
                     }
                     Spacer(modifier = Modifier.padding(2.dp))
                     Button(//lower bet button
-                        //TODO: Expand logic for allowing lower bet (do not allow bet bellow current Bet variable)
                         onClick = {
                             if (bet - 5 >= curBet)
                                 bet -= 5
@@ -415,7 +396,7 @@ data class quitInfo(
 @Composable
 fun addQuitButton(navController: NavController) {
 
-    var quitData by remember {
+    val quitData by remember {
         mutableStateOf(quitInfo())
     }
 
@@ -435,7 +416,7 @@ fun addQuitButton(navController: NavController) {
 
 
 
-    var quitDataHandler = QuitGameDataHandler()
+    val quitDataHandler = QuitGameDataHandler()
 
     quitDataHandler.getTheLobbyName(quitData)
 

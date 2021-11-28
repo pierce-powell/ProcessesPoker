@@ -6,15 +6,15 @@ import org.junit.Test
 
 class CheckHandTest {
     val checkHand = CheckHand()
-    val communitycard1 = Card(3)
-    val communitycard2 = Card(47)
-    val communitycard3 = Card(43)
-    val communitycard4 = Card(14)
-    val communitycard5 = Card(12)
-    val card6 = Card(40)
-    val card7 = Card(22)
-    val card8 = Card(41)
-    val card9 = Card(37)
+    val communitycard1 = Card(0 +13*1)
+    val communitycard2 = Card(0 +13*2)
+    val communitycard3 = Card(0 +13*3)
+    val communitycard4 = Card(0 +13*4)
+    val communitycard5 = Card(1 +13*4)
+    val card6 = Card(8)
+    val card7 = Card(6)
+    val card8 = Card(9+13)
+    val card9 = Card(12)
     val card10 = Card(8)
     val card11 = Card(5)
     var handValue = -1
@@ -44,20 +44,24 @@ class CheckHandTest {
         hand3.add(card11)
 
         checkHand.currentHand.add(Card(0))
-        checkHand.currentHand.add(Card(4+13))
+        checkHand.currentHand.add(Card(0+13))
         checkHand.currentHand.add(Card(1))
-        checkHand.currentHand.add(Card(2))
+        checkHand.currentHand.add(Card(25))
         checkHand.currentHand.add(Card(12))
     }
 
     @Test
     fun testBestHand() {
         val res = checkHand.bestHand(hand1, communityCards)
-        println("hand1 = \n${res}")
+        println("hand1 = ${res}")
         val res2 = checkHand.bestHand(hand2, communityCards)
-        println("hand2 = \n${res2}")
-        val res3 = checkHand.bestHand(hand3, communityCards)
-        println("hand2 = \n${res3}")
+        println("hand2 = ${res2}")
+    }
+
+    @Test
+    fun foo() {
+        checkHand.currentHand.removeAt(checkHand.currentHand.indexOfFirst { it.value == checkHand.getHighestCardValueInHand() })
+        println(checkHand.getHighestCardValueInHand())
     }
 
     @Test

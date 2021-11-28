@@ -30,25 +30,6 @@ val CARD_HEIGHT = 120.dp
 const val STARTING_BET = 10
 const val STARTING_BALANCE = 10000
 
-//TODO: Display Best Hand at the end of the round
-//TODO: Make the height connected to the individual box instead of the row, so we can click to enlarge?
-
-/*
-Use Case:
-User clicks play offline
-Booted into game screen, seeing only their hand and are asked to fold or bet and can
-    see the dealers starting bet as well as the pot initialized with that bet
-upon bet confirmation, the first three cards in the river are flipped, dealer places a new bet,
-    user is then faced with same question, hold, fold, raise
-Upon confirmation, the 4th card is flipped (more bets)
-then 5th (more bets)
-Winner is then displayed on screen with their best hand.
-Pot is added to the users balance
-Then Quit or Continue prompt is displayed
-Continue restarts the game
-Quit returns to Main Menu
- */
-
 @Composable
 fun GameBoardOfflineScreen(navController : NavController)
 {

@@ -1,6 +1,5 @@
 package com.example.yeehawholdem.OnlineGameGoods
 
-import androidx.compose.ui.platform.TextToolbarStatus
 import com.example.yeehawholdem.LogicGoods.Dealer
 import com.example.yeehawholdem.LogicGoods.GameValues
 import com.example.yeehawholdem.LogicGoods.Player
@@ -25,8 +24,6 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
     var dealer = Dealer()
     var table = Table()
     var gameState = GameState.STOPPED
-    // var dealerButton = 0
-    // var turn = 0
     var gameVals: GameValues = gameVa
     var isRound1Setup = false
     var isRound2Setup = false
@@ -39,12 +36,8 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         table.setupDeck()
         createPlayersList() // set up table.playerArray
         table.dealAllCards()
-        //TODO: first player = host
-        //TODO: Send all players in waitlist to active users
-        //TODO: Populate database.activeUsers hands with cards if host
 
         // get all the states, and then set up the listeners
-
         // HotFix for numplayers
         communicator.setNumPlayers(lobbyStr, table.playerArray.size.toLong())
 
@@ -68,8 +61,6 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         communicator.setCard4(lobbyStr, -1)
         communicator.setCard5(lobbyStr, -1) //
         Firebase.database.reference.child(lobbyStr).child("Winners").removeValue()
-
-        // Debug
 
         gameState = GameState.RUNNING
     }
@@ -180,7 +171,7 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         for (player in winners) {
             val winnings = gameVals.getPot() / winners.size
             val name = player.playerFirebaseId
-            val balance = gameVals.playerList.filter { it.playerFirebaseId == name }.get(0).balance
+            val balance = gameVals.playerList.filter { it.playerFirebaseId == name }[0].balance
             Firebase.database.reference.child(lobbyStr).child("ActiveUsers").child(player.playerFirebaseId).child("balance").setValue(winnings + balance)
             Firebase.database.reference.child(player.playerFirebaseId).child("balance").setValue(winnings + balance)
             Firebase.database.reference.child(lobbyStr).child("ActiveUsers").child(player.playerFirebaseId).child("DidYaWin").setValue(true)
@@ -198,7 +189,6 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
 
     fun determineWinnerOnline(): List<Player> {
         val list = mutableListOf<Int>()
-        var list2 = mutableListOf<ShowdownResults>()
         val playerList = table.playersStillIn
         table.playersStillIn.clear()
         for (player in gameVals.playersStillIn) {
@@ -212,31 +202,21 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         }
 
         for (i in playerList.indices) {
-            val player = playerList.get(i)
+            val player = playerList[i]
             val handValue = dealer.checkHand.bestHand(player.hand, table.sharedDeck)
             list.add(handValue)
-            list2.add(ShowdownResults(player.playerFirebaseId, handValue))
-            // table.playersStillIn.replaceAll()
             playerList[i].handValue = handValue
         }
         // Get player(s) with the highest hand value
         val highestVal = list.maxOrNull()
-        // val num = list.count { it == highestVal }
-        val test = playerList.filter { it.handValue == highestVal }
-        //val test2 = list2.a
         return playerList.filter { it.handValue == highestVal }
     }
 
     fun getCurrentActiveUsername(): String{
-        if(table.playerArray.size > 0) {
-            return table.playerArray[gameVals.getCurrentActivePlayer().toInt()].name
+        return if (table.playerArray.size > 0) {
+            table.playerArray[gameVals.getCurrentActivePlayer().toInt()].name
+        } else {
+            ""
         }
-        else
-            return ""
-    }
-
-    class ShowdownResults(var playerName: String = "",
-                          var handValue: Int = 0) {
-
     }
 }

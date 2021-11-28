@@ -1,7 +1,5 @@
 package com.example.yeehawholdem.LogicGoods
 
-// TODO: Add bet and fold funcitons?
-
 data class Player(
     var name: String = "",
     var balance: Int = 0,
@@ -12,15 +10,5 @@ data class Player(
 ) {
     var isStillIn = true
     var checkFlag = false
-    var isMyTurn = false
     var handValue = 0
-    //var currBet = 0
-
-    fun getHighCard() : Int {
-        return hand.maxByOrNull { it.value }!!.value
-    }
-
-    fun acceptCard() {
-        // TODO()
-    }
 }

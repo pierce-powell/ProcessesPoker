@@ -17,9 +17,6 @@ class LeaderBoardDataManager {
 
         val auth: FirebaseAuth = Firebase.auth
 
-
-
-
         Firebase.database.getReference("Users").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val lobbyBet  = dataSnapshot.children

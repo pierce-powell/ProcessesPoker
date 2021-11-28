@@ -2,11 +2,7 @@ package com.example.yeehawholdem.LogicGoods
 
 import kotlin.math.absoluteValue
 
-
-// TODO: Need a function that decides tie-breaking (e.g. highest cards)
-
 class CheckHand {
-    // var pokerHandValues: MutableList<Int> = mutableListOf()
     var currentHand: MutableList<Card> = mutableListOf()
     var curHandValue: Int = 0
 
@@ -129,22 +125,22 @@ class CheckHand {
     @JvmName("getCurHandValue1")
     fun getCurHandValue(): Int {
         curHandValue = when {
-            isRoyalFlush() -> 9 *13*13
-            isStraightFlush() -> 8 *13*13 + straight()
-            isFourOfAKind() -> 7 *13*13 + fourOfAKind()
-            isFullHouse() -> 6 *13*13 + fullHouse()
-            isFlush() -> 5 *13*13 + getHighestCardValueInHand()
-            isStraight() -> 4 *13*13 + straight()
-            isThreeOfAKind() -> 3 *13*13 + threeOfAKind()
-            isTwoPairs() -> 2 *13*13 + pairs()
-            isPair() -> 1 *13*13 + pairs()
-            else -> 0 *13*13 + getHighestCardValueInHand()
+            isRoyalFlush() -> 9 *13*13*13*13
+            isStraightFlush() -> 8 *13*13*13*13 + straight()
+            isFourOfAKind() -> 7 *13*13*13*13 + fourOfAKind()
+            isFullHouse() -> 6 *13*13*13*13 + fullHouse()
+            isFlush() -> 5 *13*13*13*13 + getHighestCardValueInHand()
+            isStraight() -> 4 *13*13*13*13 + straight()
+            isThreeOfAKind() -> 3 *13*13*13*13 + threeOfAKind()
+            isTwoPairs() -> 2 *13*13*13*13 + pairs()
+            isPair() -> 1 *13*13*13*13 + pairs()
+            else -> 0 *13*13*13*13 + getHighestCardValueInHand()
         }
         return curHandValue
     }
 
     // These functions are to help map out the hand values for tie-breaking
-    private fun getHighestCardValueInHand(): Int {
+    fun getHighestCardValueInHand(): Int {
         val list = currentHand.groupBy { it.value }
 
         return list.maxOf { it.key }
@@ -170,7 +166,7 @@ class CheckHand {
                     max = xs.key.absoluteValue
             }
         }
-        return four * 13 + max
+        return four * 13*13*13 + max*13*13
     }
 
     private fun fullHouse(): Int {
@@ -185,7 +181,7 @@ class CheckHand {
                 three = xs.key.absoluteValue
             }
         }
-        return three * 13 + pair
+        return three*13*13*13 + pair*13*13
     }
 
     private fun threeOfAKind(): Int {
@@ -200,7 +196,13 @@ class CheckHand {
                     max = xs.key.absoluteValue
             }
         }
-        return three * 13 + max
+        currentHand.removeAt(currentHand.indexOfFirst { it.value == three })
+        currentHand.removeAt(currentHand.indexOfFirst { it.value == three })
+        currentHand.removeAt(currentHand.indexOfFirst { it.value == three })
+        val card1 = getHighestCardValueInHand()
+        currentHand.removeAt(currentHand.indexOfFirst { it.value == getHighestCardValueInHand() })
+        val card2 = getHighestCardValueInHand()
+        return three*13*13*13 + card1*13*13 + card2*13
     }
 
     private fun pairs(): Int {
@@ -215,6 +217,13 @@ class CheckHand {
                     max = xs.key.absoluteValue
             }
         }
-        return pair * 13 + max
+        currentHand.removeAt(currentHand.indexOfFirst { it.value == pair })
+        currentHand.removeAt(currentHand.indexOfFirst { it.value == pair })
+        val card1 = getHighestCardValueInHand()
+        currentHand.removeAt(currentHand.indexOfFirst { it.value == getHighestCardValueInHand() })
+        val card2 = getHighestCardValueInHand()
+        currentHand.removeAt(currentHand.indexOfFirst { it.value == getHighestCardValueInHand() })
+        val card3 = getHighestCardValueInHand()
+        return pair*13*13*13 + card1*13*13 + card2*13 + card3
     }
 }

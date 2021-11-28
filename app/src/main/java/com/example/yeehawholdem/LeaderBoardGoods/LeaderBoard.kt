@@ -30,15 +30,8 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-//TODO: link the data to the actual repository of players
-//TODO: add a back button
-//TODO: discuss and implement better style (sorting by the top scores, ?DateTime/asOfScore?)
-
 fun LeaderBoardScreen(navController : NavController)
 {
-    //val fakeRepository = FakeRepository()
-    //val getAllData = fakeRepository.getListOfPlayers()
-
     //The data for our leaderboards
     var mapOfPlayers by remember { mutableStateOf(mutableMapOf<String, LeaderBoardPlayer>()) }
 
@@ -57,8 +50,6 @@ fun LeaderBoardScreen(navController : NavController)
 
     //lets first make sure they're logged in before we start making any database calls with their ID
     //Now that we know they're logged in, lets save the player uid
-
-
 
 
 
@@ -135,7 +126,7 @@ fun LeaderBoardScreen(navController : NavController)
 
                 Button(//lower bet button
                     onClick = {
-                        coroutineScope.launch { listState.scrollToItem(index = curPlayerIndex)  }
+                        coroutineScope.launch { listState.scrollToItem(index = curPlayerIndex) }
 
                     },
                     modifier = Modifier
@@ -149,8 +140,6 @@ fun LeaderBoardScreen(navController : NavController)
                     )
                 }
             }
-
-
     }
 
 

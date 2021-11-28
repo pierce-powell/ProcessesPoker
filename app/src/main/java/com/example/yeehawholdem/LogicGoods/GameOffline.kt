@@ -31,7 +31,7 @@ class GameOffline {
         gameState = GameState.RUNNING
     }
 
-    fun addPlayer(_player : Player) {
+    private fun addPlayer(_player : Player) {
         table.playerArray.add(_player)
     }
 
@@ -60,7 +60,6 @@ class GameOffline {
         return player.name
     }
 
-    // TODO: Tie-breaker/Splitting the pot?
     fun determineWinner() : Player {
         return table.playerWithHighestHand()
     }

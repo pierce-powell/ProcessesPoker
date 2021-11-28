@@ -14,9 +14,7 @@ class QuitGameDataHandler {
     fun getTheLobbyName(quitData: quitInfo) {
 
         val auth = Firebase.auth
-
         val playerUid = auth.currentUser?.uid
-
 
         val InLobbyReference = Firebase.database.getReference(playerUid.toString()).child("InLobby").addValueEventListener(object :
             ValueEventListener {
@@ -31,13 +29,13 @@ class QuitGameDataHandler {
 
                 quitData.playerID = playerUid.toString()
 
-
             }
 
             override fun onCancelled(error: DatabaseError) {
                 // Failed to read value
             }
         })
+
 
         val hostReference = Firebase.database.getReference(quitData.lobby.toString()).child("Host").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -67,35 +65,20 @@ class QuitGameDataHandler {
 
             val activePlayerReference = Firebase.database.getReference(quitData.lobby.toString()).child("ActiveUsers").addChildEventListener(object : ChildEventListener{
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-
                         quitData.playerList[snapshot.key.toString()] = snapshot.child("balance").value as Long?
-
-
                     }
-
-
 
                 override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                         quitData.playerList[snapshot.key.toString()] = snapshot.child("balance").value as Long?
-
-
-
                 }
 
                 override fun onChildRemoved(snapshot: DataSnapshot) {
-
                         quitData.playerList.remove(snapshot.key.toString())
-
-
                 }
 
-                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                    TODO("Not yet implemented")
-                }
+                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
 
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
+                override fun onCancelled(error: DatabaseError) {}
 
             })
 
@@ -107,33 +90,20 @@ class QuitGameDataHandler {
                 //Just store the key in a map to get easy look up
                 quitData.waitRoom[snapshot.key.toString()] = 0
 
-
             }
-
-
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 //Same here, the actual value doesn't matter
                 quitData.waitRoom[snapshot.key.toString()] = 0
-
-
-
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-
                 quitData.waitRoom.remove(snapshot.key.toString())
-
-
             }
 
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
 
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
 
         })
 
@@ -141,12 +111,3 @@ class QuitGameDataHandler {
     }
 
 }
-
-//Data that we need
-// Current Host
-// Current User ID
-// Current Lobby
-// If the current user is the host, remove HostOfLobby under host ID
-// Delete WaitRoom
-// Delete Active Players
-// Reset all the values back to their defaults

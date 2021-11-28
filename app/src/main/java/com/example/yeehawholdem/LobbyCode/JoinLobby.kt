@@ -16,14 +16,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.yeehawholdem.Screen
-import com.example.yeehawholdem.quitInfo
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.database.DataSnapshot
 import kotlinx.coroutines.launch
-
 import kotlinx.coroutines.tasks.await
 
 data class lobbyInfo(var playerName: String? = "", var numPlayers: Long? = 0, var playerBalance: Long? = 0, var isHost: String? = "", var isInProgress: Boolean? = false)
@@ -62,11 +60,11 @@ fun Joinlobby(navController : NavController) {
 
 
 
-    var lobbyInfoState by remember {
+    val lobbyInfoState by remember {
         mutableStateOf(lobbyInfo())
     }
 
-    var lobbyDataHandler = JoinLobbyDataHandler()
+    val lobbyDataHandler = JoinLobbyDataHandler()
     lobbyDataHandler.getTheLobbyInfo(lobbyInfoState, selectedLobby) // This selected Lobby might be jank
 
 
@@ -224,7 +222,7 @@ fun Joinlobby(navController : NavController) {
                     selectedLobbyPlayers = lobbyInfoState.numPlayers!!.toInt()
 
 
-                    //TODO: Cap the lobby
+                    //Cap the lobby
                     if(selectedLobbyPlayers > 6)
                     {
                         //Trigger a dialog telling them to join another lobby
@@ -232,11 +230,6 @@ fun Joinlobby(navController : NavController) {
                     }
                     //Theres room in the lobby, so have them join it
                     else {
-
-                        //TODO: Add a users cards reference to -1
-                        //TODO: Add bet
-                        //The users hand
-
 
                         //Lets check if we need this user to step in as the host
                         if (lobbyInfoState.isHost.toString().isEmpty()) {

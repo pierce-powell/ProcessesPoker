@@ -117,34 +117,6 @@ class GameValues {
         this.card5 = newBet
     }
 
-    fun betToString(): String {
-        return this.bet.toString()
-    }
-
-    fun potToString(): String {
-        return this.pot.toString()
-    }
-
-    fun card1ToString(): String {
-        return this.card1.toString()
-    }
-
-    fun card2ToString(): String {
-        return this.card2.toString()
-    }
-
-    fun card3ToString(): String {
-        return this.card3.toString()
-    }
-
-    fun card4ToString(): String {
-        return this.card4.toString()
-    }
-
-    fun card5ToString(): String {
-        return this.card5.toString()
-    }
-
     @JvmName("getHandCard1")
     fun getHandCard1(): Long {
         return handCard1

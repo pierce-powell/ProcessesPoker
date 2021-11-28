@@ -28,19 +28,13 @@ class JoinLobbyDataHandler {
                     if (currentLobbyInfo == null) {
                         return
                     }
-
                     currentLobbyInfo.playerName = dataSnapshot.value.toString()
-
-
-
                 }
 
                 override fun onCancelled(error: DatabaseError) {
                     // Failed to read value
                 }
             })
-
-
 
         val numPlayersRef = Firebase.database.getReference("Lobbys").child(curLobby)
             .addValueEventListener(object :
@@ -53,8 +47,6 @@ class JoinLobbyDataHandler {
                     }
 
                     currentLobbyInfo.numPlayers = dataSnapshot.value as Long?
-
-
 
                 }
 
@@ -77,8 +69,6 @@ class JoinLobbyDataHandler {
 
                     currentLobbyInfo.playerBalance = dataSnapshot.value as Long?
 
-
-
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -97,8 +87,6 @@ class JoinLobbyDataHandler {
                     }
 
                     currentLobbyInfo.isHost = dataSnapshot.value.toString()
-
-
 
                 }
 
@@ -119,8 +107,6 @@ class JoinLobbyDataHandler {
                     }
 
                     currentLobbyInfo.isInProgress = dataSnapshot.value as Boolean?
-
-
 
                 }
 

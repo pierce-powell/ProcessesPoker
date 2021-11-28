@@ -16,26 +16,6 @@ class Table {
         }
     }
 
-    // Returns true if all players have checked or called
-    fun checkCalled() : Boolean {
-        val list = playersStillIn.distinctBy { it.checkFlag }
-        if (checkPlayersStillIn()) {
-            if (!(list.size != 1 || !list[0].checkFlag))
-                return true
-        }
-
-        return false
-    }
-
-    // Returns true if Atleast 2 players are still in
-    fun checkPlayersStillIn() : Boolean {
-        val list = playersStillIn.distinctBy { it.isStillIn }
-        if (!(list.size != 1 || !list[0].isStillIn))
-            return true
-
-        return false
-    }
-
     fun resetPlayers() {
         playersStillIn.clear()
         for (p in playerArray) {
@@ -63,17 +43,6 @@ class Table {
             dealer.dealCard(player)
             dealer.dealCard(player)
         }
-
-        /*
-        // TODO: Debug
-        playersStillIn[1].hand[0] = Card(2)
-        playersStillIn[1].hand[1] = Card(19)
-        sharedDeck[0] = Card(23)
-        sharedDeck[1] = Card(12)
-        sharedDeck[2] = Card(6)
-        sharedDeck[3] = Card(43)
-        sharedDeck[4] = Card(50)
-         */
     }
 
     // Setup the full deck and user deck

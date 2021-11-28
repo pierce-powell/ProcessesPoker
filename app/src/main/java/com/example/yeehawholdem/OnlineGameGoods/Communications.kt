@@ -15,51 +15,6 @@ import kotlinx.coroutines.tasks.await
 class Communications {
     lateinit var auth: FirebaseAuth
 
-    /*
-    fun addEventListener(lobby: String, mutableList: MutableList<Long>) {
-        val dbReference = Firebase.database.getReference(lobby)
-        dbReference.child("Bet").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val lobbyBet = dataSnapshot.getValue()
-
-                // Check for null
-                if (lobbyBet == null) {
-                    return
-                }
-
-                mutableList[0] = lobbyBet as Long
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Failed to read value
-            }
-        })
-    }
-     */
-
-    fun setupLobbyEventListener(game: GameValues, lobbyStr: String) {
-        val database = Firebase.database.getReference(lobbyStr)
-        val UID = Firebase.auth.currentUser?.uid.toString()
-        val lobbyListener = object : ValueEventListener {
-
-            override fun onDataChange(snapshot: DataSnapshot) {
-                (snapshot.child("ActiveUsers").child(UID).child("Cards")
-                    .child("Card1").value as Long?)?.let { game.setHandCard1(it) }
-                (snapshot.child("ActiveUsers").child(UID).child("Cards")
-                    .child("Card2").value as Long?)?.let { game.setHandCard2(it) }
-                (snapshot.child("ActiveUsers").child(UID)
-                    .child("balance").value as Long?)?.let { game.setBalance(it) }
-                (snapshot.child("ActiveUsers").child(UID)
-                    .child("IsStillIn").value as Boolean?)?.let { game.setIsStillIn(it) }
-                (snapshot.child("ActiveUsers").child(UID)
-                    .child("TurnNumber").value as Long?)?.let { game.setTurnNumber(it.toInt()) }
-            }
-            override fun onCancelled(error: DatabaseError) {}
-
-        }
-        database.addValueEventListener(lobbyListener)
-    }
-
     fun setupBetEventListener(game: GameValues, lobbyStr: String) {
         val database = Firebase.database.getReference(lobbyStr)
         val lobbyListener = object : ValueEventListener {
@@ -242,7 +197,7 @@ class Communications {
                                 it1.toInt())
                         }
 
-                        var hand = if (card1 == null || card2 == null) mutableListOf<Card>() else mutableListOf<Card>(card1, card2)
+                        val hand = if (card1 == null || card2 == null) mutableListOf() else mutableListOf(card1, card2)
 
                         val player = playerName?.let { it1 ->
                             playerBalance?.let { it2 ->
@@ -286,16 +241,6 @@ class Communications {
     fun setCurrentActivePlayer(lobbyStr: String, changeCurrentActivePlayer: Long) {
         val database = Firebase.database.getReference(lobbyStr)
         database.child("CurrentActivePlayer").setValue(changeCurrentActivePlayer)
-    }
-
-    fun setDidPlayerQuit(lobbyStr: String, changeDidPlayerQuick: Long) {
-        val database = Firebase.database.getReference(lobbyStr)
-        database.child("DidPlayerQuit").setValue(changeDidPlayerQuick)
-    }
-
-    fun setHost(lobbyStr: String, changeHost: String) {
-        val database = Firebase.database.getReference(lobbyStr)
-        database.child("Host").setValue(changeHost)
     }
 
     fun setIsGameInProgress(lobbyStr: String, changeIsGameInProgress: Boolean) {
@@ -370,11 +315,6 @@ class Communications {
     fun setNumPlayersChecked(lobbyStr: String, numPlayersChecked: Long) {
         val database = Firebase.database.getReference(lobbyStr)
         database.child("NumPlayersChecked").setValue(numPlayersChecked)
-    }
-
-    fun setCurrBetCycle(lobbyStr: String, currBetCycle: Long) {
-        val database = Firebase.database.getReference(lobbyStr)
-        database.child("CurrBetCycle").setValue(currBetCycle)
     }
 
     fun setPlayerTurnNumber(lobbyStr: String, playerList: MutableList<Player>) {
