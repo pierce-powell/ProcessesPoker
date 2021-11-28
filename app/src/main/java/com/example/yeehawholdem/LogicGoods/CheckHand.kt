@@ -161,7 +161,7 @@ class CheckHand {
 
     private fun straight(): Int {
         val list = currentHand.distinctBy { it.value }.sortedBy { it.value }
-        if (getHighestCardValueInHand() == 12) {
+        if (list[4].value == 12 && list[3].value == 3) {
             return list.getOrNull(3)!!.value
         }
         return getHighestCardValueInHand()

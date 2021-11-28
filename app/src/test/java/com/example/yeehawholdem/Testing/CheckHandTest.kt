@@ -6,19 +6,19 @@ import org.junit.Test
 
 class CheckHandTest {
     val checkHand = CheckHand()
-    val communitycard1 = Card(5)
-    val communitycard2 = Card(7)
-    val communitycard3 = Card(8)
-    val communitycard4 = Card(9)
-    val communitycard5 = Card(12)
+    val communitycard1 = Card(1)
+    val communitycard2 = Card(2)
+    val communitycard3 = Card(9+39)
+    val communitycard4 = Card(10+26)
+    val communitycard5 = Card(11+13)
 
-    val card6 = Card(4)
-    val card7 = Card(3)
+    val card6 = Card(12+26)
+    val card7 = Card(8+13)
 
-    val card8 = Card(12+13)
-    val card9 = Card(2)
+    val card8 = Card(7+13)
+    val card9 = Card(8)
 
-    val card10 = Card(11)
+    val card10 = Card(12 + 13)
     val card11 = Card(0+26)
 
     var handValue = -1
