@@ -67,6 +67,7 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         communicator.setCard3(lobbyStr, -1)
         communicator.setCard4(lobbyStr, -1)
         communicator.setCard5(lobbyStr, -1) //
+        Firebase.database.reference.child(lobbyStr).child("Winners").removeValue()
 
         // Debug
 
@@ -173,6 +174,7 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
     fun showdownOnline(){
         // val handValues = mutableListOf<Int>()
         val winners = determineWinnerOnline()
+        var i = 0
 
         // distribute pot according to the winners
         for (player in winners) {
@@ -182,6 +184,8 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
             Firebase.database.reference.child(lobbyStr).child("ActiveUsers").child(player.playerFirebaseId).child("balance").setValue(winnings + balance)
             Firebase.database.reference.child(player.playerFirebaseId).child("balance").setValue(winnings + balance)
             Firebase.database.reference.child(lobbyStr).child("ActiveUsers").child(player.playerFirebaseId).child("DidYaWin").setValue(true)
+            Firebase.database.reference.child(lobbyStr).child("NumWinner").setValue(i + 1)
+            Firebase.database.reference.child(lobbyStr).child("Winners").child(i++.toString()).setValue(player.name)
         }
 
         gameState = GameState.STOPPED

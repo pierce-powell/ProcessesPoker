@@ -156,7 +156,7 @@ class Communications {
                 game.winners.clear()
                 for (i in 0.until(game.getNumWinners())) {
                     val str = i.toString()
-                    game.winners.add(snapshot.child(str).value as String)
+                    (snapshot.child(str).value as String?)?.let { game.winners.add(it) }
                 }
             }
             override fun onCancelled(error: DatabaseError) {}

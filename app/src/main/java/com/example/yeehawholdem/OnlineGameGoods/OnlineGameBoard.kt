@@ -90,6 +90,8 @@ fun GameBoardOnline(navController: NavController) {
     var localShowWinner by remember { mutableStateOf(false) }
     var playerWins by remember { mutableStateOf(false) }
     var userBet by remember { mutableStateOf(0) }
+    var numWinners by remember { mutableStateOf(0) }
+    var winners by remember { mutableStateOf(gameVals.winners) }
 
     // Get the lobby number and store it in the String "ls"
     LaunchedEffect(Unit) {
@@ -108,6 +110,8 @@ fun GameBoardOnline(navController: NavController) {
         communications.setupNumPlayersEventListener(gameVals, ls)
         communications.setupPlayerEventListener(gameVals, ls)
         communications.setupShowWinnerListener(gameVals, ls)
+        communications.setupWinnersEventListener(gameVals, ls)
+        communications.setupNumWinnersEventListener(gameVals, ls)
     }
 
     // flags for the UI to display the cards
@@ -126,6 +130,8 @@ fun GameBoardOnline(navController: NavController) {
     curBetCycle = gameVals.getCurrBetCycle()
     playerWins = gameVals.getDidYaWin()
     showWinner = gameVals.getShowWinner()
+    winners = gameVals.winners
+    numWinners = gameVals.getNumWinners()
 
     // This is the isHost check for the composable, use with if statement
     isHost = gameVals.getIsHost()
@@ -169,6 +175,8 @@ fun GameBoardOnline(navController: NavController) {
                 gameClass.setupRound3()
             }
         }
+    }  else if (!isHost) {
+        gameClass.createPlayersList()
     }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter)
@@ -364,14 +372,20 @@ fun GameBoardOnline(navController: NavController) {
         }
 
     }
-    if (showWinner && localShowWinner) {
+    if (showWinner && localShowWinner && (gameVals.winners.getOrNull(0) != null)) {
+        var winnerString = "Winners: "
+        for (i in gameVals.winners.indices) {
+            winnerString += gameVals.winners[i]
+            if (i + 1 < gameVals.winners.size)
+                winnerString += ", "
+        }
         AlertDialog(onDismissRequest = {},
             title = {
                 if(playerWins){
-                    Text(text = "You won!")
+                    Text(text = "You won! " + winnerString, textAlign = TextAlign.Center)
                 }
                 else{
-                    Text(text = "You lost!")
+                    Text(text = "You lost! " + winnerString, textAlign = TextAlign.Center)
                 }
             },
             confirmButton = {
