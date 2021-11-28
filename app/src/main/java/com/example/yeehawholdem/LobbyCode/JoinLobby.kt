@@ -55,13 +55,6 @@ fun Joinlobby(navController : NavController) {
     var selectedLobby by remember { mutableStateOf("Lobby1") }
     var selectedLobbyPlayers by remember { mutableStateOf(0) }
 
-    //All the values we need to put in the databases
-    var playerUsername by remember { mutableStateOf("") }
-    var playerBalance by remember { mutableStateOf(0) }
-    var numberOfPlayers by remember { mutableStateOf(0) }
-    var currentHost by remember { mutableStateOf("") }
-    // we use 0 for a game thats not active and 1 for one that is
-    var isGameInProgress by remember { mutableStateOf(false) }
 
     //state to show the user they're being added to the wait room
     var showWaitWarning by remember { mutableStateOf(false) }
