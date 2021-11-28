@@ -59,6 +59,7 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         communicator.setPlayerTurnNumber(lobbyStr, table.playerArray)
         communicator.setDidYaWin(lobbyStr, table.playerArray)
         communicator.resetHighestBet(lobbyStr, table.playerArray)
+        communicator.setPlayerIsStillIn(lobbyStr, table.playerArray)
         communicator.setBet(lobbyStr, 0)
         communicator.setCurrentActivePlayer(lobbyStr, 0)
         communicator.setCard1(lobbyStr, -1)
