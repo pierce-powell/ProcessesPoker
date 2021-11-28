@@ -56,8 +56,9 @@ class CheckHand {
                 return true
             // Check for "Wheel" Straight (Ace, 2, 3, 4, 5)
             else if (getHighestCardValueInHand() == 12) {
-                if (list.getOrNull(3)!!.value - list.getOrNull(0)!!.value == 3)
-                    return true
+                if ((list.getOrNull(3)!!.value) - list.getOrNull(0)!!.value == 3)
+                    if (list.getOrNull(3)!!.value == 3)
+                        return true
             }
         }
         return false

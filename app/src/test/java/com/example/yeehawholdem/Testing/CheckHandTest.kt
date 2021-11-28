@@ -6,20 +6,23 @@ import org.junit.Test
 
 class CheckHandTest {
     val checkHand = CheckHand()
-    val communitycard1 = Card(4)
-    val communitycard2 = Card(11)
-    val communitycard3 = Card(33)
-    val communitycard4 = Card(27)
-    val communitycard5 = Card(0)
+    val communitycard1 = Card(3)
+    val communitycard2 = Card(47)
+    val communitycard3 = Card(43)
+    val communitycard4 = Card(14)
+    val communitycard5 = Card(12)
     val card6 = Card(40)
-    val card7 = Card(48)
-    val card8 = Card(20)
-    val card9 = Card(49)
+    val card7 = Card(22)
+    val card8 = Card(41)
+    val card9 = Card(37)
+    val card10 = Card(8)
+    val card11 = Card(5)
     var handValue = -1
     val actualHandVal = 6
     val communityCards = mutableListOf<Card>()
     var hand1 = mutableListOf<Card>()
     var hand2 = mutableListOf<Card>()
+    var hand3 = mutableListOf<Card>()
 
     // Constructor that runs first
     init {
@@ -37,6 +40,8 @@ class CheckHandTest {
         hand1.add(card7)
         hand2.add(card8)
         hand2.add(card9)
+        hand3.add(card10)
+        hand3.add(card11)
 
         checkHand.currentHand.add(Card(0))
         checkHand.currentHand.add(Card(4+13))
@@ -51,6 +56,8 @@ class CheckHandTest {
         println("hand1 = \n${res}")
         val res2 = checkHand.bestHand(hand2, communityCards)
         println("hand2 = \n${res2}")
+        val res3 = checkHand.bestHand(hand3, communityCards)
+        println("hand2 = \n${res3}")
     }
 
     @Test
