@@ -129,7 +129,7 @@ class CheckHand {
             isStraightFlush() -> 8 *13*13*13*13*13 + straight()
             isFourOfAKind() -> 7 *13*13*13*13*13 + fourOfAKind()
             isFullHouse() -> 6 *13*13*13*13*13 + fullHouse()
-            isFlush() -> 5 *13*13*13*13*13 + getHighestCardValueInHand()
+            isFlush() -> 5 *13*13*13*13*13 + noCombo()
             isStraight() -> 4 *13*13*13*13*13 + straight()
             isThreeOfAKind() -> 3 *13*13*13*13*13 + threeOfAKind()
             isTwoPairs() -> 2 *13*13*13*13*13 + pairs()
