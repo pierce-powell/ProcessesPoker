@@ -58,6 +58,7 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         communicator.setShowWinner(lobbyStr, false)
         communicator.setPlayerTurnNumber(lobbyStr, table.playerArray)
         communicator.setDidYaWin(lobbyStr, table.playerArray)
+        communicator.setPlayerIsStillIn(lobbyStr, table.playerArray)
         communicator.setBet(lobbyStr, 0)
         communicator.setCurrentActivePlayer(lobbyStr, 0)
         communicator.setCard1(lobbyStr, -1)
@@ -231,6 +232,10 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
 
     class ShowdownResults(var playerName: String = "",
                           var handValue: Int = 0) {
+
+    }
+
+    fun resetPlayers(){
 
     }
 }

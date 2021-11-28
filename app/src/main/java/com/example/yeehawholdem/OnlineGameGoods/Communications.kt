@@ -362,4 +362,12 @@ class Communications {
                 .setValue(false)
         }
     }
+
+    fun setPlayerIsStillIn(lobbyStr: String, playerList: MutableList<Player>){
+        val database = Firebase.database.getReference(lobbyStr)
+        for (player in playerList) {
+            database.child("ActiveUsers").child(player.playerFirebaseId).child("IsStillIn")
+                .setValue(true)
+        }
+    }
 }
