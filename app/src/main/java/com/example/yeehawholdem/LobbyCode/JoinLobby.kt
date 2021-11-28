@@ -248,6 +248,7 @@ fun Joinlobby(navController : NavController) {
                         //Now lets update the player count
                         lobbyRef.child("NumPlayers").setValue(selectedLobbyPlayers + 1)
                         lobbyRef.child("NumWinner").setValue(0)
+                        lobbyRef.child("ShowWinner").setValue(false)
 
                         //We also need to update the Lobbys section for the realtime player counts
                         val lobbysSectionRef = database.getReference("Lobbys").child(selectedLobby)

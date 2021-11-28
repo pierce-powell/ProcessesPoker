@@ -109,7 +109,7 @@ class Communications {
         val database = Firebase.database.getReference(lobbyStr)
         val lobbyListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                game.setShowWinner(snapshot.value as Boolean)
+                (snapshot.value as Boolean?)?.let { game.setShowWinner(it) }
             }
             override fun onCancelled(error: DatabaseError) {}
         }
