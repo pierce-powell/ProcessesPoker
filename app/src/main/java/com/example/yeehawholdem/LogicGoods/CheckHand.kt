@@ -159,12 +159,17 @@ class CheckHand {
 
     private fun fourOfAKind(): Int {
         val list = currentHand.groupBy { it.value }
+        var four = 0
+        var max = 0
         for (xs in list) {
-            if (xs.value.size == 1) {
-                return xs.key.absoluteValue
+            if (xs.value.size == 4) {
+                four = xs.key
+            } else {
+                if (xs.key.absoluteValue > max)
+                    max = xs.key.absoluteValue
             }
         }
-        return -1
+        return four * 13 + max
     }
 
     private fun fullHouse(): Int {
@@ -184,25 +189,31 @@ class CheckHand {
 
     private fun threeOfAKind(): Int {
         val list = currentHand.groupBy { it.value }
+        var three = 0
         var max = 0
         for (xs in list) {
-            if (xs.value.size != 3) {
-                if(xs.key.absoluteValue > max)
+            if (xs.value.size == 3) {
+                three = xs.key
+            } else {
+                if (xs.key.absoluteValue > max)
                     max = xs.key.absoluteValue
             }
         }
-        return max
+        return three * 13 + max
     }
 
     private fun pairs(): Int {
         val list = currentHand.groupBy { it.value }
+        var pair = 0
         var max = 0
         for (xs in list) {
-            if (xs.value.size != 2) {
-                if(xs.key.absoluteValue > max)
+            if (xs.value.size == 2) {
+                pair = xs.key
+            } else {
+                if (xs.key.absoluteValue > max)
                     max = xs.key.absoluteValue
             }
         }
-        return max
+        return pair * 13 + max
     }
 }

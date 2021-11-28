@@ -63,6 +63,17 @@ class Table {
             dealer.dealCard(player)
             dealer.dealCard(player)
         }
+
+        /*
+        // TODO: Debug
+        playersStillIn[1].hand[0] = Card(2)
+        playersStillIn[1].hand[1] = Card(19)
+        sharedDeck[0] = Card(23)
+        sharedDeck[1] = Card(12)
+        sharedDeck[2] = Card(6)
+        sharedDeck[3] = Card(43)
+        sharedDeck[4] = Card(50)
+         */
     }
 
     // Setup the full deck and user deck

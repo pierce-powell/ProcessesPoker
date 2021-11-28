@@ -24,7 +24,7 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
     (gameVa: GameValues, var communicator: Communications, var lobbyStr: String) {
     var dealer = Dealer()
     var table = Table()
-    var gameState = GameState.STARTGAME
+    var gameState = GameState.STOPPED
     // var dealerButton = 0
     // var turn = 0
     var gameVals: GameValues = gameVa
@@ -67,6 +67,8 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         communicator.setCard3(lobbyStr, -1)
         communicator.setCard4(lobbyStr, -1)
         communicator.setCard5(lobbyStr, -1) //
+
+        // Debug
 
         gameState = GameState.RUNNING
     }
@@ -148,17 +150,7 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
     fun haveAllPlayersChecked(): Boolean{
         return gameVals.getNumPlayersChecked() >= gameVals.playerList.size
     }
-    /*
-    fun increaseCurrentActivePlayer(){
-        var temp = gameVals.getCurrentActivePlayer()
-        temp = (temp + 1) % gameVals.getNumPlayers()
-        if(temp == 0L) {
-            temp += 1
-            communicator?.setCurrBetCycle( lobbyStr, gameVals.getCurrBetCycle() + 1L)
-        }
-        communicator?.setCurrentActivePlayer(lobbyStr, temp + 1)
-    }
-    */
+
     fun increaseCurrentActivePlayer(){
         val temp = gameVals.getCurrentActivePlayer()
         communicator.setCurrentActivePlayer(lobbyStr, (temp + 1) % gameVals.getNumPlayers())
@@ -189,7 +181,6 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
             val balance = gameVals.playerList.filter { it.playerFirebaseId == name }.get(0).balance
             Firebase.database.reference.child(lobbyStr).child("ActiveUsers").child(player.playerFirebaseId).child("balance").setValue(winnings + balance)
             Firebase.database.reference.child(player.playerFirebaseId).child("balance").setValue(winnings + balance)
-            // Firebase.database.reference.child(player.playerFirebaseId).child("balance").setValue(winnings + player.balance)
             Firebase.database.reference.child(lobbyStr).child("ActiveUsers").child(player.playerFirebaseId).child("DidYaWin").setValue(true)
         }
 

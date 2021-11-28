@@ -126,12 +126,11 @@ fun GameBoardOnline(navController: NavController) {
     curBetCycle = gameVals.getCurrBetCycle()
     playerWins = gameVals.getDidYaWin()
     showWinner = gameVals.getShowWinner()
-    gameClass.createPlayersList()
 
     // This is the isHost check for the composable, use with if statement
     isHost = gameVals.getIsHost()
 
-    if((gameClass.isFolded() && gameClass.isTurn()) && IsGameInProgress){
+    if((gameClass.isFolded() && gameClass.isTurn()) && IsGameInProgress && (gameVals.getNumPlayers() > 0)){
         gameClass.increaseCurrentActivePlayer()
         communications.setNumPlayersChecked(
             ls,
@@ -149,7 +148,7 @@ fun GameBoardOnline(navController: NavController) {
     }
 
     // Gameplay Loop for Host
-    if (isHost) {
+    if (isHost && IsGameInProgress) {
         if(gameClass.haveAllPlayersFolded()) {
             gameClass.gameState = GameState.SHOWDOWN
         }
@@ -194,8 +193,11 @@ fun GameBoardOnline(navController: NavController) {
                     onClick = {
                         gameClass.gameState = GameState.STARTGAME
                         // communications.setIsGameInProgress(ls, true)
-                        if(gameVals.getNumPlayers() > 1)
+                        if(gameVals.getNumPlayers() > 1) {
                             startGame = true
+                            communications.setIsGameInProgress(ls, true)
+                            gameClass.gameState = GameState.STARTGAME
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth(.27f)
@@ -205,19 +207,6 @@ fun GameBoardOnline(navController: NavController) {
                     Text(text = "Start Game", fontSize = MaterialTheme.typography.h5.fontSize, textAlign = TextAlign.Center)
                 }
             }
-            /*
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(70.dp),
-                horizontalArrangement = Arrangement.Center
-            )
-            {
-                /*if (!cardsFlags[7]) AddCardBacks()
-                else AddCard(card = game.dealer_player.hand.getOrNull(0))
-                if (!cardsFlags[8]) AddCardBacks()
-                else AddCard(card = game.dealer_player.hand.getOrNull(1))*/
-            }*/
             AddText(text = "The River")
             //The River :tm:
             Row(

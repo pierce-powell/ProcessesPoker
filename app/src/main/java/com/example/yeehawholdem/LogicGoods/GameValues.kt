@@ -18,10 +18,12 @@ class GameValues {
     private var currentActivePlayer: Long = 0
     private var isGameInProgress = false
     private var showWinner = false
+    private var numWinners = 0
     private var turnNumber = 0
     private var numPlayersChecked = 0
     private var currBetCycle = 0
     private var numPlayers = 0
+    var winners = mutableListOf<String>()
     var playerList = mutableListOf<Player>()
     var playersStillIn = mutableListOf<Player>()
 
@@ -231,6 +233,16 @@ class GameValues {
     @JvmName("setTurnNumber")
     fun setTurnNumber(newBet: Int) {
         this.turnNumber = newBet
+    }
+
+    @JvmName("getNumWinners")
+    fun getNumWinners(): Int {
+        return numWinners
+    }
+
+    @JvmName("setNumWinners")
+    fun setNumWinners(newBet: Long) {
+        this.numWinners = newBet.toInt()
     }
 
     @JvmName("getNumPlayersChecked")

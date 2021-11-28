@@ -1,5 +1,6 @@
 package com.example.yeehawholdem.OnlineGameGoods
 
+import com.example.yeehawholdem.LogicGoods.Card
 import com.example.yeehawholdem.LogicGoods.GameValues
 import com.example.yeehawholdem.LogicGoods.Player
 import com.google.firebase.auth.FirebaseAuth
@@ -137,6 +138,32 @@ class Communications {
         database.child("NumPlayersChecked").addValueEventListener(lobbyListener)
     }
 
+    fun setupNumWinnersEventListener(game: GameValues, lobbyStr: String) {
+        val database = Firebase.database.getReference(lobbyStr)
+        val lobbyListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                game.setNumWinners(snapshot.value as Long)
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        database.child("NumWinner").addValueEventListener(lobbyListener)
+    }
+
+    fun setupWinnersEventListener(game: GameValues, lobbyStr: String) {
+        val database = Firebase.database.getReference(lobbyStr)
+        val lobbyListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                game.winners.clear()
+                for (i in 0.until(game.getNumWinners())) {
+                    val str = i.toString()
+                    game.winners.add(snapshot.child(str).value as String)
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        database.child("Winners").addValueEventListener(lobbyListener)
+    }
+
     fun setupCurrBetCycleEventListener(game: GameValues, lobbyStr: String) {
         val database = Firebase.database.getReference(lobbyStr)
         val lobbyListener = object : ValueEventListener {
@@ -198,7 +225,7 @@ class Communications {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val lobbyBet = dataSnapshot.children
                     // var curPlayer = LeaderBoardPlayer()
-                    game.playerList.clear()
+                        game.playerList.clear()
                     game.playersStillIn.clear()
 
                     lobbyBet.forEach {
@@ -206,12 +233,23 @@ class Communications {
                         val playerBalance = it.child("balance").value as Long?
                         val playerName = it.child("username").value as String?
                         val isStillIn = it.child("IsStillIn").value as Boolean?
+                        val card1 = (it.child("Cards").child("Card1").value as Long?)?.let { it1 ->
+                            Card(
+                                it1.toInt())
+                        }
+                        val card2 = (it.child("Cards").child("Card2").value as Long?)?.let { it1 ->
+                            Card(
+                                it1.toInt())
+                        }
+
+                        var hand = if (card1 == null || card2 == null) mutableListOf<Card>() else mutableListOf<Card>(card1, card2)
+
                         val player = playerName?.let { it1 ->
                             playerBalance?.let { it2 ->
                                 Player(
                                     name = it1,
                                     balance = it2.toInt(),
-                                    playerFirebaseId = key
+                                    playerFirebaseId = key, hand = hand
                                 )
                             }
                         }
