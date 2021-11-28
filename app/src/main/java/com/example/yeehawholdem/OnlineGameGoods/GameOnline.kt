@@ -232,6 +232,14 @@ class Game//this.lobbyStr = lobbyStr//When creating a Game object, initialize wi
         return playerList.filter { it.handValue == highestVal }
     }
 
+    fun getCurrentActiveUsername(): String{
+        if(table.playerArray.size > 0) {
+            return table.playerArray[gameVals.getCurrentActivePlayer().toInt()].name
+        }
+        else
+            return ""
+    }
+
     class ShowdownResults(var playerName: String = "",
                           var handValue: Int = 0) {
 

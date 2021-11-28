@@ -126,6 +126,7 @@ fun GameBoardOnline(navController: NavController) {
     curBetCycle = gameVals.getCurrBetCycle()
     playerWins = gameVals.getDidYaWin()
     showWinner = gameVals.getShowWinner()
+    gameClass.createPlayersList()
 
     // This is the isHost check for the composable, use with if statement
     isHost = gameVals.getIsHost()
@@ -239,7 +240,7 @@ fun GameBoardOnline(navController: NavController) {
                 else AddCardBacks()
             }
             Spacer(modifier = Modifier.padding(10.dp))
-            AddText(text = "Who's up: ")                                                                        //TODO: ADD THE DATA CALL LIKE BELOW
+            AddText(text = "Who's up: ${gameClass.getCurrentActiveUsername()}")                                                                    //TODO: ADD THE DATA CALL LIKE BELOW
             Spacer(modifier = Modifier.padding(10.dp))
             AddText(text = "Pot: ${gameVals.getPot()}" + "   Highest Bet: ${gameVals.getBet()}")
             Spacer(modifier = Modifier.padding(10.dp))
