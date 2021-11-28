@@ -135,7 +135,7 @@ fun LeaderBoardScreen(navController : NavController)
                 )
                 {
                     Text(
-                        text = "My Postion",
+                        text = "My Position",
                         fontSize = MaterialTheme.typography.h5.fontSize
                     )
                 }
